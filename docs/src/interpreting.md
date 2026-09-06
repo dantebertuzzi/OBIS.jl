@@ -123,8 +123,10 @@ the OBIS Mapper, so an analysis built on a Mapper export has no access to them a
 
 Why it matters: a presence-only dataset cannot distinguish "not recorded here" from "looked
 for and not found here". Any method that needs a contrast between occupied and unoccupied
-sites — and most do — has to construct the unoccupied set somehow. Real absences, where
-they exist, are better than any construction of them.
+sites — and most do — has to construct the unoccupied set somehow, usually as
+pseudo-absences drawn from the background. A recorded absence is an observation; a
+pseudo-absence is an assumption. Where recorded absences exist, using them removes that
+assumption from the analysis.
 
 ```julia
 # Presences and absences together, labelled.

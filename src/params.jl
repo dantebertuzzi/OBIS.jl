@@ -388,7 +388,7 @@ function build_params(;
         a <= b || throw(
             OBISValidationError(
                 :startdate, startdate,
-                "`startdate` ($a) must not be after `enddate` ($b)."
+                "`startdate` ($a) must not be after `enddate` ($b).",
             ),
         )
     end

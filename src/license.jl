@@ -143,8 +143,23 @@ end
 
 Whether a licence requires the data provider to be credited.
 
-False only for `CC0-1.0`. The OBIS data policy asks that providers be credited regardless,
-so this describes the legal obligation, not the expected practice.
+False only for `CC0-1.0`, the one licence here that waives the requirement. `"unknown"`
+counts as requiring attribution: an unidentifiable rights statement is not evidence that
+attribution was waived, and treating it as such is exactly the permissive guess the rest of
+this file avoids.
+
+This describes the legal obligation. The OBIS data policy asks that providers be credited
+regardless of licence, so `false` is not advice to omit the credit.
+
+```jldoctest
+julia> OBIS.requires_attribution("CC0-1.0")
+false
+
+julia> OBIS.requires_attribution("CC-BY-4.0")
+true
+
+julia> OBIS.requires_attribution("unknown")
+true
+```
 """
-requires_attribution(id) =
-    String(string(id)) in ("CC-BY-4.0", "CC-BY-NC-4.0", "CC-BY-SA-4.0")
+requires_attribution(id) = String(string(id)) != "CC0-1.0"

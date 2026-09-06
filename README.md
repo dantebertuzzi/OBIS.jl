@@ -44,25 +44,26 @@ Data from OBIS comes with obligations. Datasets carry different licences, and an
 to be cited with the date it was accessed. Both travel with the result.
 
 ```julia
-using OBIS
+using OBIS, Dates
 
-# A query: one species, in a polygon, over a decade.
+# A query: one species, in the southern North Sea, over two decades.
 recs = OBIS.occurrence(;
     scientificname = "Abra alba",
-    geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))",
-    startdate = Date(2010, 1, 1),
+    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
+    startdate = Date(2000, 1, 1),
     enddate   = Date(2020, 12, 31),
-)
+)                                    # 5,921 records from 43 datasets
 
 # What may be done with these data?
 OBIS.licenses(recs)
-# license        datasets  records  permits_redistribution  permits_commercial_use  …
-# CC-BY-4.0            11     2841                    true                    true
-# CC0-1.0               3      412                    true                    true
-# CC-BY-NC-4.0          2      118                    true                   false
+# license       datasets  records  permits_redistribution  permits_commercial_use  requires_attribution
+# CC-BY-4.0           28     3875                    true                    true                  true
+# CC0-1.0              8     1136                    true                    true                 false
+# CC-BY-NC-4.0         6      907                    true                   false                  true
+# unknown              1        3                   false                   false                  true
 
-# One CC BY-NC dataset makes the combined result non-commercial. The summary says so
-# before you build anything on it.
+# Six CC BY-NC datasets make the combined result non-commercial, and one dataset's rights
+# statement could not be identified at all. The summary says so before you build on it.
 
 # How to credit them. The access date comes from the request, so it is already correct.
 print(OBIS.citations(recs; format = :text))
@@ -73,6 +74,11 @@ write("obis-references.bib", OBIS.citations(recs; format = :bibtex))
 # The per-dataset breakdown, as a table.
 cites = OBIS.citations(recs)
 cites.dataset_id, cites.records, cites.license, cites.doi
+
+# Wageningen Marine Research (2019). WOT-schelpdieren: Dutch national shellfish monitoring
+# in the coastal zone. [Dataset] (Available: Ocean Biodiversity Information System.
+# Intergovernmental Oceanographic Commission of UNESCO. https://obis.org.
+# Accessed: 2026-09-06)
 ```
 
 Records the default view leaves out are available too. Absence records — a species looked

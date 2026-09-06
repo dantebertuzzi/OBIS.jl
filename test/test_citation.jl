@@ -59,6 +59,9 @@ end
 
     @test !OBIS.requires_attribution("CC0-1.0")
     @test OBIS.requires_attribution("CC-BY-4.0")
+    @test OBIS.requires_attribution("CC-BY-NC-4.0")
+    # An unidentifiable rights statement is not evidence that attribution was waived.
+    @test OBIS.requires_attribution("unknown")
 
     @test OBIS.license_url("CC-BY-NC-4.0") ==
         "https://creativecommons.org/licenses/by-nc/4.0/"

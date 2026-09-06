@@ -121,7 +121,7 @@ end
 A query was estimated to return more records than the configured API threshold.
 
 Raised rather than silently switching access routes: the two routes differ in coverage
-(see [`export_available`](@ref)), so the choice belongs to the caller.
+(see [`export_covers`](@ref)), so the choice belongs to the caller.
 """
 struct OBISLargeQueryError <: OBISError
     estimate::Int

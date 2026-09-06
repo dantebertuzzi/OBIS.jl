@@ -762,3 +762,14 @@ Recorded because they contradict assumptions that would otherwise reach the code
    than to a guess.
 5. Does `size` behave identically on `/checklist` as on `/occurrence`, and does
    `/checklist` support `after`? Undocumented; only `size` was verified. (§2.2)
+
+## 13. Answered since first writing
+
+- **Polygon winding order is irrelevant.** Both orientations of the same box return
+  identical counts, so the client does not need to normalize it. (§3.2)
+- **`/statistics` agreement was re-verified end to end.** The integration suite checks four
+  filter combinations on every run, so a regression in this assumption surfaces rather than
+  silently skewing the route heuristic. (§2.2)
+- **The export bucket needs no credentials.** Confirmed by fetching `licenses.tsv` and a
+  per-dataset Parquet file over plain HTTPS, which is why the export route needs no AWS
+  SDK. (§7.2)

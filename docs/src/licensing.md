@@ -32,9 +32,14 @@ most restrictive one governs what may be done with the result as a whole.
 [`OBIS.licenses`](@ref) summarizes a result:
 
 ```julia
-using OBIS
+using OBIS, Dates
 
-recs = OBIS.occurrence("Abra alba"; limit = 2000)
+recs = OBIS.occurrence(;
+    scientificname = "Abra alba",
+    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
+    startdate = Date(2000, 1, 1),
+    enddate   = Date(2020, 12, 31),
+)
 OBIS.licenses(recs)
 ```
 
@@ -42,11 +47,11 @@ Each row gives the licence, how many datasets and records fall under it, and wha
 permits:
 
 ```
-license        datasets  records  permits_redistribution  permits_commercial_use  requires_attribution
-CC-BY-4.0            41     1502                    true                    true                  true
-CC0-1.0              12      398                    true                    true                 false
-CC-BY-NC-4.0          4       97                    true                   false                  true
-unknown               1        3                   false                   false                  true
+license       datasets  records  permits_redistribution  permits_commercial_use  requires_attribution
+CC-BY-4.0           28     3875                    true                    true                  true
+CC0-1.0              8     1136                    true                    true                 false
+CC-BY-NC-4.0         6      907                    true                   false                  true
+unknown              1        3                   false                   false                  true
 ```
 
 Read the last two columns before building anything. One CC BY-NC dataset makes the combined
@@ -159,7 +164,7 @@ using OBIS, DataFrames
 
 recs = OBIS.occurrence(;
     scientificname = "Abra alba",
-    geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))",
+    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
 )
 
 # 1. May I use these as I intend to?

@@ -89,7 +89,7 @@ function citation_entries(t::OBISTable)
                 entries,
                 CitationEntry(
                     id, missing, missing, missing, "unknown", missing, missing, n,
-                    meta.accessed
+                    meta.accessed,
                 ),
             )
             continue

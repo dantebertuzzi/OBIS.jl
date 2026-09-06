@@ -1,5 +1,11 @@
 # API reference
 
+## The module
+
+```@docs
+OBIS.OBIS
+```
+
 ## Occurrences
 
 ```@docs
@@ -132,4 +138,6 @@ OBIS.OCCURRENCE_SCHEMA
 OBIS.TAXON_SCHEMA
 OBIS.DATASET_SCHEMA
 OBIS.FieldSpec
+OBIS.coerce_field
+OBIS.column_type
 ```

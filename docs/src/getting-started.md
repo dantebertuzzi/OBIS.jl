@@ -17,7 +17,7 @@ OBIS.occurrence(; taxonid = 141433, limit = 100)
 # In an area, over a period, within a depth range.
 OBIS.occurrence(;
     scientificname = "Delphinidae",
-    geometry  = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))",
+    geometry  = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
     startdate = Date(2010, 1, 1),
     enddate   = Date(2020, 12, 31),
     startdepth = 0,

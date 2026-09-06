@@ -58,7 +58,7 @@ because a dropped record is excluded from every default query and from the bulk 
 """
 const DROPPING_FLAGS = Set([
     "NO_COORD", "ZERO_COORD", "LON_OUT_OF_RANGE", "LAT_OUT_OF_RANGE", "NO_MATCH",
-    "NOT_MARINE"
+    "NOT_MARINE",
 ])
 
 """
