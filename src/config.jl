@@ -11,7 +11,7 @@ const DEFAULT_BASE_URL = "https://api.obis.org/v3/"
 const DEFAULT_EXPORT_URL = "https://obis-open-data.s3.amazonaws.com/"
 
 "Repository URL, sent in the `User-Agent` header so OBIS can identify the client."
-const REPO_URL = "https://github.com/EDIT-GITHUB-USER/OBIS.jl"
+const REPO_URL = "https://github.com/dantebertuzzi/OBIS.jl"
 
 "Largest page the API accepts for `/occurrence`."
 const MAX_PAGE_SIZE = 10_000

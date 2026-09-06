@@ -3,8 +3,8 @@
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
 Intergovernmental Oceanographic Commission of UNESCO.
 
-[![Build Status](https://github.com/EDIT-GITHUB-USER/OBIS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/EDIT-GITHUB-USER/OBIS.jl/actions/workflows/CI.yml)
-[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://EDIT-GITHUB-USER.github.io/OBIS.jl/stable)
+[![Build Status](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml)
+[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/stable)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## Installation

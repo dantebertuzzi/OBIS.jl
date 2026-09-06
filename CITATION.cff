@@ -10,11 +10,11 @@ abstract: >-
   pagination, an optional reproducibility cache, and access to absence and dropped records.
 type: software
 authors:
-  - given-names: EDIT-AUTHOR-GIVEN-NAMES
-    family-names: EDIT-AUTHOR-FAMILY-NAME
-    orcid: "https://orcid.org/EDIT-AUTHOR-ORCID"
-repository-code: "https://github.com/EDIT-GITHUB-USER/OBIS.jl"
-url: "https://EDIT-GITHUB-USER.github.io/OBIS.jl"
+  - given-names: Dante
+    family-names: Bertuzzi
+    orcid: "https://orcid.org/0009-0007-5223-2814"
+repository-code: "https://github.com/dantebertuzzi/OBIS.jl"
+url: "https://dantebertuzzi.github.io/OBIS.jl"
 license: MIT
 version: 0.1.0
 keywords:
