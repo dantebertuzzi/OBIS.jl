@@ -1,0 +1,38 @@
+name = "OBIS"
+uuid = "bf4f0d90-9197-4e1e-85a0-d7f577e5c8e6"
+authors = ["EDIT-AUTHOR-NAME <EDIT-AUTHOR-EMAIL>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+
+[weakdeps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+
+[extensions]
+OBISDataFramesExt = "DataFrames"
+
+[compat]
+Aqua = "0.8"
+DataFrames = "1"
+Dates = "1.10"
+HTTP = "1.10"
+JSON3 = "1.14"
+SHA = "0.7"
+StructTypes = "1.10"
+Tables = "1.11"
+Test = "1.10"
+julia = "1.10"
+
+[extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Aqua", "DataFrames", "Test"]

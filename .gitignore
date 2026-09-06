@@ -1,0 +1,18 @@
+# Local research notes, never versioned
+scratch/
+
+# Julia
+Manifest.toml
+/docs/build/
+/docs/Manifest.toml
+*.cov
+*.jl.mem
+deps/deps.jl
+
+# Local cache used by the package during development
+.obis_cache/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

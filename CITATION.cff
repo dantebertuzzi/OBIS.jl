@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: >-
+  If you use this package, please cite it. Citing the package does not replace citing the
+  OBIS datasets you used; generate those with `OBIS.citations(result)`.
+title: "OBIS.jl: a Julia client for the Ocean Biodiversity Information System"
+abstract: >-
+  A Julia client for the OBIS (Ocean Biodiversity Information System) API, a programme of
+  the Intergovernmental Oceanographic Commission of UNESCO. Provides a stable typed schema
+  across queries, licence and citation metadata carried on results, streaming and resumable
+  pagination, an optional reproducibility cache, and access to absence and dropped records.
+type: software
+authors:
+  - given-names: EDIT-AUTHOR-GIVEN-NAMES
+    family-names: EDIT-AUTHOR-FAMILY-NAME
+    orcid: "https://orcid.org/EDIT-AUTHOR-ORCID"
+repository-code: "https://github.com/EDIT-GITHUB-USER/OBIS.jl"
+url: "https://EDIT-GITHUB-USER.github.io/OBIS.jl"
+license: MIT
+version: 0.1.0
+keywords:
+  - marine biodiversity
+  - biodiversity informatics
+  - Darwin Core
+  - OBIS
+  - Julia
+references:
+  - type: database
+    title: Ocean Biodiversity Information System
+    authors:
+      - name: Intergovernmental Oceanographic Commission of UNESCO
+    url: "https://obis.org"

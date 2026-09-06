@@ -1,0 +1,132 @@
+{
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&flags=ON_LAND&size=3": {
+        "name": "occurrence_on_land",
+        "status": 200,
+        "file": "occurrence_on_land.json"
+    },
+    "https://api.obis.org/v3/statistics?scientificname=Abra%20alba": {
+        "name": "statistics_abra",
+        "status": 200,
+        "file": "statistics_abra.json"
+    },
+    "https://api.obis.org/v3/checklist?scientificname=Abra&size=5": {
+        "name": "checklist",
+        "status": 200,
+        "file": "checklist.json"
+    },
+    "https://api.obis.org/v3/statistics?scientificname=Mollusca": {
+        "name": "statistics_mollusca",
+        "status": 200,
+        "file": "statistics_mollusca.json"
+    },
+    "https://api.obis.org/v3/institute?scientificname=Abra%20alba": {
+        "name": "institute_list",
+        "status": 200,
+        "file": "institute_list.json"
+    },
+    "https://api.obis.org/v3/statistics?scientificname=Abra%20alba&absence=true": {
+        "name": "statistics_abra_absence",
+        "status": 200,
+        "file": "statistics_abra_absence.json"
+    },
+    "https://api.obis.org/v3/node": {
+        "name": "node_list",
+        "status": 200,
+        "file": "node_list.json"
+    },
+    "https://api.obis.org/v3/area": {
+        "name": "area_list",
+        "status": 200,
+        "file": "area_list.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Delphinidae&size=25": {
+        "name": "occurrence_diverse",
+        "status": 200,
+        "file": "occurrence_diverse.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&geometry=POLYGON%20((0%200,%200%200.001,%200.001%200.001,%200.001%200,%200%200))&size=3": {
+        "name": "occurrence_empty",
+        "status": 200,
+        "file": "occurrence_empty.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&absence=true&size=3": {
+        "name": "occurrence_absence_only",
+        "status": 200,
+        "file": "occurrence_absence_only.json"
+    },
+    "https://api.obis.org/v3/statistics/years?scientificname=Abra%20alba": {
+        "name": "statistics_years",
+        "status": 200,
+        "file": "statistics_years.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&size=3": {
+        "name": "occurrence_page1",
+        "status": 200,
+        "file": "occurrence_page1.json"
+    },
+    "https://api.obis.org/v3/dataset/8acba7e7-2e50-4490-8328-b78a30472508": {
+        "name": "dataset_single",
+        "status": 200,
+        "file": "dataset_single.json"
+    },
+    "https://api.obis.org/v3/dataset?scientificname=Abra%20alba": {
+        "name": "dataset_list",
+        "status": 200,
+        "file": "dataset_list.json"
+    },
+    "https://api.obis.org/v3/country": {
+        "name": "country_list",
+        "status": 200,
+        "file": "country_list.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Notaspecies%20atallxyz&size=3": {
+        "name": "occurrence_name_not_found",
+        "status": 200,
+        "file": "occurrence_name_not_found.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&size=3&after=0004cda1-9e0f-4f5c-9eff-6a8efcfbc826": {
+        "name": "occurrence_page2",
+        "status": 200,
+        "file": "occurrence_page2.json"
+    },
+    "https://api.obis.org/v3/statistics/qc?scientificname=Abra%20alba": {
+        "name": "statistics_qc",
+        "status": 200,
+        "file": "statistics_qc.json"
+    },
+    "https://api.obis.org/v3/taxon/Abra%20alba": {
+        "name": "taxon_by_name",
+        "status": 200,
+        "file": "taxon_by_name.json"
+    },
+    "https://api.obis.org/v3/occurrence/0001837f-afc5-45a9-a76d-b63ab73fb93c": {
+        "name": "occurrence_single",
+        "status": 200,
+        "file": "occurrence_single.json"
+    },
+    "https://api.obis.org/v3/facet?facets=flags&scientificname=Abra%20alba": {
+        "name": "facet_flags",
+        "status": 200,
+        "file": "facet_flags.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&dropped=true&size=3": {
+        "name": "occurrence_dropped_only",
+        "status": 200,
+        "file": "occurrence_dropped_only.json"
+    },
+    "https://obis-open-data.s3.amazonaws.com/licenses.tsv": {
+        "name": "export_licenses",
+        "status": 200,
+        "file": "licenses.tsv"
+    },
+    "https://api.obis.org/v3/taxon/141433": {
+        "name": "taxon_by_id",
+        "status": 200,
+        "file": "taxon_by_id.json"
+    },
+    "https://api.obis.org/v3/occurrence?scientificname=Abra%20alba&size=20000": {
+        "name": "size_too_large",
+        "status": 400,
+        "file": "size_too_large.txt"
+    }
+}
