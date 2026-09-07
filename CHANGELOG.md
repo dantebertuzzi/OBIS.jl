@@ -16,6 +16,16 @@ All notable changes to this project are documented here. The format follows
   `OBIS.TRANSPORT` on the request path. The export route is now testable without reaching
   the bucket; the default behaviour is unchanged.
 
+### Changed
+
+- `export_covers` now accepts `absence` and `dropped` selections. The bulk export does
+  contain those records, contrary to the OBIS data access page: across five datasets the
+  export's `absence` and `dropped` row counts matched the API's `absence = :only` and
+  `dropped = :only` counts exactly, and each export's total came to the default count plus
+  them. `download_exports` no longer refuses such a query, and the large-query error offers
+  the export route for it. Only a pure `event` selection is still API-only — the export has
+  no column identifying those records.
+
 ## [0.1.0]
 
 Initial release; not yet registered.

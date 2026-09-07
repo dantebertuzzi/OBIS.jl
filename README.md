@@ -315,9 +315,9 @@ permissive.
 **Two access routes, chosen by you.** The API serves filtered queries; OBIS recommends its
 bulk GeoParquet export for large volumes. A query estimated to exceed a configurable
 threshold raises an error naming the alternatives instead of switching routes, because the
-routes do not cover the same records: absence and dropped records exist only on the API,
-and the export excludes records of insufficient quality. Silently changing route would
-change the answer.
+routes do not answer the same question: the export is a periodic snapshot and the API is
+live, pure event records can be selected only on the API, and the export is per dataset and
+unfiltered. Silently changing route would change the answer.
 
 **Large queries stream and resume.** `occurrence_pages` yields one page at a time, so a
 query larger than memory is still workable. Pagination is keyset on the record UUID, so the

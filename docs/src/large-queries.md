@@ -22,9 +22,12 @@ By default, `occurrence` estimates a query first and refuses to page through mor
 than a silent switch to the bulk export, because **the two routes do not return the same
 records**:
 
-- Absence records and records dropped by the quality pipeline are served by the API and are
-  not in the export.
-- The export excludes records of insufficient quality by design.
+- The export is a periodic snapshot and the API is live, so the same query answered from
+  each differs by whatever OBIS has ingested since the export was built.
+- Pure event records can be selected on the API and not in the export, which carries no
+  column identifying them.
+- The export is per dataset and unfiltered: you get whole files and apply the query's
+  filters yourself.
 
 Changing route silently would change the answer, so the package explains the options and
 lets you choose:
@@ -124,8 +127,15 @@ WKB. The field names are documented at
 
 ```julia
 OBIS.export_covers(; scientificname = "Abra alba")     # true
-OBIS.export_covers(; absence = :only)                  # false — API only
+OBIS.export_covers(; absence = :only)                  # true — the export carries them
+OBIS.export_covers(; event = :only)                    # false — API only
 ```
+
+Absence and dropped records are in the export, despite the data access page saying
+otherwise, which is why the query above filters them out explicitly rather than assuming
+they are absent. Checked against `/statistics` for five datasets: the export's `absence`
+and `dropped` row counts matched the API's `absence = :only` and `dropped = :only` counts
+exactly, and each export's total came to the default count plus them.
 
 The full OBIS dataset is itself licensed CC BY-NC. The licence and citation for every
 source dataset are published alongside it:

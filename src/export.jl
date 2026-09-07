@@ -39,20 +39,36 @@ end
 
 """
     export_covers(; absence = nothing, dropped = nothing, event = nothing, kwargs...) -> Bool
+    export_covers(params::QueryParams) -> Bool
 
 Whether the bulk export can serve a query.
 
-`false` when the query selects absence, dropped or pure event records. Those are available
-through the API, and the OBIS documentation is not consistent about whether the export
-includes absence records, so the package treats the export as not covering them rather than
-returning a result that might silently be missing a class of records.
+`false` only for a query that selects pure event records. The export has no column that
+identifies them — its event information is a `_event_id` carried on each occurrence, not a
+record class — so there is nothing in a file to select on.
+
+Absence and dropped records **are** in the export, contrary to the OBIS data access page,
+which says exports carry neither. Verified per dataset against `/statistics`: across five
+datasets the export's `absence` and `dropped` row counts matched the API's `absence = :only`
+and `dropped = :only` counts exactly, and each export's total equalled the default count
+plus them (NOTES.md §7.3). Reading them out of an export is a filter on those two columns.
+
+What still differs between the routes is the date. The export is regenerated periodically
+and the API is live, so the same query answered from each will differ by whatever OBIS has
+ingested since — which is why a large query raises rather than switching route on its own.
 """
 function export_covers(; absence=nothing, dropped=nothing, event=nothing, kwargs...)
-    for (name, sel) in ((:absence, absence), (:dropped, dropped), (:event, event))
-        selection_value(name, sel) === nothing || return false
-    end
-    return true
+    # `absence` and `dropped` no longer decide the answer, but are still validated: a typo
+    # in a selection should be an error wherever it is written rather than silently ignored
+    # here and caught by the next call that happens to look at it.
+    selection_value(:absence, absence)
+    selection_value(:dropped, dropped)
+    return selection_value(:event, event) === nothing
 end
+
+# Taken by the route heuristic, which holds a built parameter set rather than keywords.
+# Sharing the rule keeps the guard's advice and this function from drifting apart.
+export_covers(params::QueryParams) = !haskey(params, "event")
 
 """
     download_export(dataset_id; dir = pwd(), overwrite = false) -> String
@@ -86,9 +102,10 @@ Download the GeoParquet exports for every dataset a query touches.
 Resolves the query to its datasets with [`dataset`](@ref), then fetches one file per
 dataset, serially. Returns the local paths.
 
-The export excludes records the quality pipeline dropped, and its coverage of absence
-records is not documented consistently, so a query that needs either should stay on the
-API. [`export_covers`](@ref) reports which case a query is in.
+One file per dataset, whole: the export is not filtered, so a query's filters are applied
+by you after reading. Absence and dropped records are present and carry their own columns;
+pure event records cannot be selected at all. [`export_covers`](@ref) reports which case a
+query is in.
 
 ```julia
 paths = OBIS.download_exports("Abra alba"; dir = "obis-export")

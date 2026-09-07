@@ -47,12 +47,26 @@ end
     @test OBIS.export_covers(; scientificname="Abra alba")
     @test OBIS.export_covers(; absence=:exclude)
 
-    # The export excludes dropped records, and OBIS documentation is inconsistent about
-    # absence records, so these queries stay on the API.
-    @test !OBIS.export_covers(; absence=:only)
-    @test !OBIS.export_covers(; absence=:include)
-    @test !OBIS.export_covers(; dropped=:only)
+    # Absence and dropped records are in the export, whatever the OBIS data access page
+    # says: across five datasets the export's counts for both matched the API's
+    # `absence = :only` and `dropped = :only` counts exactly (NOTES.md §7.3).
+    @test OBIS.export_covers(; absence=:only)
+    @test OBIS.export_covers(; absence=:include)
+    @test OBIS.export_covers(; dropped=:only)
+
+    # Pure event records are the one selection the export cannot serve: no column in the
+    # file identifies them, so there is nothing to filter on.
     @test !OBIS.export_covers(; event=:only)
+    @test !OBIS.export_covers(; event=:include)
+
+    # A mistyped selection is still an error here, even though only `event` decides.
+    @test_throws OBIS.OBISValidationError OBIS.export_covers(; absence=:maybe)
+    @test_throws OBIS.OBISValidationError OBIS.export_covers(; dropped=:maybe)
+
+    # The route heuristic reads the same rule from a built parameter set, so the guard's
+    # advice cannot drift from what this function reports.
+    @test OBIS.export_covers(OBIS.build_params(; scientificname="Abra alba", absence=:only))
+    @test !OBIS.export_covers(OBIS.build_params(; scientificname="Abra alba", event=:only))
 end
 
 @testset "export URLs" begin
@@ -65,9 +79,7 @@ end
 end
 
 @testset "an API-only query cannot be sent to the export" begin
-    @test_throws OBIS.OBISValidationError OBIS.download_exports(
-        "Abra alba"; absence=:only
-    )
+    @test_throws OBIS.OBISValidationError OBIS.download_exports("Abra alba"; event=:only)
 end
 
 @testset "the export licence table parses" begin
@@ -124,30 +136,48 @@ end
     end
 end
 
-@testset "the export is not offered for a query it cannot serve" begin
-    # The two routes do not cover the same records: absence, dropped and event records are
-    # reachable only through the API. Suggesting the export for one of those queries would
-    # be suggesting a different answer to a different question.
-    with_mock() do
-        old = OBIS.config().api_record_limit
-        try
-            OBIS.configure!(; api_record_limit=1)
-            err = try
-                OBIS.occurrence("Abra alba"; absence=:only, licenses=false)
-                nothing
-            catch e
-                e
-            end
-            @test err isa OBIS.OBISLargeQueryError
+@testset "the export is offered only for a query it can serve" begin
+    # The guard's advice has to match `export_covers`, or it sends the caller to a route
+    # that cannot answer their question. Driven through a stub estimate so the test does
+    # not depend on how many event records OBIS happens to hold for a given taxon.
+    old_transport = OBIS.TRANSPORT[]
+    old_limit = OBIS.config().api_record_limit
+    OBIS.TRANSPORT[] =
+        (url, headers, timeout) -> (200, Dict{String,String}(), """{"records":5000000}""")
+    try
+        OBIS.configure!(; api_record_limit=1000)
 
-            msg = sprint(showerror, err)
-            @test occursin("does not cover", msg)
-            @test !occursin("download_exports", msg)
-            # The routes that do work for this query are still named.
-            @test occursin("occurrence_pages", msg)
-        finally
-            OBIS.configure!(; api_record_limit=old)
+        # Pure event records: nothing in an export file identifies them, so the export is
+        # not among the options.
+        err = try
+            OBIS.guard_query_size(
+                OBIS.build_params(; scientificname="Abra alba", event=:only)
+            )
+            nothing
+        catch e
+            e
         end
+        @test err isa OBIS.OBISLargeQueryError
+        msg = sprint(showerror, err)
+        @test occursin("no column that identifies them", msg)
+        @test !occursin("download_exports", msg)
+        # The routes that do work for this query are still named.
+        @test occursin("occurrence_pages", msg)
+
+        # Absence records are in the export, so it is offered like any other query.
+        err2 = try
+            OBIS.guard_query_size(
+                OBIS.build_params(; scientificname="Abra alba", absence=:only)
+            )
+            nothing
+        catch e
+            e
+        end
+        @test err2 isa OBIS.OBISLargeQueryError
+        @test occursin("download_exports", sprint(showerror, err2))
+    finally
+        OBIS.TRANSPORT[] = old_transport
+        OBIS.configure!(; api_record_limit=old_limit)
     end
 end
 

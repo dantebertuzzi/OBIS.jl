@@ -629,24 +629,75 @@ Intergovernmental Oceanographic Commission of UNESCO.
 https://doi.org/10.25607/obis.occurrence.b89117cd.
 ```
 
-### 7.3 Contradiction between two OBIS sources on absence records in exports
+### 7.3 Absence and dropped records ARE in the exports — settled
+
+Two OBIS sources disagreed:
 
 - access.html: "Note the disclaimer that such exports will not include records of
   insufficient quality, or absence records."
 - `iobis/obis-open-data`: "absence — Absence flag. Note that by default the OBIS
   webservices do not expose absence records, but they are included in this dataset."
 
-These disagree, and the disagreement is load-bearing for the route heuristic: if a user's
-query needs absence records, whether the export route can serve it at all depends on which
-statement is current. The GeoParquet schema does carry an `absence` column, which suggests
-the export-side statement is the newer one, but that is an inference from a schema, not a
-verified count.
+**`obis-open-data` is right and access.html is stale. (Observed.)** Six per-dataset export
+files were read and their `absence` and `dropped` columns counted, then cross-checked
+against `/statistics` for the same dataset:
 
-Until this is settled against the actual files, the safe behavior is to treat the export
-route as **not** covering `absence` or `dropped` selections, and to keep such queries on
-the API — which is also the conservative choice, since the API definitely serves them.
-Worth resolving in Phase 6 by reading one Parquet file, and worth an email to
-helpdesk@obis.org.
+| dataset | export rows | `absence` | `dropped` | API `absence=:only` | API `dropped=:only` | API default |
+| --- | --- | --- | --- | --- | --- | --- |
+| `947cd13d…` | 5,280 | 4,422 | 0 | 4,422 | — | 858 |
+| `7def03fb…` | 31,768 | 24,281 | 0 | 24,281 | — | 7,487 |
+| `ee924936…` | 1,990 | 1,616 | 0 | 1,616 | — | 374 |
+| `0c44a7dc…` | 261 | 0 | 26 | — | 26 | 235 |
+| `500c9a4a…` | 214 | 0 | 16 | — | 16 | 198 |
+| `734b7fc4…` | 219 | 0 | 0 | — | — | — |
+
+Every count matches exactly, and each export total is the API's default count plus its
+absence or dropped count — so the export is the union, and its flags mean the same records
+the API's tri-state selections return.
+
+Consequences for the client:
+
+1. `export_covers` refuses only `event` selections. There is no `event` boolean anywhere in
+   the export schema; the only event information is a top-level `_event_id` carried on each
+   occurrence, which identifies an event a record belongs to rather than marking the record
+   as an event. So pure event records cannot be selected from a file at all.
+2. The route difference that remains is **the date**: the export is a periodic snapshot
+   (the files read here carried `Last-Modified: 2025-09-20`) and the API is live.
+3. Anything reading an export must filter `absence` and `dropped` explicitly. Assuming they
+   are absent silently mixes them into an ordinary count.
+
+### 7.4 Reading an export: Parquet2.jl cannot, DuckDB can
+
+**(Observed, on a 261-row export file.)** The schema has 646 elements and 622 leaf columns,
+written by `parquet-cpp-arrow version 20.0.0`, with `geo` and `ARROW:schema` key-value
+metadata. Fifteen top-level fields, nine of them groups:
+
+| field | kind | children |
+| --- | --- | --- |
+| `_id`, `_event_id`, `_occurrence_id`, `dataset_id` | BYTE_ARRAY | — |
+| `node_ids`, `missing`, `invalid`, `flags`, `tags` | list | 1 |
+| `source` | struct | 188 |
+| `interpreted` | struct | 276 |
+| `extensions` | struct | 2 |
+| `dropped`, `absence` | BOOLEAN | — |
+| `geometry` | BYTE_ARRAY (WKB) | — |
+
+`interpreted` is the canonical schema's source and already carries the right types:
+`decimalLatitude`/`decimalLongitude`/`depth`/`bathymetry` as DOUBLE, `aphiaid` and
+`date_start`/`date_mid`/`date_end`/`date_year` as INT64 — the same millisecond epoch as the
+API (`616377600000` on a 1989 record).
+
+- **Parquet2.jl v0.2.35 cannot read these files.** It throws before returning anything, in
+  `thriftget(::Nothing, :meta_data, nothing)`: that helper calls `getfield` with no guard,
+  and the column-chunk lookup returns `nothing` for every group node. Patching that guard
+  in gets the file open, and then it says so itself — `Warning: column "source" is nested
+  and not supported by Parquet2.jl` — returning empty `NamedTuple`s for structs. Its name
+  index is also wrong for this schema: group children surface as top-level siblings, so
+  even the flat `absence`, `dropped` and `geometry` become `KeyError`.
+- **DuckDB.jl reads them.** Nested access works in SQL (`interpreted.decimalLatitude`),
+  types arrive concrete through Tables.jl, and filters push down into the read, so a 232 MB
+  export need not be materialized to answer a narrow question. The `DuckDB_jll` artifact is
+  ~52 MiB, which is why it belongs behind a package extension rather than in `[deps]`.
 
 ## 8. Error semantics
 
@@ -749,18 +800,16 @@ Recorded because they contradict assumptions that would otherwise reach the code
 
 ## 12. Open questions
 
-1. Do the GeoParquet exports contain absence records? (§7.3) Resolve by reading one file;
-   ask helpdesk@obis.org if it stays ambiguous.
-2. Is there a complete published enumeration of quality flags, including the
+1. Is there a complete published enumeration of quality flags, including the
    `WORMS_ANNOTATION_*` family? The facet truncates at 10 and the QC reference is
    incomplete. (§3.5)
-3. Is `licenses.tsv` regenerated with each export, or is the 2025-04-17 timestamp its
+2. Is `licenses.tsv` regenerated with each export, or is the 2025-04-17 timestamp its
    current state? Determines whether it is usable as anything but a stale accelerator.
    (§6.3)
-4. Is there a documented request-rate expectation beyond "do not parallelize"? Worth
+3. Is there a documented request-rate expectation beyond "do not parallelize"? Worth
    asking so the default pacing can be set to something OBIS is comfortable with rather
    than to a guess.
-5. Does `size` behave identically on `/checklist` as on `/occurrence`, and does
+4. Does `size` behave identically on `/checklist` as on `/occurrence`, and does
    `/checklist` support `after`? Undocumented; only `size` was verified. (§2.2)
 
 ## 13. Answered since first writing
@@ -770,6 +819,13 @@ Recorded because they contradict assumptions that would otherwise reach the code
 - **`/statistics` agreement was re-verified end to end.** The integration suite checks four
   filter combinations on every run, so a regression in this assumption surfaces rather than
   silently skewing the route heuristic. (§2.2)
+- **The exports do contain absence and dropped records.** Counted in six export files and
+  reconciled against `/statistics` dataset by dataset; every count matched, and each
+  export's total was the API's default count plus them. access.html is stale on this
+  point. (§7.3)
+- **Parquet2.jl cannot read an OBIS export; DuckDB can.** Nested struct columns are
+  unsupported by Parquet2 and everything the canonical schema needs lives under
+  `interpreted`. (§7.4)
 - **The export bucket needs no credentials.** Confirmed by fetching `licenses.tsv` and a
   per-dataset Parquet file over plain HTTPS, which is why the export route needs no AWS
   SDK. (§7.2)

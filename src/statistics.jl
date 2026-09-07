@@ -177,8 +177,7 @@ function guard_query_size(params::QueryParams)
 
     estimate <= limit && return nothing
 
-    wants_api_only =
-        haskey(params, "absence") || haskey(params, "dropped") || haskey(params, "event")
+    wants_api_only = !export_covers(params)
 
     io = IOBuffer()
     println(io, "  Options, in the order most likely to help:")
@@ -193,18 +192,16 @@ function guard_query_size(params::QueryParams)
     println(io, "     page at a time and can resume after an interruption.")
     if wants_api_only
         println(io)
-        println(
-            io, "  The bulk export is not an option for this query: it selects absence,"
-        )
-        println(io, "  dropped or event records, which the export route does not cover.")
+        println(io, "  The bulk export is not an option for this query: it selects pure")
+        println(io, "  event records, and the export has no column that identifies them.")
     else
         println(io)
         println(io, "  4. Use the bulk export, which OBIS recommends at this volume:")
         println(
             io, "     `OBIS.download_exports(...)` fetches the GeoParquet files for the"
         )
-        println(io, "     datasets a query touches. Note the export excludes absence and")
-        println(io, "     dropped records.")
+        println(io, "     datasets a query touches. Note that the export is a periodic")
+        println(io, "     snapshot, so it lags whatever the API has ingested since.")
     end
     println(io)
     print(io, "  To proceed on the API anyway: `OBIS.configure!(api_record_limit = ")
