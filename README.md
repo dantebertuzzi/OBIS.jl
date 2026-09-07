@@ -137,6 +137,34 @@ before you build anything on the data.
 </picture>
 
 
+## A worked example
+
+[`examples/orcas.jl`](examples/orcas.jl) runs a full session on killer whales — retrieve,
+map, group, pivot, and test whether apparent species richness tracks sampling effort across
+26 large marine ecosystems (it does: Spearman's ρ = 0.77, slope 0.45). Written up in the
+manual under [Worked example: killer whales](https://dantebertuzzi.github.io/OBIS.jl/stable/worked-example/).
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/orca-global-dark.png">
+  <img alt="Every killer whale record in OBIS, on a Robinson projection" src="examples/figures/orca-global.png">
+</picture>
+
+Once the table is in hand the client's job is done, and `groupby`, `unstack`, `cor` and
+`log10` all work on it without a cleaning step:
+
+```julia
+using OBIS, DataFrames
+
+df = DataFrame(OBIS.occurrence("Orcinus orca"))
+
+df.decade     = (df.date_year .÷ 10) .* 10
+df.hemisphere = ifelse.(df.decimalLatitude .>= 0, "northern", "southern")
+
+unstack(combine(groupby(dropmissing(df, [:decade, :hemisphere]),
+                        [:decade, :hemisphere]), nrow => :records),
+        :decade, :hemisphere, :records; fill = 0)
+```
+
 ## How it fits Julia
 
 The package is written for the way Julia code is normally written, and the four points

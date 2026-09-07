@@ -58,6 +58,9 @@ Arrow and Parquet all work without the package depending on any of them.
 | [`QueryCache`](@ref OBIS.QueryCache) | Reproducible re-runs against cached responses | [Reproducibility](reproducibility.md) |
 | [`configure!`](@ref OBIS.configure!) | Page size, pacing, retries, caching | [Getting started](getting-started.md) |
 
+A full session — retrieve, map, group, pivot and test a relationship — is in
+[Worked example: killer whales](worked-example.md).
+
 Full docstrings are in the [Public API](api.md) reference. Functions the package uses
 internally, and that the schema is built from, are in [Internals](internals.md).
 
@@ -110,8 +113,9 @@ Three mechanisms keep it that way:
   that `/statistics` still agrees with `/occurrence` filter for filter, and that the
   endpoints the package relies on still exist.
 
-The figures come from [`examples/figures.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/figures.jl),
-which queries the API when it runs. Counts in the figures move as OBIS ingests data.
+The figures come from [`examples/figures.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/figures.jl)
+and [`examples/orcas.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/orcas.jl),
+which query the API when they run. Counts in the figures move as OBIS ingests data.
 
 ## Sources
 

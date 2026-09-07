@@ -22,6 +22,7 @@ makedocs(;
         "Home" => "index.md",
         "Getting started" => "getting-started.md",
         "Interpreting OBIS data" => "interpreting.md",
+        "Worked example: killer whales" => "worked-example.md",
         "Licensing and citation" => "licensing.md",
         "Large queries" => "large-queries.md",
         "Reproducibility" => "reproducibility.md",
