@@ -6,13 +6,18 @@ Intergovernmental Oceanographic Commission of UNESCO.
 [![Tests](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml)
 [![Coverage](https://codecov.io/gh/dantebertuzzi/OBIS.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dantebertuzzi/OBIS.jl)
 [![Julia](https://img.shields.io/badge/julia-1.10%2B-9558B2.svg?logo=julia&logoColor=white)](https://julialang.org)
-[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/dev)
+[![Docs (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/stable)
+[![Docs (dev)](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://dantebertuzzi.github.io/OBIS.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 > **Not an official OBIS product.** OBIS.jl is an independent, community-maintained client.
 > It is not affiliated with, endorsed by, or maintained by OBIS, the Intergovernmental
 > Oceanographic Commission, or UNESCO. The name identifies the service the package connects
 > to; the data, the API and the quality control pipeline are the work of OBIS and its nodes.
+
+The manual — installation, the filter set, how to read OBIS data, licensing, large queries
+and reproducibility — is at
+**[dantebertuzzi.github.io/OBIS.jl/stable](https://dantebertuzzi.github.io/OBIS.jl/stable)**.
 
 ## Installation
 
