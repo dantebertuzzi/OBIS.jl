@@ -29,7 +29,8 @@ most restrictive one governs what may be done with the result as a whole.
 
 ## Knowing what you may do
 
-[`OBIS.licenses`](@ref) summarizes a result:
+[`OBIS.licenses`](@ref) summarizes a result: one row per licence, with how many datasets
+and records fall under it and what it permits.
 
 ```julia
 using OBIS, Dates
@@ -40,20 +41,96 @@ recs = OBIS.occurrence(;
     startdate = Date(2000, 1, 1),
     enddate   = Date(2020, 12, 31),
 )
-OBIS.licenses(recs)
+rights = OBIS.licenses(recs)
 ```
 
-Each row gives the licence, how many datasets and records fall under it, and what it
-permits:
+The summary is a table like any other, so
+[PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) prints it directly. This is
+the one worth laying out properly: it is what you read before building anything on the
+data, and the answer is a shape — which permissions hold over which share of the records —
+rather than a number.
 
-```
-license       datasets  records  permits_redistribution  permits_commercial_use  requires_attribution
-CC-BY-4.0           28     3875                    true                    true                  true
-CC0-1.0              8     1136                    true                    true                 false
-CC-BY-NC-4.0         6      907                    true                   false                  true
-unknown              1        3                   false                   false                  true
+```julia
+using PrettyTables
+
+# Digit grouping: record counts are the one thing here you read at a glance.
+group(n) = replace(string(n), r"(?<=[0-9])(?=(?:[0-9]{3})+$)" => ",")
+
+# The columns are plain vectors, so choosing and renaming them is a NamedTuple.
+sheet = (
+    datasets     = rights.datasets,
+    records      = rights.records,
+    redistribute = rights.permits_redistribution,
+    commercial   = rights.permits_commercial_use,
+    attribution  = rights.requires_attribution,
+)
+
+pretty_table(
+    sheet;
+    title    = "Abra alba · southern North Sea · 2000-2020",
+    subtitle = "$(group(OBIS.nrow(recs))) records · " *
+               "accessed $(OBIS.metadata(recs).accessed)",
+
+    # Licences as row labels: the question is what each one permits, so it is the stub.
+    row_labels     = rights.license,
+    stubhead_label = "Licence",
+    column_labels  = [["Datasets", "Records", "Redistribute", "Commercial", "Attribution"]],
+
+    # The combined result is what governs, so the totals get a row of their own.
+    summary_rows = [
+        (_, j) -> j == 1 ? sum(rights.datasets) :
+                  j == 2 ? group(sum(rights.records)) : "",
+    ],
+    summary_row_labels = ["All datasets"],
+
+    formatters = [
+        (v, i, j) -> j == 2 && v isa Integer ? group(v) : v,
+        (v, i, j) -> v isa Bool ? (v ? "✓" : "✗") : v,
+    ],
+
+    # Colour belongs to the terminal; the marks carry the same reading without it.
+    highlighters = [
+        TextHighlighter((_, i, _) -> rights.license[i] == "unknown", crayon"yellow bold"),
+        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === false, crayon"red"),
+        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === true, crayon"green"),
+    ],
+
+    # The two caveats belong to particular cells, so they are footnotes, not prose.
+    footnotes = [
+        (:column_label, 1, 4) =>
+            "Six CC BY-NC datasets make the combined result non-commercial.",
+        (:row_label, 4, 1) => "One provider's rights statement could not be identified.",
+    ],
+
+    alignment                  = [:r, :r, :c, :c, :c],
+    row_label_column_alignment = :l,
+    table_format = TextTableFormat(; borders = text_table_borders__unicode_rounded),
+    source_notes = "Ocean Biodiversity Information System, IOC-UNESCO — obis.org",
+)
 ```
 
+```text
+                   Abra alba · southern North Sea · 2000-2020
+                      5,921 records · accessed 2026-09-07
+╭──────────────┬──────────┬─────────┬──────────────┬─────────────┬─────────────╮
+│ Licence      │ Datasets │ Records │ Redistribute │ Commercial¹ │ Attribution │
+├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
+│ CC-BY-4.0    │       28 │   3,875 │      ✓       │      ✓      │      ✓      │
+│ CC0-1.0      │        8 │   1,136 │      ✓       │      ✓      │      ✗      │
+│ CC-BY-NC-4.0 │        6 │     907 │      ✓       │      ✗      │      ✓      │
+│ unknown²     │        1 │       3 │      ✗       │      ✗      │      ✓      │
+├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
+│ All datasets │       43 │   5,921 │              │             │             │
+╰──────────────┴──────────┴─────────┴──────────────┴─────────────┴─────────────╯
+¹: Six CC BY-NC datasets make the combined result non-commercial.
+²: One provider's rights statement could not be identified.
+Ocean Biodiversity Information System, IOC-UNESCO — obis.org
+```
+
+PrettyTables is not a dependency of OBIS.jl. It renders the result because results are
+Tables.jl sources, which is the same reason `DataFrame(rights)` works; in a terminal the
+highlighters do the reading for you, green where a permission is granted and red where it
+is refused.
 
 ```@raw html
 <picture>
@@ -62,9 +139,10 @@ unknown              1        3                   false                   false 
 </picture>
 ```
 
-Read the last two columns before building anything. One CC BY-NC dataset makes the combined
-result non-commercial. A summary that shows only the majority licence would be worse than
-no summary, which is why the breakdown is per licence rather than a single verdict.
+Read the permission columns before building anything: a single CC BY-NC dataset makes the
+whole result non-commercial, and this query has six. A summary that showed only the
+majority licence would be worse than no summary, which is why the breakdown is per licence
+rather than a single verdict.
 
 To check before retrieving anything, query the datasets first:
 
