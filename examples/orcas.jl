@@ -139,7 +139,7 @@ println(
     """
 Reading: richness rises with effort, and the slope is well below 1, so a region with ten
 times the records does not hold ten times the species — it has been looked at harder.
-Any comparison of regional richness that does not account for this is measuring budgets."""
+Any comparison of regional richness that does not account for this is measuring budgets.""",
 )
 
 # ---------------------------------------------------------------------------------------

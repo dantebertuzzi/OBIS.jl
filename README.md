@@ -157,11 +157,13 @@ using OBIS, DataFrames
 
 df = DataFrame(OBIS.occurrence("Orcinus orca"))
 
-df.decade     = (df.date_year .÷ 10) .* 10
-df.hemisphere = ifelse.(df.decimalLatitude .>= 0, "northern", "southern")
+# Drop the missings first: both columns are Union{Missing,...} by schema, and `ifelse`
+# on a missing condition throws.
+work = dropmissing(df, [:date_year, :decimalLatitude])
+work.decade     = (work.date_year .÷ 10) .* 10
+work.hemisphere = ifelse.(work.decimalLatitude .>= 0, "northern", "southern")
 
-unstack(combine(groupby(dropmissing(df, [:decade, :hemisphere]),
-                        [:decade, :hemisphere]), nrow => :records),
+unstack(combine(groupby(work, [:decade, :hemisphere]), nrow => :records),
         :decade, :hemisphere, :records; fill = 0)
 ```
 

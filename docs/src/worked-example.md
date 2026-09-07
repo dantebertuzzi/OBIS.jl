@@ -122,6 +122,28 @@ dip in the 2000s is a survey programme ending, not whales leaving.
 
 ## 4. Mapping
 
+Coordinates are `Float64` columns, so they go straight into a plotting call. Land comes
+from Natural Earth; nothing here is specific to OBIS.jl:
+
+```julia
+using CairoMakie, GeoMakie, NaturalEarth
+
+lon  = collect(records.decimalLongitude)
+lat  = collect(records.decimalLatitude)
+keep = .!ismissing.(lon) .& .!ismissing.(lat)
+
+fig = Figure(; size = (900, 560))
+ga  = GeoAxis(fig[1, 1]; dest = "+proj=robin",
+              xticklabelsvisible = false, yticklabelsvisible = false)
+
+poly!(ga, NaturalEarth.naturalearth("land", 110).geometry;
+      color = "#eeece6", strokecolor = "#c3c2b7", strokewidth = 0.5)
+scatter!(ga, lon[keep], lat[keep];
+         color = ("#2a78d6", 0.35), markersize = 3, strokewidth = 0)
+
+save("orca-global.png", fig; px_per_unit = 2)
+```
+
 ```@raw html
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/orca-global-dark.png">
@@ -134,7 +156,31 @@ distribution — and even so, the density is as much about observers as about wh
 off northwest Europe, the Pacific Northwest and the Antarctic Peninsula, thin across the
 tropics and the southern Indian Ocean.
 
-Zooming in shows structure a world map flattens away:
+Zooming in shows structure a world map flattens away. Each panel is the same records under
+a different bounding box, filtered with ordinary broadcasting:
+
+```julia
+REGIONS = [
+    ("Norwegian and Barents Seas",         (0.0, 44.0, 62.0, 80.0)),
+    ("Gulf of Alaska and British Columbia", (-160.0, -122.0, 47.0, 62.0)),
+    ("Antarctic Peninsula",                (-72.0, -50.0, -70.0, -60.0)),
+    ("Northwest Europe",                   (-14.0, 12.0, 48.0, 62.0)),
+]
+
+fig  = Figure(; size = (940, 700))
+land = NaturalEarth.naturalearth("land", 50).geometry
+
+for (k, (title, (w, e, s, n))) in enumerate(REGIONS)
+    row, col = divrem(k - 1, 2) .+ (1, 1)
+    inbox = keep .& (lon .>= w) .& (lon .<= e) .& (lat .>= s) .& (lat .<= n)
+
+    ga = GeoAxis(fig[row, col]; dest = "+proj=merc", limits = (w, e, s, n),
+                 title = "$(title)  ·  $(count(inbox)) records")
+    poly!(ga, land; color = "#eeece6", strokecolor = "#c3c2b7", strokewidth = 0.6)
+    scatter!(ga, lon[inbox], lat[inbox];
+             color = ("#2a78d6", 0.5), markersize = 4, strokewidth = 0)
+end
+```
 
 ```@raw html
 <picture>
@@ -158,12 +204,25 @@ per region:
 
 ```julia
 areas = OBIS.area()
-lme = [i for i in 1:OBIS.nrow(areas) if areas.type[i] == "lme"]
+lme = [i for i in 1:OBIS.nrow(areas)
+       if !ismissing(areas.type[i]) && areas.type[i] == "lme"]
 
+name, records, species = String[], Int[], Int[]
 for i in lme[1:26]
-    s = OBIS.statistics(; areaid = areas.id[i])
-    # collect s["records"] and s["species"]
+    s = try
+        OBIS.statistics(; areaid = areas.id[i])
+    catch err
+        err isa OBIS.OBISError || rethrow()
+        continue                       # a region with no data is not a failure
+    end
+    (s["records"] > 0 && s["species"] > 0) || continue
+    push!(name, String(areas.name[i]))
+    push!(records, Int(s["records"]))
+    push!(species, Int(s["species"]))
 end
+
+regions = DataFrame(; region = name, records, species)
+sort!(regions, :records; rev = true)
 ```
 
 ```
@@ -226,6 +285,12 @@ Two caveats on the analysis itself, since it is an example and not a result:
 - Records and species are not independent quantities: a species enters the count because a
   record exists. The correlation is real, but it is partly definitional, which is exactly
   why the slope matters more than the correlation.
+
+## The complete scripts
+
+The code above is trimmed to what each step is about — the shared theme, the light and dark
+variants, and the captions are left out. Both scripts appear in full, exactly as they are in
+the repository, under [Example scripts](example-scripts.md).
 
 ## What to take from this
 
