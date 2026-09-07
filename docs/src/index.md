@@ -7,6 +7,11 @@ OBIS aggregates marine biodiversity observations from thousands of datasets into
 integrated database, currently over 200 million occurrence records. This package retrieves
 them.
 
+> **Not an official OBIS product.** OBIS.jl is an independent, community-maintained client.
+> It is not affiliated with, endorsed by, or maintained by OBIS, the Intergovernmental
+> Oceanographic Commission, or UNESCO. The name identifies the service the package connects
+> to; the data, the API and the quality control pipeline are the work of OBIS and its nodes.
+
 ## Installation
 
 ```julia

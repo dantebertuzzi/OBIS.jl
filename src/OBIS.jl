@@ -8,6 +8,11 @@ Results are Tables.jl tables with a fixed, concretely typed schema, and they car
 licence and citation of every dataset they draw on together with the date they were
 retrieved.
 
+!!! note "Not an official OBIS product"
+    This is an independent, community-maintained client. It is not affiliated with,
+    endorsed by, or maintained by OBIS, the Intergovernmental Oceanographic Commission, or
+    UNESCO. The name identifies the service the package connects to.
+
 # Getting started
 
 ```julia

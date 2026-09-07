@@ -9,6 +9,11 @@ Intergovernmental Oceanographic Commission of UNESCO.
 [![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+> **Not an official OBIS product.** OBIS.jl is an independent, community-maintained client.
+> It is not affiliated with, endorsed by, or maintained by OBIS, the Intergovernmental
+> Oceanographic Commission, or UNESCO. The name identifies the service the package connects
+> to; the data, the API and the quality control pipeline are the work of OBIS and its nodes.
+
 ## Installation
 
 ```julia
@@ -141,10 +146,6 @@ in text or BibTeX. OBIS publishes the licence as free prose — 63 distinct stri
 the corpus — so it is normalized to an identifier, the original text is kept alongside, and
 statements that cannot be identified are reported as `unknown` rather than assumed
 permissive.
-
-**Results are Tables.jl tables.** The package depends on neither DataFrames, CSV, Arrow nor
-Parquet, and works with all of them. A DataFrames extension loads automatically when
-DataFrames is present and adds flattening of the `extra` column.
 
 **Two access routes, chosen by you.** The API serves filtered queries; OBIS recommends its
 bulk GeoParquet export for large volumes. A query estimated to exceed a configurable
