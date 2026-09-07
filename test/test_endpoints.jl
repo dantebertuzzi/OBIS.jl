@@ -111,3 +111,44 @@ end
     )
     @test_throws OBIS.OBISValidationError OBIS.taxon("")
 end
+
+@testset "download metrics" begin
+    with_mock() do
+        id = "8acba7e7-2e50-4490-8328-b78a30472508"
+
+        # `/metrics` answers with a bare object rather than the usual envelope, so it is
+        # returned as plain Julia data instead of a table.
+        yearly = OBIS.metrics(; datasetid=id)
+        @test yearly isa Dict
+        @test haskey(yearly, "downloads")
+        @test !isempty(yearly["downloads"])
+
+        totals = OBIS.metrics_downloads(id)
+        @test totals["downloads"] > 0
+        @test totals["records"] > 0
+
+        # `groupby = "time"` swaps the aggregate for one entry per download event, which is
+        # a different shape from the same endpoint.
+        events = OBIS.metrics_downloads(
+            id; startdate=Date(2018, 10, 1), enddate=Date(2018, 12, 1), groupby="time"
+        )
+        @test haskey(events, "downloads")
+        @test all(e -> haskey(e, "time"), events["downloads"])
+    end
+end
+
+@testset "page size is validated when it is configured, not when it is sent" begin
+    # The API rejects an oversized page with HTTP 400 after the request has gone out; the
+    # package refuses it at the point the mistake was made.
+    old = OBIS.config().page_size
+    try
+        @test_throws OBIS.OBISValidationError OBIS.configure!(; page_size=0)
+        @test_throws OBIS.OBISValidationError OBIS.configure!(;
+            page_size=OBIS.MAX_PAGE_SIZE + 1
+        )
+        OBIS.configure!(; page_size=500)
+        @test OBIS.config().page_size == 500
+    finally
+        OBIS.configure!(; page_size=old)
+    end
+end

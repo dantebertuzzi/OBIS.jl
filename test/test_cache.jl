@@ -95,3 +95,13 @@ end
             OBIS.cache_key("checklist", a; base_url="https://api.obis.org/v3/")
     end
 end
+
+@testset "an unreadable cache entry is skipped, not fatal" begin
+    mktempdir() do dir
+        cache = OBIS.QueryCache(dir)
+        # A truncated write — an interrupted process, a full disk — must not make the whole
+        # cache unlistable, which would leave the user with no way to see or clear it.
+        write(joinpath(dir, "broken.meta.json"), "{ not json")
+        @test OBIS.cache_entries(cache) == Dict{String,Any}[]
+    end
+end

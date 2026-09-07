@@ -102,3 +102,109 @@ end
     @test t.license == ["CC0-1.0", "CC-BY-4.0"]
     @test occursin("spans lines", t.citation[2])
 end
+
+@testset "a failed size estimate does not block the query" begin
+    # The estimate is a courtesy, not a gate: if `/statistics` is unavailable the pull
+    # should go ahead and let the progress indicator show how large it turns out to be.
+    # Refusing the query because the pre-flight check failed would be the worse answer.
+    old = OBIS.TRANSPORT[]
+    old_limit = OBIS.config().api_record_limit
+    OBIS.TRANSPORT[] =
+        (url, headers, timeout) ->
+            (500, Dict{String,String}(), """{"error":"Invalid date format"}""")
+    try
+        # A limit of one record: any estimate that came back at all would refuse the
+        # query, so passing proves the failed estimate was the reason it went through.
+        OBIS.configure!(; api_record_limit=1)
+        @test OBIS.guard_query_size(OBIS.build_params(; scientificname="Abra alba")) ===
+            nothing
+    finally
+        OBIS.TRANSPORT[] = old
+        OBIS.configure!(; api_record_limit=old_limit)
+    end
+end
+
+@testset "the export is not offered for a query it cannot serve" begin
+    # The two routes do not cover the same records: absence, dropped and event records are
+    # reachable only through the API. Suggesting the export for one of those queries would
+    # be suggesting a different answer to a different question.
+    with_mock() do
+        old = OBIS.config().api_record_limit
+        try
+            OBIS.configure!(; api_record_limit=1)
+            err = try
+                OBIS.occurrence("Abra alba"; absence=:only, licenses=false)
+                nothing
+            catch e
+                e
+            end
+            @test err isa OBIS.OBISLargeQueryError
+
+            msg = sprint(showerror, err)
+            @test occursin("does not cover", msg)
+            @test !occursin("download_exports", msg)
+            # The routes that do work for this query are still named.
+            @test occursin("occurrence_pages", msg)
+        finally
+            OBIS.configure!(; api_record_limit=old)
+        end
+    end
+end
+
+@testset "a previously downloaded licence table is read from disk" begin
+    # The table is regenerated with the export and is large; a user who has it already
+    # should not have to fetch it again to parse it.
+    mktemp() do path, io
+        write(io, fixture("licenses"))
+        close(io)
+        t = OBIS.export_licenses(; path=path)
+        @test OBIS.nrow(t) > 10
+        @test "CC-BY-4.0" in Set(t.license)
+    end
+end
+
+@testset "the export bucket gets the same retry rules as the API" begin
+    # The bucket is not under the API base URL and so has a request path of its own. It
+    # must not quietly lose the backoff, the identification and the error reporting that
+    # the API path has.
+    old = OBIS.TRANSPORT[]
+    old_retries = OBIS.config().retries
+    old_base = OBIS.config().backoff_base
+    try
+        OBIS.configure!(; retries=2, backoff_base=0.001)
+
+        attempts = Ref(0)
+        OBIS.TRANSPORT[] = function (url, headers, timeout)
+            attempts[] += 1
+            attempts[] == 1 && return (503, Dict{String,String}(), "temporarily down")
+            return (200, Dict{String,String}(), fixture("licenses"))
+        end
+        t = OBIS.export_licenses()
+        @test attempts[] == 2
+        @test OBIS.nrow(t) > 10
+
+        # A permanent failure is reported with the same advice as on the API path.
+        OBIS.TRANSPORT[] =
+            (url, headers, timeout) -> (404, Dict{String,String}(), "not found")
+        err = try
+            OBIS.export_licenses()
+            nothing
+        catch e
+            e
+        end
+        @test err isa OBIS.OBISAPIError
+        @test occursin("No such endpoint", sprint(showerror, err))
+
+        # And a connection failure exhausts the budget rather than looping.
+        attempts[] = 0
+        OBIS.TRANSPORT[] = function (url, headers, timeout)
+            attempts[] += 1
+            return error("connection reset")
+        end
+        @test_throws OBIS.OBISConnectionError OBIS.export_licenses()
+        @test attempts[] == 3      # the initial attempt plus two retries
+    finally
+        OBIS.TRANSPORT[] = old
+        OBIS.configure!(; retries=old_retries, backoff_base=old_base)
+    end
+end

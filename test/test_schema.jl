@@ -62,3 +62,43 @@ end
         end
     end
 end
+
+@testset "a value that cannot be represented becomes missing, never an error" begin
+    # A single odd record must not fail a whole pull, so every coercion has a total
+    # answer. All of these shapes occur: a null where a number is expected, a nested
+    # object where a string is, a timestamp outside the representable range.
+    @test OBIS.coerce_scalar(Int, nothing) === missing
+    @test OBIS.coerce_scalar(Int, [1, 2]) === missing
+
+    # An object or array under a string field is a structural surprise, not a value:
+    # stringifying it would put raw JSON in a column that otherwise reads as prose.
+    @test OBIS.coerce_scalar(String, JSON3.read("""{"a":1}""")) === missing
+    @test OBIS.coerce_scalar(String, JSON3.read("""[1,2]""")) === missing
+
+    # A scalar of the wrong type is still a value, so it is rendered rather than dropped.
+    @test OBIS.coerce_scalar(String, 42) == "42"
+    @test OBIS.coerce_scalar(String, true) == "true"
+
+    # Far outside DateTime's range: `unix2datetime` throws, and `missing` is the honest
+    # answer for a timestamp the package cannot represent.
+    @test OBIS.coerce_epoch_ms(1e30) === missing
+
+    @test OBIS.coerce_iso_datetime("not a date") === missing
+    @test OBIS.coerce_iso_datetime("") === missing
+end
+
+@testset "node and institute names are lifted out of their objects" begin
+    # `node` and `institute` arrive as arrays of objects; the schema keeps the names, since
+    # a column of JSON objects is not something a user can group or filter on.
+    v = JSON3.read("""[{"name":"Ocean Node","id":1},{"name":"Second"}]""")
+    @test OBIS.coerce_named_list(v, :name) == ["Ocean Node", "Second"]
+
+    # Anything that is not an object, or an object without the key, is skipped rather than
+    # turned into a placeholder that would count as a node.
+    mixed = JSON3.read("""["bare string",{"id":7},{"name":"Kept"}]""")
+    @test OBIS.coerce_named_list(mixed, :name) == ["Kept"]
+
+    # Absent is an empty list, not `missing`: the record has no nodes, which is a fact.
+    @test OBIS.coerce_named_list(nothing, :name) == String[]
+    @test OBIS.coerce_named_list(missing, :name) == String[]
+end

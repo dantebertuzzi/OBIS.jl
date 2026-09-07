@@ -109,3 +109,32 @@ end
     c = OBIS.build_params(; scientificname="Abra alba", startdepth=6)
     @test ka != OBIS.cache_key("occurrence", c; base_url="https://api.obis.org/v3/")
 end
+
+@testset "a page size must be a whole number of records" begin
+    # `size = 2.5` is a mistake, not a value to round: the API would take the truncation
+    # silently and the caller would never learn which one they got.
+    @test_throws OBIS.OBISValidationError OBIS.validate_size(2.5)
+    @test OBIS.validate_size(10.0) == 10
+    @test_throws OBIS.OBISValidationError OBIS.validate_size(0)
+    @test_throws OBIS.OBISValidationError OBIS.validate_size(OBIS.MAX_PAGE_SIZE + 1)
+end
+
+@testset "tags accept one value or several" begin
+    @test Dict(OBIS.pairs(OBIS.build_params(; tags="marine")))["tags"] == "marine"
+    @test Dict(OBIS.pairs(OBIS.build_params(; tags=["marine", "benthic"])))["tags"] ==
+        "marine,benthic"
+end
+
+@testset "a validation error names the value that was wrong" begin
+    # The point of validating locally is that the message can say more than the API's
+    # would; repeating the offending value back is most of that.
+    msg = sprint(showerror, OBIS.OBISValidationError(:size, 20_000, "Too large."))
+    @test occursin("size", msg)
+    @test occursin("20000", msg)
+    @test occursin("Too large.", msg)
+
+    # Some checks are about an absent value rather than a wrong one, and those say so
+    # without an empty parenthesis.
+    absent = sprint(showerror, OBIS.OBISValidationError(:datasetid, nothing, "Required."))
+    @test !occursin("(got", absent)
+end

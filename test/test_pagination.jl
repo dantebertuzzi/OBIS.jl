@@ -76,3 +76,71 @@ end
         @test OBIS.metadata(two).accessed == OBIS.metadata(recs).accessed
     end
 end
+
+@testset "progress goes to stderr, not to stdout" begin
+    # A long pull needs to say how far it has got, but stdout belongs to the caller: a
+    # piped `julia script.jl > records.csv` must not have a progress line in it.
+    with_mock() do
+        out = mktemp() do path, io
+            redirect_stderr(io) do
+                pages = OBIS.occurrence_pages("Abra alba"; page_size=3, progress=true)
+                iterate(pages)
+                # A caller-imposed stop needs a closing line of its own; an iterator run to
+                # exhaustion prints one itself.
+                OBIS.occurrence("Abra alba"; limit=3, licenses=false, progress=true)
+            end
+            flush(io)
+            read(path, String)
+        end
+        @test occursin("OBIS:", out)
+        @test occursin("%", out)
+        @test occursin("records retrieved", out)
+    end
+end
+
+@testset "a page without ids stops instead of spinning" begin
+    # The cursor is the last `id` on the page, so a response without one cannot advance it
+    # and re-requesting would return the same page forever. `fields` cannot exclude `id` —
+    # the validator refuses — but the loop must not be able to spin regardless.
+    old = OBIS.TRANSPORT[]
+    OBIS.TRANSPORT[] =
+        (url, headers, timeout) -> (
+            200,
+            Dict{String,String}(),
+            """{"total":2,"results":[{"scientificName":"Abra alba"}]}""",
+        )
+    try
+        pages = OBIS.occurrence_pages("Abra alba"; page_size=1)
+        page, state = @test_logs (:warn, r"cursor cannot advance") iterate(pages)
+        @test OBIS.nrow(page) == 1
+        @test state === :done
+
+        # The records already fetched are still handed over; only the pull ends.
+        @test iterate(pages, state) === nothing
+    finally
+        OBIS.TRANSPORT[] = old
+    end
+end
+
+@testset "an exhausted pull ends without a limit to stop it" begin
+    # A pull with no `limit` runs until the API stops returning records. The empty page is
+    # the only signal that it is over, so it must end the loop rather than being treated
+    # as a failure or as a page of zero records to append.
+    old = OBIS.TRANSPORT[]
+    old_size = OBIS.config().page_size
+    served = Ref(0)
+    OBIS.TRANSPORT[] = function (url, headers, timeout)
+        served[] += 1
+        served[] == 1 && return mock_transport(url, headers, timeout)
+        return (200, Dict{String,String}(), """{"total":3,"results":[]}""")
+    end
+    try
+        OBIS.configure!(; page_size=3)
+        recs = OBIS.occurrence("Abra alba"; check_size=false, licenses=false)
+        @test OBIS.nrow(recs) == 3
+        @test served[] == 2
+    finally
+        OBIS.TRANSPORT[] = old
+        OBIS.configure!(; page_size=old_size)
+    end
+end

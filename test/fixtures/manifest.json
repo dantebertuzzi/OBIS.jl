@@ -34,6 +34,11 @@
         "status": 200,
         "file": "node_list.json"
     },
+    "https://api.obis.org/v3/metrics/downloads?datasetid=8acba7e7-2e50-4490-8328-b78a30472508&startdate=2018-10-01&enddate=2018-12-01&groupby=time": {
+        "name": "metrics_downloads_by_time",
+        "status": 200,
+        "file": "metrics_downloads_by_time.json"
+    },
     "https://api.obis.org/v3/area": {
         "name": "area_list",
         "status": 200,
@@ -104,6 +109,11 @@
         "status": 200,
         "file": "occurrence_single.json"
     },
+    "https://api.obis.org/v3/metrics/downloads?datasetid=8acba7e7-2e50-4490-8328-b78a30472508": {
+        "name": "metrics_downloads",
+        "status": 200,
+        "file": "metrics_downloads.json"
+    },
     "https://api.obis.org/v3/facet?facets=flags&scientificname=Abra%20alba": {
         "name": "facet_flags",
         "status": 200,
@@ -118,6 +128,11 @@
         "name": "export_licenses",
         "status": 200,
         "file": "licenses.tsv"
+    },
+    "https://api.obis.org/v3/metrics?datasetid=8acba7e7-2e50-4490-8328-b78a30472508": {
+        "name": "metrics_dataset",
+        "status": 200,
+        "file": "metrics_dataset.json"
     },
     "https://api.obis.org/v3/taxon/141433": {
         "name": "taxon_by_id",

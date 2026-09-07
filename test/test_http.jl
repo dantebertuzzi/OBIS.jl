@@ -61,19 +61,26 @@ end
 end
 
 @testset "HTTP errors carry advice" begin
-    with_mock() do
-        err = try
-            OBIS.api_get(
-                "occurrence",
-                OBIS.build_params(; scientificname="Abra alba", size=10_000),
-            )
-            nothing
-        catch e
-            e
+    # No fixture is recorded for this request, so the mock refuses it and the request layer
+    # exhausts its retry budget. The backoff is turned down for the duration: the point is
+    # the error that comes out, not the thirty seconds of waiting on the way to it.
+    old_base = OBIS.config().backoff_base
+    try
+        OBIS.configure!(; backoff_base=0.001)
+        with_mock() do
+            err = try
+                OBIS.api_get(
+                    "occurrence",
+                    OBIS.build_params(; scientificname="Abra alba", size=10_000),
+                )
+                nothing
+            catch e
+                e
+            end
+            @test err isa OBIS.OBISError
         end
-        # The recorded fixture for this URL is the 400 the API returns for size=20000; the
-        # package refuses 20000 locally, so this checks the 400 path via a recorded response.
-        @test err === nothing || err isa OBIS.OBISError
+    finally
+        OBIS.configure!(; backoff_base=old_base)
     end
 
     e = OBIS.OBISAPIError(
@@ -153,4 +160,58 @@ end
         OBIS.TRANSPORT[] = old
         OBIS.configure!(; retries=5, backoff_base=1.0)
     end
+end
+
+@testset "the courtesy gap is honoured between requests" begin
+    # OBIS publishes no request quota and asks users not to parallelize downloads, so the
+    # spacing between requests is the one rule the service asks for by name. Checked
+    # against the clock rather than by inspection.
+    old_gap = OBIS.config().request_gap
+    try
+        OBIS.configure!(; request_gap=0.2)
+        OBIS.LAST_REQUEST[] = time()
+        @test (@elapsed OBIS.throttle!(OBIS.config())) >= 0.15
+
+        # A gap of zero must not sleep at all: the setting has to be genuinely free to
+        # turn off, or a test suite serving fixtures would pay for it.
+        OBIS.configure!(; request_gap=0.0)
+        OBIS.LAST_REQUEST[] = time()
+        @test (@elapsed OBIS.throttle!(OBIS.config())) < 0.05
+    finally
+        OBIS.configure!(; request_gap=old_gap)
+    end
+end
+
+@testset "a 429 backs off and retries" begin
+    # The one status where the server is explicitly asking for a pause, and the only one
+    # where it says how long: `Retry-After` wins over the computed schedule.
+    attempts = Ref(0)
+    old = OBIS.TRANSPORT[]
+    old_retries = OBIS.config().retries
+    old_base = OBIS.config().backoff_base
+    OBIS.TRANSPORT[] = function (url, headers, timeout)
+        attempts[] += 1
+        attempts[] == 1 && return (429, Dict("retry-after" => "0"), "slow down")
+        return (200, Dict{String,String}(), """{"total":0,"results":[]}""")
+    end
+    try
+        OBIS.configure!(; retries=2, backoff_base=0.001)
+        payload = OBIS.api_get("occurrence")
+        @test attempts[] == 2
+        @test OBIS.total_of(payload) == 0
+    finally
+        OBIS.TRANSPORT[] = old
+        OBIS.configure!(; retries=old_retries, backoff_base=old_base)
+    end
+end
+
+@testset "every status maps to advice the caller can act on" begin
+    # An HTTP status on its own tells a user nothing about what to do next, and these are
+    # the sentences that do.
+    @test occursin("page_size", OBIS.http_error_advice(400, ""))
+    @test occursin("endpoints", OBIS.http_error_advice(404, ""))
+    @test occursin("request_gap", OBIS.http_error_advice(429, ""))
+    @test occursin("server error", OBIS.http_error_advice(503, ""))
+    # An unclassified status still gets a sentence rather than an empty message.
+    @test OBIS.http_error_advice(418, "") == "The request failed."
 end

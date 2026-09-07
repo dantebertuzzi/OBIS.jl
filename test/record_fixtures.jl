@@ -42,6 +42,11 @@ const REQUESTS = [
     "country_list" => "country",
     "institute_list" => "institute?scientificname=Abra%20alba",
     "size_too_large" => "occurrence?scientificname=Abra%20alba&size=20000",
+    "metrics_dataset" => "metrics?datasetid=8acba7e7-2e50-4490-8328-b78a30472508",
+    "metrics_downloads" => "metrics/downloads?datasetid=8acba7e7-2e50-4490-8328-b78a30472508",
+    # A narrow window: unbounded, the by-time response is four megabytes of individual
+    # download events, which is not a fixture.
+    "metrics_downloads_by_time" => "metrics/downloads?datasetid=8acba7e7-2e50-4490-8328-b78a30472508&startdate=2018-10-01&enddate=2018-12-01&groupby=time",
 ]
 
 function fetch(url)
