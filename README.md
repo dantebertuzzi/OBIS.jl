@@ -189,13 +189,77 @@ dependency of OBIS.jl — it renders the result because results are Tables.jl so
 is the same reason `DataFrame(recs)` and `CSV.write(path, recs)` work.
 
 Records the default view leaves out are available too. Absence records — a species looked
-for and not found — and records the quality pipeline dropped are served by the API and not
-by the bulk downloads:
+for and not found — and records the quality pipeline dropped are excluded unless asked for,
+on either access route:
 
 ```julia
 absences = OBIS.occurrence("Abra alba"; absence = :only)
 dropped  = OBIS.occurrence("Abra alba"; dropped = :only)
 ```
+
+## The bulk export
+
+OBIS recommends its GeoParquet export rather than the API for large volumes, and a query
+estimated to exceed `api_record_limit` raises an error naming that route instead of
+switching to it silently. The files are per dataset and served over plain HTTPS, so a
+query's worth is fetched by resolving the query to its datasets:
+
+```julia
+using OBIS, DuckDB          # DuckDB loads the extension that reads the files
+
+# One file per dataset the query touches — scoped here to a single dataset, because a
+# species query can run to many files and tens of gigabytes.
+paths = OBIS.download_exports(; datasetid = "0c44a7dc-7f06-4eab-b831-4cae103c9902",
+                                dir = "obis-export")
+
+recs = OBIS.read_export(paths)
+```
+
+```text
+OBISTable: 235 records, 62 columns
+  endpoint:  export/occurrence
+  accessed:  2026-09-07
+  query:     absence=exclude, dropped=exclude, files=0c44a7dc-7f06-4eab-b831-4cae103c9902.parquet
+  licenses:  CC-BY-4.0
+  columns:   id, dataset_id, license, license_url, dataset_citation, occurrenceID, eventID, catalogNumber, … (53 more)
+```
+
+That is the same table an API query returns — same columns, in the same order, with the same
+element types — so everything downstream works on it unchanged:
+
+```julia
+OBIS.licenses(recs)
+OBIS.citations(recs; format = :bibtex)
+DataFrame(recs)
+```
+
+```text
+OBISTable: 1 record, 7 columns
+  endpoint:  licenses
+  accessed:  2026-09-07
+  query:     absence=exclude, dropped=exclude, files=0c44a7dc-7f06-4eab-b831-4cae103c9902.parquet
+  licenses:  CC-BY-4.0
+  columns:   license, datasets, records, permits_redistribution, permits_commercial_use, requires_attribution, url
+```
+
+The export's own schema is nothing like this: 622 columns, the provider's terms nested under
+`source`, the pipeline's under `interpreted`, geometry as WKB, and the AphiaID spelled
+`aphiaid`. `read_export` maps it, coercing every value through the same function the API
+path uses, so the two routes cannot drift in how they read one.
+
+Three things are worth knowing about it:
+
+- **`absence` and `dropped` default to `:exclude`, as on the API.** The export *contains*
+  those records, despite what the OBIS data access page says, so a plain `select *` would
+  mix them into an ordinary count without saying so. Pass `:include` or `:only` for the
+  other views; the filter is pushed into the read rather than applied afterwards.
+- **The access date is the file's, not today's.** The records are as old as the export that
+  carried them, and a citation built from the table has to say when the data was obtained.
+- **`freshwater` and `terrestrial` are always `missing`.** The export carries `marine` and
+  `brackish` and not those two.
+
+DuckDB is a weak dependency, so it is installed only if you ask for it. Parquet2.jl is not
+an alternative: it does not support the nested struct columns the export is built from.
 
 ## What the data looks like
 

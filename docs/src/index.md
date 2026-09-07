@@ -3,7 +3,7 @@
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
 Intergovernmental Oceanographic Commission of UNESCO — typed results with a schema that
 does not change between queries, licence and citation carried on every row, and access to
-the absence and dropped records the bulk downloads leave out.
+the absence and dropped records the default view leaves out.
 
 !!! note "Not an official OBIS product"
     OBIS.jl is an independent, community-maintained client. It is not affiliated with,
@@ -75,8 +75,9 @@ the core schema are preserved per row in an `extra` column.
 of its dataset, and the result records the date it was retrieved — which the OBIS citation
 format requires and nothing in the data supplies.
 
-**Access to what the downloads omit.** Absence records and records dropped by the quality
-pipeline are served by the API and not by the Mapper downloads.
+**Access to what the default view omits.** Absence records and records dropped by the
+quality pipeline are excluded unless asked for, and the tri-state `absence`, `dropped` and
+`event` keywords ask for them.
 
 **A choice between access routes.** A query too large for the API raises an error naming
 the alternatives rather than switching routes silently, because the routes do not cover the

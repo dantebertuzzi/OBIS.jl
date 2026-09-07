@@ -126,8 +126,12 @@ OBIS.statistics("Abra alba"; absence = :only)["records"]      # absences
 OBIS.statistics("Abra alba"; absence = :include)["records"]   # both
 ```
 
-Absence records are available through the API and are not included in the downloads from
-the OBIS Mapper, so an analysis built on a Mapper export has no access to them at all.
+Absence records are excluded from the default view on either access route, and asked for
+with `absence = :include` or `:only`. OBIS's data access page says the Mapper downloads and
+the bulk export contain none at all; for the bulk export that is stale — the files do carry
+them, verified count for count against `/statistics` (NOTES.md §7.3), and
+[`OBIS.read_export`](@ref) reads them with the same tri-state selection the API takes. The
+Mapper was not checked, so treat the page's statement about it as it stands.
 
 Why it matters: a presence-only dataset cannot distinguish "not recorded here" from "looked
 for and not found here". Any method that needs a contrast between occupied and unoccupied
