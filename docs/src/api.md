@@ -105,6 +105,7 @@ OBIS.export_archive_url
 OBIS.download_export
 OBIS.download_exports
 OBIS.export_licenses
+OBIS.read_export
 ```
 
 ## Configuration and caching

@@ -127,6 +127,6 @@ export OBISError, OBISValidationError, OBISAPIError, OBISNameNotFoundError,
 # Access routes.
 export estimate_size,
     export_url, export_covers, download_export, download_exports,
-    export_licenses
+    export_licenses, read_export
 
 end # module

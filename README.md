@@ -317,7 +317,10 @@ bulk GeoParquet export for large volumes. A query estimated to exceed a configur
 threshold raises an error naming the alternatives instead of switching routes, because the
 routes do not answer the same question: the export is a periodic snapshot and the API is
 live, pure event records can be selected only on the API, and the export is per dataset and
-unfiltered. Silently changing route would change the answer.
+unfiltered. Silently changing route would change the answer. Once you have chosen, though,
+the routes are interchangeable downstream: `OBIS.read_export` reads the GeoParquet files
+into the same schema an API query returns, rights and citations included, through a package
+extension on DuckDB that only export users install.
 
 **Large queries stream and resume.** `occurrence_pages` yields one page at a time, so a
 query larger than memory is still workable. Pagination is keyset on the record UUID, so the

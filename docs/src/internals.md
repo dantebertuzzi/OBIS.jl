@@ -103,6 +103,8 @@ OBIS.stats_filters
 OBIS.parse_licenses_tsv
 OBIS.raw_request_absolute
 OBIS.download_file
+OBIS.EXPORT_COLUMN_SOURCES
+OBIS.export_select
 ```
 
 ## Cache

@@ -3,6 +3,7 @@ using Dates
 using JSON3
 using Tables
 using DataFrames
+using DuckDB
 using OBIS
 
 include("mock.jl")
@@ -37,6 +38,9 @@ include("mock.jl")
     end
     @testset "access routes" begin
         include("test_routes.jl")
+    end
+    @testset "reading the bulk export" begin
+        include("test_export_read.jl")
     end
     @testset "quality" begin
         include("test_aqua.jl")

@@ -16,6 +16,17 @@ using Dates
 using Tables
 using OBIS
 
+# The export reader lives in a package extension, so it is exercised only when DuckDB is
+# available. Running this file the documented way skips that testset; the scheduled job
+# runs it in a temporary environment that has DuckDB, because export schema drift is
+# exactly the kind of change recorded fixtures would hide.
+const HAS_DUCKDB = try
+    @eval using DuckDB
+    true
+catch
+    false
+end
+
 OBIS.configure!(; request_gap=0.5, page_size=5)
 
 @testset "OBIS live API" begin
@@ -143,5 +154,38 @@ OBIS.configure!(; request_gap=0.5, page_size=5)
         licenses = OBIS.export_licenses()
         @test OBIS.nrow(licenses) > 1000
         @test "CC-BY-NC-4.0" in Set(licenses.license)
+    end
+
+    if !HAS_DUCKDB
+        @info "DuckDB not available; skipping the export reader against a live file."
+    else
+        @testset "an export still reads into the canonical schema" begin
+            # The reader depends on the shape of the published files: the pipeline's values
+            # under `interpreted`, the AphiaID spelled `aphiaid` there, `absence` and
+            # `dropped` as top-level booleans. A change to any of that would break the bulk
+            # route silently, and nothing in the offline suite would notice.
+            #
+            # A small dataset on purpose — 220 kB against the 232 MB of a large one.
+            id = "0c44a7dc-7f06-4eab-b831-4cae103c9902"
+            mktempdir() do dir
+                path = OBIS.download_export(id; dir=dir)
+                table = OBIS.read_export(path; licenses=false)
+
+                reference = OBIS.occurrence(; datasetid=id, licenses=false, limit=nothing,
+                    check_size=false)
+                @test Tables.columnnames(table) == Tables.columnnames(reference)
+                @test OBIS.nrow(table) == OBIS.nrow(reference)
+                @test Set(table.id) == Set(reference.id)
+
+                # `:exclude` is the default on both routes, so the counts have to agree.
+                dropped = OBIS.read_export(path; dropped=:only, licenses=false)
+                @test OBIS.nrow(dropped) ==
+                    OBIS.statistics(; datasetid=id, dropped=:only)["records"]
+
+                @test all(x -> x isa Float64, skipmissing(table.decimalLatitude))
+                @test all(f -> f isa Set{String}, table.flags)
+                @test all(x -> x isa Int, skipmissing(table.aphiaID))
+            end
+        end
     end
 end

@@ -145,6 +145,107 @@ function download_exports(
 end
 
 """
+    EXPORT_COLUMN_SOURCES
+
+Where each occurrence column comes from in a GeoParquet export, for the columns that are not
+simply `interpreted.<name>`.
+
+The export nests the provider's own terms under `source` and the quality pipeline's output
+under `interpreted`. `interpreted` is what the API serves, so it is the default source for
+every canonical column. The exceptions are the four that sit at the top level of the file,
+the two whose name differs there, the three filled from the licence table, and the two the
+export does not carry at all. A `nothing` means the column cannot be read from the file.
+
+`interpreted.license` exists in the schema but was empty in every export examined, so the
+licence is taken from [`export_licenses`](@ref) rather than from the row.
+"""
+const EXPORT_COLUMN_SOURCES = Dict{Symbol,Union{Nothing,String}}(
+    :id => "_id",
+    :dataset_id => "dataset_id",
+    :node_id => "node_ids",
+    :flags => "flags",
+    :dropped => "dropped",
+    :absence => "absence",
+    # The pipeline's AphiaID is lower case in the export and camel case in the API.
+    :aphiaID => "interpreted.aphiaid",
+    # What the provider published, before the taxonomy match: `source.scientificName` is
+    # "Haliotis tuberculata lamellosa" where `interpreted.scientificName` is the matched
+    # "Haliotis tuberculata". That is exactly the API's `originalScientificName`.
+    :originalScientificName => "source.\"scientificName\"",
+    # Joined from the licence table after the read; an occurrence row carries no rights.
+    :license => nothing,
+    :license_url => nothing,
+    :dataset_citation => nothing,
+    # The export carries `marine` and `brackish` but not the other two habitat flags.
+    :freshwater => nothing,
+    :terrestrial => nothing,
+)
+
+"""
+    export_select(spec) -> String
+
+One entry of the `SELECT` list that reads a canonical column out of an export file.
+
+Built from [`OCCURRENCE_SCHEMA`](@ref) rather than written out, so a column added to the
+schema is read from the export without a second list to remember to update.
+"""
+function export_select(spec::FieldSpec)
+    name = String(spec.name)
+    if haskey(EXPORT_COLUMN_SOURCES, spec.name)
+        src = EXPORT_COLUMN_SOURCES[spec.name]
+        src === nothing && return string("NULL AS \"", name, '"')
+        return string(src, " AS \"", name, '"')
+    end
+    return string("interpreted.\"", name, "\" AS \"", name, '"')
+end
+
+"""
+    read_export(path; absence = :exclude, dropped = :exclude, licenses = true,
+                limit = nothing, source_terms = false) -> OBISTable
+
+Read one or more GeoParquet export files into the package's canonical occurrence schema.
+
+`path` is a file, or a vector of them — so `read_export(download_exports(...))` composes.
+
+Requires DuckDB: `using DuckDB` loads the extension that implements this. Parquet2.jl cannot
+read these files, whose nested `source` and `interpreted` structs it does not support.
+
+The result is an `OBISTable` with the same columns, in the same order and with the same
+types, as one from [`occurrence`](@ref), so the two access routes become interchangeable in
+everything downstream — [`licenses`](@ref) and [`citations`](@ref) included. Two columns are
+always `missing`: the export carries `marine` and `brackish` but not `freshwater` or
+`terrestrial`.
+
+`absence` and `dropped` default to `:exclude`, matching the API, because the export contains
+those records (NOTES.md §7.3) and a plain read would otherwise mix them into an ordinary
+count without saying so. `:include` and `:only` mean what they mean everywhere else, and the
+filter is pushed into the read rather than applied afterwards.
+
+`licenses = true` fetches [`export_licenses`](@ref) once. Pass a table returned by it to
+reuse across many files, or `false` to leave the three rights columns `missing`.
+
+`source_terms = true` fills the `extra` column with the provider's own terms from `source`.
+It is off by default: that block has 188 fields, and reading them costs far more than the
+core schema does.
+
+The access date on the result is the file's modification time, not today — the data is as
+old as the export, and a citation built from it should say so.
+"""
+function read_export(
+    path::Union{AbstractString,AbstractVector{<:AbstractString}}; kwargs...
+)
+    ext = Base.get_extension(@__MODULE__, :OBISDuckDBExt)
+    ext === nothing && throw(
+        ArgumentError(
+            "OBIS.read_export needs DuckDB. Run `using DuckDB` (add it with " *
+            "`import Pkg; Pkg.add(\"DuckDB\")`) and call this again; the reader lives in " *
+            "a package extension so that OBIS.jl itself does not depend on it.",
+        ),
+    )
+    return ext.read_export_impl(path; kwargs...)
+end
+
+"""
     export_licenses(; path = nothing) -> OBISTable
 
 Fetch the licence table published alongside the bulk export.

@@ -15,6 +15,12 @@ All notable changes to this project are documented here. The format follows
 - `OBIS.DOWNLOADER`, a swappable seam for the bulk-export download, matching
   `OBIS.TRANSPORT` on the request path. The export route is now testable without reaching
   the bucket; the default behaviour is unchanged.
+- `OBIS.read_export`, which reads the bulk GeoParquet export into the same canonical schema
+  an API query returns — so `licenses`, `citations`, `DataFrame` and everything else
+  downstream work on the bulk route too. It lives in a package extension on DuckDB, which is
+  therefore installed only by users who take that route. `absence` and `dropped` default to
+  `:exclude`, matching the API, and the access date on the result is the file's date rather
+  than today.
 
 ### Changed
 

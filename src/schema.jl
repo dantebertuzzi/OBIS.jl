@@ -363,7 +363,9 @@ function coerce_flagset(v)
     )
     out = Set{String}()
     for f in v
-        f === nothing && continue
+        # A `missing` element is not a flag. JSON never produces one, but a Parquet list
+        # column is typed `Union{Missing,String}` and an export read comes through here.
+        (f === nothing || f === missing) && continue
         s = uppercase(strip(String(string(f))))
         isempty(s) || push!(out, s)
     end
@@ -374,7 +376,7 @@ end
 function coerce_strlist(v)
     (v === nothing || v === missing) && return String[]
     v isa AbstractString && return [String(v)]
-    return [String(string(x)) for x in v if x !== nothing]
+    return [String(string(x)) for x in v if x !== nothing && x !== missing]
 end
 
 "Pull one key out of each object in a JSON array of objects."

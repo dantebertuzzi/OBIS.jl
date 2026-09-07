@@ -131,12 +131,23 @@ function main()
     )
     println(rpad("dataset_list", 30), status, "  trimmed to ", length(kept), " datasets")
 
-    # A slice of the export licence table, enough to exercise the TSV parser.
+    # A slice of the export licence table, enough to exercise the TSV parser, plus the rows
+    # for the datasets the export fixtures come from — the licence join in `read_export` is
+    # only testable if those two are in the table.
     lic_url = EXPORT_BASE * "licenses.tsv"
-    r = HTTP.get(lic_url; headers=["User-Agent" => UA, "Range" => "bytes=0-60000"],
-        status_exception=false)
-    text = String(r.body)
-    text = text[1:findlast('\n', text)]      # drop the partial final row
+    r = HTTP.get(lic_url; headers=["User-Agent" => UA], status_exception=false)
+    whole = String(r.body)
+    # Roughly the first 60 kB, cut at a row boundary. `thisind` because the table is UTF-8
+    # and an arbitrary byte offset can land inside a character.
+    cut = thisind(whole, min(60_000, ncodeunits(whole)))
+    text = whole[1:something(findprev('\n', whole, cut), cut)]
+    for (_, dataset, _) in EXPORT_FIXTURES
+        occursin(dataset, text) && continue
+        i = findfirst(dataset, whole)
+        i === nothing && continue
+        stop = findnext('\n', whole, last(i))
+        text *= whole[first(i):(stop === nothing ? lastindex(whole) : stop)]
+    end
     write(joinpath(FIXTURE_DIR, "licenses.tsv"), text)
     manifest[lic_url] = Dict(
         "status" => 200, "file" => "licenses.tsv", "name" => "export_licenses"
@@ -147,6 +158,54 @@ function main()
         JSON3.pretty(io, manifest)
     end
     println("\nWrote ", length(manifest), " fixtures to ", FIXTURE_DIR)
+
+    record_export_fixtures()
+    return nothing
+end
+
+# Two slices of real per-dataset exports, for the DuckDB extension.
+#
+# Cut from the files themselves rather than written by hand: the point of the reader is that
+# it copes with the export's actual shape — 622 columns, the provider's terms nested under
+# `source` and the pipeline's under `interpreted` — and a fixture that flattened any of that
+# would test nothing. Five rows each is enough, and the schema is most of the file size.
+#
+# The two datasets are chosen for what they contain: one has records the pipeline dropped,
+# the other has absence records, and neither has both.
+const EXPORT_FIXTURES = [
+    ("export_dropped.parquet", "0c44a7dc-7f06-4eab-b831-4cae103c9902", "dropped"),
+    ("export_absence.parquet", "947cd13d-3f49-4b8f-9f82-0fc3aadb1b85", "absence"),
+]
+
+function record_export_fixtures()
+    DuckDB = Base.require(
+        Base.PkgId(
+            Base.UUID("d2f5444f-75bc-4fdf-ac35-56f514c445e1"), "DuckDB"
+        ),
+    )
+    db = DuckDB.DBInterface.connect(DuckDB.DB)
+
+    mktempdir() do dir
+        for (file, dataset, flag) in EXPORT_FIXTURES
+            url = EXPORT_BASE * "occurrence/" * dataset * ".parquet"
+            whole = joinpath(dir, dataset * ".parquet")
+            r = HTTP.get(url; headers=["User-Agent" => UA], status_exception=false)
+            write(whole, r.body)
+
+            out = joinpath(FIXTURE_DIR, file)
+            DuckDB.DBInterface.execute(
+                db,
+                """
+                COPY (
+                    (SELECT * FROM '$(whole)' WHERE $(flag) IS NOT TRUE LIMIT 2)
+                    UNION ALL
+                    (SELECT * FROM '$(whole)' WHERE $(flag) IS TRUE LIMIT 3)
+                ) TO '$(out)' (FORMAT PARQUET, COMPRESSION ZSTD)
+                """,
+            )
+            println(rpad(file, 30), filesize(out), " bytes  (5 rows, mixed $(flag))")
+        end
+    end
     return nothing
 end
 

@@ -103,9 +103,40 @@ credentials, so a query's worth can be fetched by resolving the query to its dat
 paths = OBIS.download_exports("Abra alba"; dir = "obis-export")
 ```
 
-The package downloads the files and tells you where they are. It does not parse Parquet:
-that would mean a heavy dependency for a format you may already have a preferred reader
-for, and at this size the files are more useful on disk. Read them with whatever you like:
+### Reading what you downloaded
+
+The files are not the table the API returns. Their schema has 622 columns: the provider's
+own terms nested under `source`, the quality pipeline's under `interpreted`, the geometry as
+WKB, and the AphiaID spelled `aphiaid` rather than `aphiaID`. The field names are documented
+at [github.com/iobis/obis-open-data](https://github.com/iobis/obis-open-data).
+
+[`OBIS.read_export`](@ref) reads them into the canonical schema, so the two access routes
+become interchangeable in everything downstream:
+
+```julia
+using DuckDB          # loads the extension that implements read_export
+
+recs = OBIS.read_export(paths)
+
+OBIS.licenses(recs)                          # works, as on an API result
+OBIS.citations(recs; format = :bibtex)       # likewise
+DataFrame(recs)
+```
+
+`absence` and `dropped` default to `:exclude`, as on the API, because the export contains
+those records — a plain `select *` would mix them into an ordinary count without saying so.
+Pass `:include` or `:only` for the other two views, and the filter is pushed into the read
+rather than applied to a materialized table.
+
+Two columns are always `missing`: the export carries `marine` and `brackish` but not
+`freshwater` or `terrestrial`. The access date on the result is the file's modification
+time, not today, because the records are as old as the export that carried them.
+
+DuckDB is a weak dependency, so it is installed only if you ask for it, and Parquet2.jl is
+not an alternative here: it does not support the nested struct columns the export is built
+from (NOTES.md §7.4).
+
+Nothing stops you reading the files yourself instead — they are ordinary Parquet:
 
 ```julia
 using DuckDB, DBInterface
@@ -117,11 +148,6 @@ DBInterface.execute(con, """
       and dropped is not true and absence is not true
 """)
 ```
-
-The export schema is nested and differs from the API's flat JSON: provider-supplied terms
-sit under `source`, pipeline-interpreted terms under `interpreted`, and the geometry is
-WKB. The field names are documented at
-[github.com/iobis/obis-open-data](https://github.com/iobis/obis-open-data).
 
 [`OBIS.export_covers`](@ref) reports whether the export can serve a query at all:
 
