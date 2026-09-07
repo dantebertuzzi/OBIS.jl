@@ -101,7 +101,7 @@ Every number, field name, error message and API behaviour stated here was verifi
 the live OBIS API rather than taken from documentation. Where a statement rests on
 observation rather than on something OBIS publishes, the text says so.
 
-Three mechanisms keep it that way:
+Four mechanisms keep it that way:
 
 - The examples that produce output were executed, and their output pasted back rather than
   written by hand.
@@ -112,6 +112,11 @@ Three mechanisms keep it that way:
   timestamps are still milliseconds, that quality flags are still matched case-sensitively,
   that `/statistics` still agrees with `/occurrence` filter for filter, and that the
   endpoints the package relies on still exist.
+- A [link check](https://github.com/dantebertuzzi/OBIS.jl/blob/main/test/links/runtests.jl)
+  runs on the same weekly schedule over every URL in this manual, the README, the docstrings
+  and the CITATION files, and over the ones the package builds at run time — the licence
+  URLs above all, since those are what a user follows to decide whether they may
+  redistribute a dataset.
 
 The figures come from [`examples/figures.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/figures.jl)
 and [`examples/orcas.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/orcas.jl),

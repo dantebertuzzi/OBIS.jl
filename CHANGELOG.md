@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A link check (`test/links/runtests.jl`) over every URL in the README, the manual, the
+  docstrings, the CITATION files and the example scripts, and over the ones the package
+  builds at run time from a prefix and an identifier. It runs weekly alongside the
+  integration suite, never on every push.
+
 ## [0.1.0]
 
 Initial release; not yet registered.

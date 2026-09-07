@@ -1,8 +1,8 @@
 name: Integration
 
-# These tests reach the live OBIS API to detect changes the recorded fixtures would hide.
-# They run weekly and on request, never on every push, so the package does not generate
-# unnecessary load on a service that publishes no request quota.
+# The checks that need the outside world: the live OBIS API, and every URL the package
+# shows a reader. Both run weekly and on request, never on every push, so the package does
+# not generate unnecessary load on a service that publishes no request quota.
 
 on:
   schedule:
@@ -27,3 +27,26 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - name: Run integration tests
         run: julia --project=. test/integration/runtests.jl
+
+  links:
+    # The unit suite never leaves the machine, so a link that rots in the README, the
+    # manual, a docstring or the CITATION files is invisible to it. Retried as a whole: a
+    # runner that cannot reach one host for a minute is not a broken link.
+    name: Documentation and run-time links
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - uses: julia-actions/cache@v2
+      - uses: julia-actions/julia-buildpkg@v1
+      - name: Check links
+        run: |
+          for attempt in 1 2 3; do
+            julia --project=. test/links/runtests.jl && exit 0
+            echo "Attempt $attempt failed; waiting before retrying..."
+            sleep 30
+          done
+          exit 1
