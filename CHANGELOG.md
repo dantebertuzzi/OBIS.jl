@@ -6,39 +6,9 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [0.1.1]
-
-### Added
-
-- A worked example on killer whales — retrieval, `groupby`, `unstack`, global and regional
-  maps, and a test of whether apparent species richness tracks sampling effort across large
-  marine ecosystems — as `examples/orcas.jl` and a manual page built from its output.
-- Figures in the README and the manual, generated from live queries by `examples/figures.jl`
-  and `examples/orcas.jl`. Plotting stays out of the package: CairoMakie, GeoMakie,
-  NaturalEarth and DataFrames belong to the `examples/` environment only.
-- An "Example scripts" page carrying both scripts in full, generated from the files at
-  build time so it cannot drift from them.
-- A `CITATION.bib` alongside `CITATION.cff`.
-
-### Changed
-
-- The manual is organized around a table mapping each function to what it returns and where
-  it is explained, and the reference is split into a public API and an internals page.
-  `checkdocs` is raised to `:all`, so every docstring must be reachable from the manual.
-- `requires_attribution` now returns `true` for an unidentified licence. Returning `false`
-  read as "no credit needed" for a rights statement the package could not parse, which is
-  the permissive guess the rest of the licence handling exists to avoid.
-
-### Fixed
-
-- Figures on documentation subpages 404'd: Documenter does not rewrite paths inside
-  `@raw html`, so `assets/…` resolved relative to the subpage.
-- A docstring referred to a `RecordSelection` type that does not exist; the constant is
-  `RECORD_SELECTIONS`.
-
 ## [0.1.0]
 
-Initial release.
+Initial release; not yet registered.
 
 ### Added
 
@@ -67,3 +37,17 @@ Initial release.
   and quality flags, with errors that name the fix.
 - Serial requests with an identifying `User-Agent`, exponential backoff on 429 and 5xx,
   and `Retry-After` support.
+- A worked example on killer whales — retrieval, `groupby`, `unstack`, global and regional
+  maps, and a test of whether apparent species richness tracks sampling effort across large
+  marine ecosystems — as `examples/orcas.jl` and a manual page built from its output.
+- Figures in the README and the manual, generated from live queries by `examples/figures.jl`
+  and `examples/orcas.jl`. Plotting stays out of the package: CairoMakie, GeoMakie,
+  NaturalEarth and DataFrames belong to the `examples/` environment only.
+- An "Example scripts" page carrying both scripts in full, generated from the files at
+  build time so it cannot drift from them.
+- A `CITATION.bib` alongside `CITATION.cff`.
+- Licence handling that treats an unidentified rights statement as requiring attribution
+  and as not permitting redistribution, rather than assuming a permissive default.
+- A manual organized around a table mapping each function to what it returns and where it
+  is explained, with the reference split into a public API and an internals page, and
+  `checkdocs = :all` so every docstring has to be reachable from it.
