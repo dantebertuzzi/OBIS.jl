@@ -208,3 +208,111 @@ end
         OBIS.configure!(; retries=old_retries, backoff_base=old_base)
     end
 end
+
+@testset "an export is downloaded once and then reused" begin
+    with_mock() do
+        mktempdir() do dir
+            id = "8acba7e7-2e50-4490-8328-b78a30472508"
+
+            path = OBIS.download_export(id; dir=dir)
+            @test path == joinpath(dir, id * ".parquet")
+            @test isfile(path)
+            @test DOWNLOAD_LOG == [OBIS.export_url(id)]
+
+            # These files run to megabytes, so re-running a script must not re-fetch one
+            # that is already on disk.
+            again = @test_logs (:info, r"already present") OBIS.download_export(id; dir=dir)
+            @test again == path
+            @test length(DOWNLOAD_LOG) == 1
+
+            # Unless the caller says so, which is how a stale copy gets refreshed.
+            OBIS.download_export(id; dir=dir, overwrite=true)
+            @test length(DOWNLOAD_LOG) == 2
+
+            @test_throws OBIS.OBISValidationError OBIS.download_export(
+                "not-a-uuid"; dir=dir
+            )
+        end
+    end
+end
+
+@testset "an interrupted download leaves nothing behind" begin
+    # The file lands on `.part` and is moved into place only once it is whole, so a failure
+    # cannot leave a truncated Parquet file that a later run would take for finished.
+    old = OBIS.DOWNLOADER[]
+    OBIS.DOWNLOADER[] = function (url, path, headers)
+        write(path, "PAR1 half a fi")
+        return error("connection reset")
+    end
+    try
+        mktempdir() do dir
+            err = try
+                OBIS.download_export("8acba7e7-2e50-4490-8328-b78a30472508"; dir=dir)
+                nothing
+            catch e
+                e
+            end
+            @test err isa OBIS.OBISConnectionError
+            # Where the failure was matters: the bucket is not the API, and a user chasing
+            # it should not go looking at the wrong service.
+            @test occursin("unrelated to the API", sprint(showerror, err))
+            @test isempty(readdir(dir))
+        end
+    finally
+        OBIS.DOWNLOADER[] = old
+    end
+end
+
+@testset "a query's exports are downloaded one dataset at a time" begin
+    with_mock() do
+        mktempdir() do dir
+            paths = String[]
+            @test_logs (:info, r"Downloading") match_mode = :any begin
+                paths = OBIS.download_exports("Abra alba"; dir=dir)
+            end
+            @test length(paths) == 18
+            @test all(isfile, paths)
+            @test all(p -> endswith(p, ".parquet"), paths)
+            # Serial, as the data access page asks: one request per dataset, in order.
+            @test length(DOWNLOAD_LOG) == length(paths)
+        end
+    end
+end
+
+@testset "one failed export does not abandon the rest" begin
+    # The export is regenerated periodically and lags the API, so a dataset that has no
+    # file in the bucket yet is ordinary. Losing the other seventeen downloads over it
+    # would be the wrong trade.
+    with_mock() do
+        mktempdir() do dir
+            calls = Ref(0)
+            OBIS.DOWNLOADER[] = function (url, path, headers)
+                calls[] += 1
+                calls[] == 1 && error("404 from the bucket")
+                write(path, "PAR1 stand-in")
+                return path
+            end
+            paths = String[]
+            @test_logs (:warn, r"Could not download the export") match_mode = :any begin
+                paths = OBIS.download_exports("Abra alba"; dir=dir)
+            end
+            @test length(paths) == calls[] - 1
+            @test length(paths) == 17
+        end
+    end
+end
+
+@testset "a query that touches no dataset downloads nothing" begin
+    old = OBIS.TRANSPORT[]
+    OBIS.TRANSPORT[] =
+        (url, headers, timeout) ->
+            (200, Dict{String,String}(), """{"total":0,"results":[]}""")
+    try
+        mktempdir() do dir
+            @test OBIS.download_exports("Notaspecies atallxyz"; dir=dir) == String[]
+            @test isempty(readdir(dir))
+        end
+    finally
+        OBIS.TRANSPORT[] = old
+    end
+end

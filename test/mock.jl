@@ -89,19 +89,41 @@ function mock_transport(url::AbstractString, headers, timeout::Integer)
     )
 end
 
+"URLs the mock downloader has been asked for, in order."
+const DOWNLOAD_LOG = String[]
+
+"""
+    mock_downloader(url, path, headers) -> String
+
+Write a stand-in export file instead of fetching one from the bucket.
+
+The real files are GeoParquet and run to megabytes, and the package never parses them — it
+downloads them and hands back a path. What has to be true is that the file arrives whole,
+in the right place, under the right name, so a few recognizable bytes are enough.
+"""
+function mock_downloader(url::AbstractString, path::AbstractString, headers)
+    push!(DOWNLOAD_LOG, String(url))
+    write(path, "PAR1 stand-in for $(url)")
+    return path
+end
+
 """
     with_mock(f)
 
-Run `f` with the mock transport installed and the request log cleared.
+Run `f` with the mock transport and downloader installed and their logs cleared.
 """
 function with_mock(f)
-    old = OBIS.TRANSPORT[]
+    old_transport = OBIS.TRANSPORT[]
+    old_downloader = OBIS.DOWNLOADER[]
     OBIS.TRANSPORT[] = mock_transport
+    OBIS.DOWNLOADER[] = mock_downloader
     empty!(REQUEST_LOG)
+    empty!(DOWNLOAD_LOG)
     try
         return f()
     finally
-        OBIS.TRANSPORT[] = old
+        OBIS.TRANSPORT[] = old_transport
+        OBIS.DOWNLOADER[] = old_downloader
     end
 end
 

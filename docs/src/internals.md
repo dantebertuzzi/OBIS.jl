@@ -58,6 +58,8 @@ OBIS.results_of
 OBIS.total_of
 OBIS.TRANSPORT
 OBIS.default_transport
+OBIS.DOWNLOADER
+OBIS.default_downloader
 OBIS.http_error_advice
 OBIS.LAST_REQUEST
 ```

@@ -254,8 +254,9 @@ leave a truncated file that looks complete.
 """
 function download_file(url::AbstractString, path::AbstractString)
     tmp = path * ".part"
+    downloader = DOWNLOADER[] === nothing ? default_downloader : DOWNLOADER[]
     try
-        HTTP.download(url, tmp; headers=request_headers(CONFIG), update_period=Inf)
+        downloader(url, tmp, request_headers(CONFIG))
     catch err
         isfile(tmp) && rm(tmp; force=true)
         throw(

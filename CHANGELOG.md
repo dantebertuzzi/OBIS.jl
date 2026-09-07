@@ -12,6 +12,9 @@ All notable changes to this project are documented here. The format follows
   docstrings, the CITATION files and the example scripts, and over the ones the package
   builds at run time from a prefix and an identifier. It runs weekly alongside the
   integration suite, never on every push.
+- `OBIS.DOWNLOADER`, a swappable seam for the bulk-export download, matching
+  `OBIS.TRANSPORT` on the request path. The export route is now testable without reaching
+  the bucket; the default behaviour is unchanged.
 
 ## [0.1.0]
 

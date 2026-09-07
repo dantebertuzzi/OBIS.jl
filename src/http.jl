@@ -40,6 +40,31 @@ function default_transport(url::AbstractString, headers, timeout::Integer)
     )
 end
 
+"""
+    DOWNLOADER
+
+Function that writes the body at `url` to the file at `path`, given request headers.
+
+The second seam beside [`TRANSPORT`](@ref), and separate from it because a bulk export is a
+file rather than a response: it goes to disk as it arrives instead of being held in memory,
+so it cannot share the transport's `(status, headers, body)` shape. Swappable for the same
+reason — the export route has to be testable without reaching AWS.
+"""
+const DOWNLOADER = Ref{Any}(nothing)
+
+"""
+    default_downloader(url, path, headers) -> String
+
+Stream `url` into `path` with `HTTP.jl`.
+
+`update_period = Inf` silences `HTTP.jl`'s own progress logging: the package reports
+progress itself, and two indicators disagreeing is worse than neither.
+"""
+function default_downloader(url::AbstractString, path::AbstractString, headers)
+    HTTP.download(url, path; headers=headers, update_period=Inf)
+    return path
+end
+
 "Timestamp of the last request, used to honour `request_gap`."
 const LAST_REQUEST = Ref(0.0)
 
