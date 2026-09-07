@@ -97,6 +97,41 @@ absences = OBIS.occurrence("Abra alba"; absence = :only)
 dropped  = OBIS.occurrence("Abra alba"; dropped = :only)
 ```
 
+## What the data looks like
+
+The figures below are produced by [`examples/figures.jl`](examples/figures.jl) from live
+queries; regenerate them with `julia --project=examples examples/figures.jl`. Plotting is
+not part of the package — CairoMakie and GeoMakie belong to the example environment only.
+
+**Where the records are, and which ones the pipeline flagged.** A default query returns
+flagged records alongside clean ones. Here the `ON_LAND` records are not scattered at
+random: they sit on the Dutch coast and in the Zeeland estuaries, which is what a
+georeferencing error looks like for a marine bivalve.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/map-north-sea-dark.png">
+  <img alt="Occurrences of Abra alba in the southern North Sea, with records flagged ON_LAND shown separately" src="examples/figures/map-north-sea.png">
+</picture>
+
+**Record counts measure sampling effort.** The rise through the late twentieth century is
+survey programmes and digitization campaigns, not a population increase; the fall at the
+right-hand end is publication lag. Neither is biology.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/records-per-year-dark.png">
+  <img alt="Records of Abra alba per year worldwide, rising steeply from the 1970s and falling at the recent end" src="examples/figures/records-per-year.png">
+</picture>
+
+**What a result may be used for.** Licences are per dataset, so one query usually spans
+several, and the most restrictive governs the whole. `OBIS.licenses(result)` reports this
+before you build anything on the data.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/licenses-dark.png">
+  <img alt="Records per licence in one query, split by whether commercial use is permitted" src="examples/figures/licenses.png">
+</picture>
+
+
 ## How it fits Julia
 
 The package is written for the way Julia code is normally written, and the four points

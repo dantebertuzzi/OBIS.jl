@@ -7,9 +7,9 @@
 # before the request goes out.
 
 """
-    RecordSelection
+    RECORD_SELECTIONS
 
-How a class of records enters a query.
+The three values `absence`, `dropped` and `event` accept.
 
   - `:exclude` — leave them out. The API default.
   - `:include` — return them alongside ordinary records.
@@ -23,7 +23,7 @@ const RECORD_SELECTIONS = (:exclude, :include, :only)
 """
     selection_value(name, sel) -> Union{Nothing,String}
 
-Translate a [`RecordSelection`](@ref) into the string the API expects, or `nothing` when
+Translate one of [`RECORD_SELECTIONS`](@ref) into the string the API expects, or `nothing` when
 the parameter should be omitted entirely.
 """
 function selection_value(name::Symbol, sel)

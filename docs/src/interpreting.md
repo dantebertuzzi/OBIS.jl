@@ -40,6 +40,14 @@ for e in years
 end
 ```
 
+
+```@raw html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/records-per-year-dark.png">
+  <img alt="Records of Abra alba per year worldwide" src="assets/records-per-year.png">
+</picture>
+```
+
 The series for almost any well-recorded taxon rises steeply through the late twentieth
 century and then moves sharply with individual events. Those movements are survey
 programmes starting and ending, museum collections being digitized, and national nodes
@@ -152,7 +160,15 @@ clean = OBIS.occurrence("Abra alba"; exclude = "ON_LAND", limit = 5000)
 
 `ON_LAND` is a georeferencing error most of the time: a coordinate transposed, truncated,
 or given as a locality centroid inland. For a habitat or distribution analysis those
-records are actively misleading.
+records are actively misleading. Mapped, they are not scattered at random — they sit on the
+coast and in estuaries, which is what the error looks like:
+```@raw html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/map-north-sea-dark.png">
+  <img alt="Occurrences of Abra alba in the southern North Sea, with ON_LAND records shown separately" src="assets/map-north-sea.png">
+</picture>
+```
+
 
 But not every flag is an error, and this is where domain knowledge is required rather than
 a rule. `DEPTH_EXCEEDS_BATH` compares the recorded depth against GEBCO bathymetry, and OBIS

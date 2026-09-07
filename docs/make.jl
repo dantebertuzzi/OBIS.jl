@@ -25,9 +25,10 @@ makedocs(;
         "Licensing and citation" => "licensing.md",
         "Large queries" => "large-queries.md",
         "Reproducibility" => "reproducibility.md",
-        "API reference" => "api.md",
+        "Public API" => "api.md",
+        "Internals" => "internals.md",
     ],
-    checkdocs=:exports,
+    checkdocs=:all,
 )
 
 deploydocs(; repo="github.com/dantebertuzzi/OBIS.jl", devbranch="main")

@@ -54,6 +54,14 @@ CC-BY-NC-4.0         6      907                    true                   false 
 unknown              1        3                   false                   false                  true
 ```
 
+
+```@raw html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/licenses-dark.png">
+  <img alt="Records per licence in one query, split by whether commercial use is permitted" src="assets/licenses.png">
+</picture>
+```
+
 Read the last two columns before building anything. One CC BY-NC dataset makes the combined
 result non-commercial. A summary that shows only the majority licence would be worse than
 no summary, which is why the breakdown is per licence rather than a single verdict.

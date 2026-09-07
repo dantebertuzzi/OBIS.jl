@@ -1,4 +1,7 @@
-# API reference
+# Public API
+
+Everything a caller needs. Functions the package uses internally are in
+[Internals](internals.md).
 
 ## The module
 
@@ -126,18 +129,4 @@ OBIS.OBISNameNotFoundError
 OBIS.OBISAPIError
 OBIS.OBISConnectionError
 OBIS.OBISLargeQueryError
-```
-
-## Reference material
-
-```@docs
-OBIS.disclaimer
-OBIS.OBIS_DISCLAIMER
-OBIS.RECORD_SELECTIONS
-OBIS.OCCURRENCE_SCHEMA
-OBIS.TAXON_SCHEMA
-OBIS.DATASET_SCHEMA
-OBIS.FieldSpec
-OBIS.coerce_field
-OBIS.column_type
 ```
