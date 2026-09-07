@@ -67,15 +67,7 @@ recs = OBIS.occurrence(;
 )                                    # 5,921 records from 43 datasets
 
 # What may be done with these data?
-OBIS.licenses(recs)
-# license       datasets  records  permits_redistribution  permits_commercial_use  requires_attribution
-# CC-BY-4.0           28     3875                    true                    true                  true
-# CC0-1.0              8     1136                    true                    true                 false
-# CC-BY-NC-4.0         6      907                    true                   false                  true
-# unknown              1        3                   false                   false                  true
-
-# Six CC BY-NC datasets make the combined result non-commercial, and one dataset's rights
-# statement could not be identified at all. The summary says so before you build on it.
+rights = OBIS.licenses(recs)
 
 # How to credit them. The access date comes from the request, so it is already correct.
 print(OBIS.citations(recs; format = :text))
@@ -92,6 +84,109 @@ cites.dataset_id, cites.records, cites.license, cites.doi
 # Intergovernmental Oceanographic Commission of UNESCO. https://obis.org.
 # Accessed: 2026-09-06)
 ```
+
+### The rights summary, rendered
+
+`rights` is a table like any other, so
+[PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) prints it directly. This one
+is worth the trouble to lay out: it is what you read before building anything on the data,
+and the answer is a shape — which permissions hold across which share of the records —
+rather than a number.
+
+```julia
+using OBIS, PrettyTables, Dates
+
+recs   = OBIS.occurrence(;
+    scientificname = "Abra alba",
+    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
+    startdate = Date(2000, 1, 1),
+    enddate   = Date(2020, 12, 31),
+)
+rights = OBIS.licenses(recs)
+
+# Digit grouping: record counts are the one thing here you read at a glance.
+group(n) = replace(string(n), r"(?<=[0-9])(?=(?:[0-9]{3})+$)" => ",")
+
+# The columns are plain vectors, so choosing and renaming them is a NamedTuple.
+sheet = (
+    datasets     = rights.datasets,
+    records      = rights.records,
+    redistribute = rights.permits_redistribution,
+    commercial   = rights.permits_commercial_use,
+    attribution  = rights.requires_attribution,
+)
+
+pretty_table(
+    sheet;
+    title    = "Abra alba · southern North Sea · 2000-2020",
+    subtitle = "$(group(OBIS.nrow(recs))) records · " *
+               "accessed $(OBIS.metadata(recs).accessed)",
+
+    # Licences as row labels: the question is what each one permits, so it is the stub.
+    row_labels     = rights.license,
+    stubhead_label = "Licence",
+    column_labels  = [["Datasets", "Records", "Redistribute", "Commercial", "Attribution"]],
+
+    # The combined result is what governs, so the totals get a row of their own.
+    summary_rows = [
+        (_, j) -> j == 1 ? sum(rights.datasets) :
+                  j == 2 ? group(sum(rights.records)) : "",
+    ],
+    summary_row_labels = ["All datasets"],
+
+    formatters = [
+        (v, i, j) -> j == 2 && v isa Integer ? group(v) : v,
+        (v, i, j) -> v isa Bool ? (v ? "✓" : "✗") : v,
+    ],
+
+    # Colour belongs to the terminal; the marks carry the same reading without it.
+    highlighters = [
+        TextHighlighter((_, i, _) -> rights.license[i] == "unknown", crayon"yellow bold"),
+        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === false, crayon"red"),
+        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === true, crayon"green"),
+    ],
+
+    # The two caveats belong to particular cells, so they are footnotes, not prose.
+    footnotes = [
+        (:column_label, 1, 4) =>
+            "Six CC BY-NC datasets make the combined result non-commercial.",
+        (:row_label, 4, 1) => "One provider's rights statement could not be identified.",
+    ],
+
+    alignment                  = [:r, :r, :c, :c, :c],
+    row_label_column_alignment = :l,
+    table_format = TextTableFormat(; borders = text_table_borders__unicode_rounded),
+    source_notes = "Ocean Biodiversity Information System, IOC-UNESCO — obis.org",
+)
+```
+
+```text
+                   Abra alba · southern North Sea · 2000-2020
+                      5,921 records · accessed 2026-09-07
+╭──────────────┬──────────┬─────────┬──────────────┬─────────────┬─────────────╮
+│ Licence      │ Datasets │ Records │ Redistribute │ Commercial¹ │ Attribution │
+├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
+│ CC-BY-4.0    │       28 │   3,875 │      ✓       │      ✓      │      ✓      │
+│ CC0-1.0      │        8 │   1,136 │      ✓       │      ✓      │      ✗      │
+│ CC-BY-NC-4.0 │        6 │     907 │      ✓       │      ✗      │      ✓      │
+│ unknown²     │        1 │       3 │      ✗       │      ✗      │      ✓      │
+├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
+│ All datasets │       43 │   5,921 │              │             │             │
+╰──────────────┴──────────┴─────────┴──────────────┴─────────────┴─────────────╯
+¹: Six CC BY-NC datasets make the combined result non-commercial.
+²: One provider's rights statement could not be identified.
+Ocean Biodiversity Information System, IOC-UNESCO — obis.org
+```
+
+Read down the `Commercial` column and the query answers its own question: 907 records
+carry a non-commercial licence, so the combined result is non-commercial whatever the
+other 5,014 permit. One dataset, three records, could not be identified at all, and
+`unknown` is a refusal rather than a guess: that row reads `✗` under both permissions.
+
+In a terminal the highlighters do that reading for you: green where a permission is
+granted, red where it is refused, the unidentified row in yellow. PrettyTables is not a
+dependency of OBIS.jl — it renders the result because results are Tables.jl sources, which
+is the same reason `DataFrame(recs)` and `CSV.write(path, recs)` work.
 
 Records the default view leaves out are available too. Absence records — a species looked
 for and not found — and records the quality pipeline dropped are served by the API and not
