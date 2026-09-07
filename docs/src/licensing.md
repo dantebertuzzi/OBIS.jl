@@ -57,8 +57,8 @@ unknown              1        3                   false                   false 
 
 ```@raw html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/licenses-dark.png">
-  <img alt="Records per licence in one query, split by whether commercial use is permitted" src="assets/licenses.png">
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/licenses-dark.png">
+  <img alt="Records per licence in one query, split by whether commercial use is permitted" src="../assets/licenses.png">
 </picture>
 ```
 

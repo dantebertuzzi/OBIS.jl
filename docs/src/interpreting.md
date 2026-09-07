@@ -43,8 +43,8 @@ end
 
 ```@raw html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/records-per-year-dark.png">
-  <img alt="Records of Abra alba per year worldwide" src="assets/records-per-year.png">
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/records-per-year-dark.png">
+  <img alt="Records of Abra alba per year worldwide" src="../assets/records-per-year.png">
 </picture>
 ```
 
@@ -164,8 +164,8 @@ records are actively misleading. Mapped, they are not scattered at random — th
 coast and in estuaries, which is what the error looks like:
 ```@raw html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/map-north-sea-dark.png">
-  <img alt="Occurrences of Abra alba in the southern North Sea, with ON_LAND records shown separately" src="assets/map-north-sea.png">
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/map-north-sea-dark.png">
+  <img alt="Occurrences of Abra alba in the southern North Sea, with ON_LAND records shown separately" src="../assets/map-north-sea.png">
 </picture>
 ```
 
