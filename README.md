@@ -3,8 +3,10 @@
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
 Intergovernmental Oceanographic Commission of UNESCO.
 
-[![Build Status](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml)
-[![Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/stable)
+[![Tests](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dantebertuzzi/OBIS.jl/actions/workflows/CI.yml)
+[![Coverage](https://codecov.io/gh/dantebertuzzi/OBIS.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dantebertuzzi/OBIS.jl)
+[![Julia](https://img.shields.io/badge/julia-1.10%2B-9558B2.svg?logo=julia&logoColor=white)](https://julialang.org)
+[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://dantebertuzzi.github.io/OBIS.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## Installation
@@ -89,6 +91,36 @@ by the bulk downloads:
 absences = OBIS.occurrence("Abra alba"; absence = :only)
 dropped  = OBIS.occurrence("Abra alba"; dropped = :only)
 ```
+
+## How it fits Julia
+
+The package is written for the way Julia code is normally written, and the four points
+below are the ones that show up in day-to-day use.
+
+**Columns have concrete element types.** JSON has a single number type, and the encoder
+drops a zero fractional part, so about 2% of `decimalLatitude` values arrive as integers.
+Inferring types per value would give a `Union{Int64,Float64}` coordinate column, which
+neither dispatches nor vectorizes well. Every numeric field is coerced, so
+`recs.decimalLatitude isa Vector{Union{Missing,Float64}}` holds for every query, and
+`Tables.schema` is known before a single row is read.
+
+**`missing` means missing, and nothing else.** Absent values are `missing`; a column never
+disappears because a query happened to return no value for it. Collection-valued columns go
+further and are never `missing`: `flags` is a `Set{String}` that is empty when the quality
+pipeline raised nothing, because "no flags" is a fact about the record rather than a gap in
+it. So `count(fs -> "ON_LAND" in fs, recs.flags)` needs no missing-handling.
+
+**Tables.jl is the interface, not DataFrames.** Results implement Tables.jl directly, so
+the package depends on none of DataFrames, CSV, Arrow or Parquet while working with all of
+them. DataFrames-specific behaviour — flattening the `extra` column, and the DataAPI
+`nrow`/`ncol` generics — lives in a package extension under `ext/` that loads only if you
+already have DataFrames. Installing the client pulls in HTTP, JSON3, StructTypes, Tables
+and two stdlibs, and nothing else.
+
+**Large pulls are an iterator.** `occurrence_pages` implements the iterator protocol, so it
+composes with `for`, `Iterators.take`, `Iterators.filter` and everything else in Base
+without materializing the query. The client is native Julia end to end; there is no foreign
+runtime to install or marshal across.
 
 ## Design notes
 
