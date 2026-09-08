@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example scripts · OBIS.jl</title><meta name="title" content="Example scripts · OBIS.jl"/><meta property="og:title" content="Example scripts · OBIS.jl"/><meta property="twitter:title" content="Example scripts · OBIS.jl"/><meta name="description" content="Documentation for OBIS.jl."/><meta property="og:description" content="Documentation for OBIS.jl."/><meta property="twitter:description" content="Documentation for OBIS.jl."/><meta property="og:url" content="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><meta property="twitter:url" content="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><link rel="canonical" href="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.63.2/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">OBIS.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting-started/">Getting started</a></li><li><a class="tocitem" href="../interpreting/">Interpreting OBIS data</a></li><li><a class="tocitem" href="../worked-example/">Worked example: killer whales</a></li><li class="is-active"><a class="tocitem" href>Example scripts</a><ul class="internal"><li><a class="tocitem" href="#examples/orcas.jl"><span><code>examples/orcas.jl</code></span></a></li><li><a class="tocitem" href="#examples/figures.jl"><span><code>examples/figures.jl</code></span></a></li><li><a class="tocitem" href="#examples/theme.jl"><span><code>examples/theme.jl</code></span></a></li></ul></li><li><a class="tocitem" href="../licensing/">Licensing and citation</a></li><li><a class="tocitem" href="../large-queries/">Large queries</a></li><li><a class="tocitem" href="../reproducibility/">Reproducibility</a></li><li><a class="tocitem" href="../api/">Public API</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Example scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Example scripts</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBIS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBIS.jl/blob/main/docs/src/example-scripts.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Example-scripts"><a class="docs-heading-anchor" href="#Example-scripts">Example scripts</a><a id="Example-scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Example-scripts" title="Permalink"></a></h1><p>The scripts behind the figures and the worked example, in full and exactly as they are in the repository — this page is generated from the files at build time, so it cannot fall out of step with them.</p><p>They live in <code>examples/</code>, which has its own environment: CairoMakie, GeoMakie, NaturalEarth and DataFrames are dependencies of the examples, never of OBIS.jl. Run them with <code>julia --project=examples examples/&lt;script&gt;.jl</code>; each one queries the live API.</p><h2 id="examples/orcas.jl"><a class="docs-heading-anchor" href="#examples/orcas.jl"><code>examples/orcas.jl</code></a><a id="examples/orcas.jl-1"></a><a class="docs-heading-anchor-permalink" href="#examples/orcas.jl" title="Permalink"></a></h2><p>The killer whale session: retrieval, groupby, pivot, maps, and the richness-against-effort analysis.</p><pre><code class="language-julia hljs"># A worked example: killer whales (Orcinus orca) in OBIS.
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Example scripts · OBIS.jl</title><meta name="title" content="Example scripts · OBIS.jl"/><meta property="og:title" content="Example scripts · OBIS.jl"/><meta property="twitter:title" content="Example scripts · OBIS.jl"/><meta name="description" content="Documentation for OBIS.jl."/><meta property="og:description" content="Documentation for OBIS.jl."/><meta property="twitter:description" content="Documentation for OBIS.jl."/><meta property="og:url" content="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><meta property="twitter:url" content="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><link rel="canonical" href="https://dantebertuzzi.github.io/OBIS.jl/example-scripts/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.63.2/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">OBIS.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting-started/">Getting started</a></li><li><a class="tocitem" href="../interpreting/">Interpreting OBIS data</a></li><li><a class="tocitem" href="../worked-example/">Worked example: killer whales</a></li><li><a class="tocitem" href="../mapping-a-coast/">Mapping a coast</a></li><li class="is-active"><a class="tocitem" href>Example scripts</a><ul class="internal"><li><a class="tocitem" href="#examples/orcas.jl"><span><code>examples/orcas.jl</code></span></a></li><li><a class="tocitem" href="#examples/figures.jl"><span><code>examples/figures.jl</code></span></a></li><li><a class="tocitem" href="#examples/brazil.jl"><span><code>examples/brazil.jl</code></span></a></li><li><a class="tocitem" href="#examples/theme.jl"><span><code>examples/theme.jl</code></span></a></li></ul></li><li><a class="tocitem" href="../licensing/">Licensing and citation</a></li><li><a class="tocitem" href="../large-queries/">Large queries</a></li><li><a class="tocitem" href="../reproducibility/">Reproducibility</a></li><li><a class="tocitem" href="../api/">Public API</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Example scripts</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Example scripts</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBIS.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBIS.jl/blob/main/docs/src/example-scripts.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Example-scripts"><a class="docs-heading-anchor" href="#Example-scripts">Example scripts</a><a id="Example-scripts-1"></a><a class="docs-heading-anchor-permalink" href="#Example-scripts" title="Permalink"></a></h1><p>The scripts behind the figures and the worked example, in full and exactly as they are in the repository — this page is generated from the files at build time, so it cannot fall out of step with them.</p><p>They live in <code>examples/</code>, which has its own environment: CairoMakie, GeoMakie, NaturalEarth and DataFrames are dependencies of the examples, never of OBIS.jl. Run them with <code>julia --project=examples examples/&lt;script&gt;.jl</code>; each one queries the live API.</p><h2 id="examples/orcas.jl"><a class="docs-heading-anchor" href="#examples/orcas.jl"><code>examples/orcas.jl</code></a><a id="examples/orcas.jl-1"></a><a class="docs-heading-anchor-permalink" href="#examples/orcas.jl" title="Permalink"></a></h2><p>The killer whale session: retrieval, groupby, pivot, maps, and the richness-against-effort analysis.</p><pre><code class="language-julia hljs"># A worked example: killer whales (Orcinus orca) in OBIS.
 #
 #     julia --project=examples examples/orcas.jl
 #
@@ -521,13 +521,764 @@ for f in readdir(OUT)
     endswith(f, &quot;.png&quot;) &amp;&amp; cp(joinpath(OUT, f), joinpath(DOCS_ASSETS, f); force=true)
 end
 println(&quot;  copied &quot;, count(endswith(&quot;.png&quot;), readdir(OUT)), &quot; figures to docs/src/assets&quot;)
-println(&quot;Done.&quot;)</code></pre><h2 id="examples/theme.jl"><a class="docs-heading-anchor" href="#examples/theme.jl"><code>examples/theme.jl</code></a><a id="examples/theme.jl-1"></a><a class="docs-heading-anchor-permalink" href="#examples/theme.jl" title="Permalink"></a></h2><p>The shared colour palette and Makie theme both scripts include.</p><pre><code class="language-julia hljs"># Shared figure theme for the example scripts.
+println(&quot;Done.&quot;)</code></pre><h2 id="examples/brazil.jl"><a class="docs-heading-anchor" href="#examples/brazil.jl"><code>examples/brazil.jl</code></a><a id="examples/brazil.jl-1"></a><a class="docs-heading-anchor-permalink" href="#examples/brazil.jl" title="Permalink"></a></h2><p>Four maps of the Brazilian shelf: a choropleth built from <code>statistics</code> alone, the same cells with sampling effort divided out, one download read at two taxonomic ranks, and a depth-coloured map with its own marginal.</p><pre><code class="language-julia hljs"># Four maps of the Brazilian coast.
+#
+#     julia --project=examples examples/brazil.jl
+#
+# The maps in figures.jl and orcas.jl all do the same thing: retrieve a query and plot its
+# records as points. These four deliberately do not.
+#
+#   1. A choropleth of sampling effort and apparent richness, built entirely from
+#      `statistics` — one cheap request per grid cell, not one occurrence downloaded.
+#   2. The same cells with effort divided out, which is the only version of a richness map
+#      that is about biology rather than about budgets.
+#   3. One download read at two taxonomic ranks, which turn out to answer two different
+#      questions about where Brazil&#39;s reefs are.
+#   4. A depth-coloured map with its own marginal, showing which part of the Brazilian
+#      exclusive economic zone OBIS actually covers.
+#
+# The first run makes about 600 small requests and retrieves some 26 000 records, which
+# takes a few minutes. It caches into `~/.cache/OBIS.jl`, so a second run costs nothing and
+# rebuilds exactly the same figures from exactly the same responses — that is what
+# `QueryCache` is for, and a script that queries this many times is the case it was written
+# for.
+#
+# Plotting is not part of OBIS.jl. CairoMakie, GeoMakie and DataFrames belong to the
+# example environment only.
+
+using OBIS
+using CairoMakie
+using GeoMakie
+using NaturalEarth
+using DataFrames
+using Statistics
+using Printf
+
+const OUT = joinpath(@__DIR__, &quot;figures&quot;)
+const DOCS_ASSETS = joinpath(dirname(@__DIR__), &quot;docs&quot;, &quot;src&quot;, &quot;assets&quot;)
+
+include(joinpath(@__DIR__, &quot;theme.jl&quot;))
+
+# Cache every response. Beyond saving the reruns, it is what makes the figures
+# reproducible: OBIS ingests continuously, so without this the same script run tomorrow
+# draws different maps and there is no copy of what today&#39;s were based on.
+OBIS.configure!(cache=OBIS.QueryCache(), progress=true)
+
+rule(s) = println(&quot;\n&quot;, s, &quot;\n&quot;, &quot;-&quot;^length(s))
+
+# The three OBIS areas that cover the Brazilian shelf, north to south. Using the areas
+# rather than a hand-drawn bounding box means the region is OBIS&#39;s own definition, and the
+# same one their statistics are reported against.
+const SHELVES = [
+    (40017, &quot;North Brazil Shelf&quot;),
+    (40016, &quot;East Brazil Shelf&quot;),
+    (40015, &quot;South Brazil Shelf&quot;),
+]
+
+# The box the choropleth is gridded over, and the cell size.
+const W, E, S, N = -54.0, -27.0, -35.0, 5.0
+const CELL = 1.0
+
+# The extent the maps are drawn at, a little wider than the box so the coast is not against
+# the frame. GeoMakie draws a GeoAxis&#39;s frame through its outermost ticks rather than at its
+# limits, so the extent and the ticks are chosen to coincide; otherwise the axis labels end
+# up printed across the middle of the map.
+const EXTENT = (-55.0, -25.0, -35.0, 5.0)
+const XTICKS = [-55.0, -45.0, -35.0, -25.0]
+const YTICKS = [-35.0, -25.0, -15.0, -5.0, 5.0]
+
+# Places worth naming, so the maps can be read by someone who does not already know the
+# coast. `align` and `offset` push each label into open water rather than over the land.
+const PLACES = [
+    (&quot;Foz do Amazonas&quot;, -48.5, 0.6, (:left, :center), (7, 0)),
+    (&quot;Fernando de Noronha&quot;, -32.4, -3.9, (:right, :bottom), (-7, 5)),
+    (&quot;Recife&quot;, -34.9, -8.1, (:left, :center), (7, 0)),
+    (&quot;Todos os Santos&quot;, -38.5, -13.0, (:left, :center), (7, 0)),
+    (&quot;Abrolhos&quot;, -38.7, -17.9, (:left, :center), (7, 0)),
+    (&quot;Trindade&quot;, -29.3, -20.5, (:right, :center), (-7, 0)),
+    (&quot;Cabo Frio&quot;, -42.0, -22.9, (:left, :bottom), (7, 4)),
+    (&quot;São Sebastião&quot;, -45.4, -23.8, (:right, :top), (-7, -4)),
+    (&quot;Rio Grande&quot;, -52.1, -32.1, (:left, :top), (7, -4)),
+]
+
+# ---------------------------------------------------------------------------------------
+rule(&quot;1. The region, priced before anything is downloaded&quot;)
+
+for (id, name) in SHELVES
+    st = OBIS.statistics(; areaid=id)
+    @printf(
+        &quot;%-20s %8d records  %6d species  %4d datasets  %d–%d\n&quot;,
+        name, st[&quot;records&quot;], st[&quot;species&quot;], st[&quot;datasets&quot;],
+        st[&quot;yearrange&quot;][1], st[&quot;yearrange&quot;][2],
+    )
+end
+
+# ---------------------------------------------------------------------------------------
+rule(&quot;2. A choropleth without downloading a single record&quot;)
+
+# `statistics` honours `geometry`, so one request per cell returns that cell&#39;s record and
+# species counts. Six hundred requests is a lot of requests but almost no data: the whole
+# grid below costs less than a single page of occurrences.
+#
+# Requesting every cell of a 27° × 40° box would be 1080 requests, most of them over the
+# Amazon basin or the open South Atlantic. Instead the grid is masked to a corridor around
+# the coastline and around the oceanic islands — five degrees, roughly the width of the
+# exclusive economic zone plus a margin. The coastline below is a coarse polyline, adequate
+# for a mask and not pretending to be a boundary.
+const COASTLINE = [
+    (-51.6, 4.4), (-50.0, 2.0), (-48.5, 0.0), (-47.0, -0.7), (-44.3, -2.5),
+    (-42.0, -2.8), (-38.5, -3.7), (-37.0, -4.9), (-35.2, -5.8), (-34.8, -7.1),
+    (-34.9, -8.05), (-35.7, -9.7), (-37.0, -11.0), (-38.5, -13.0), (-39.0, -15.0),
+    (-39.2, -17.7), (-40.3, -20.3), (-41.0, -21.8), (-42.0, -22.9), (-43.2, -23.0),
+    (-45.1, -23.4), (-46.3, -24.0), (-48.5, -25.5), (-48.5, -27.6), (-49.7, -29.3),
+    (-52.1, -32.1), (-53.4, -33.7),
+]
+# The three island groups far enough offshore to fall outside that corridor. They are in
+# the grid because they are the most distinctive thing on the finished map.
+const OFFSHORE = [(-32.42, -3.85), (-29.35, 0.92), (-29.33, -20.5)]
+
+&quot;Distance in degrees from `(x, y)` to the segment `a–b`, with longitude scaled by cos φ.&quot;
+function segment_distance(x, y, ax, ay, bx, by)
+    k = cosd((ay + by) / 2)
+    dx, dy = (bx - ax) * k, by - ay
+    len2 = dx^2 + dy^2
+    t = len2 == 0 ? 0.0 : clamp(((x - ax) * k * dx + (y - ay) * dy) / len2, 0.0, 1.0)
+    return hypot((x - (ax + t * (bx - ax))) * k, y - (ay + t * (by - ay)))
+end
+
+function in_corridor(x, y)
+    coast = minimum(
+        segment_distance(x, y, COASTLINE[i]..., COASTLINE[i + 1]...)
+        for i in 1:(length(COASTLINE) - 1)
+    )
+    coast &lt;= 5.0 &amp;&amp; return true
+    return minimum(hypot((x - a) * cosd(b), y - b) for (a, b) in OFFSHORE) &lt;= 2.5
+end
+
+cell_wkt(w, s) =
+    &quot;POLYGON (($w $s, $(w + CELL) $s, $(w + CELL) $(s + CELL), &quot; *
+    &quot;$w $(s + CELL), $w $s))&quot;
+
+struct GridCell
+    w::Float64
+    s::Float64
+    records::Int
+    species::Int
+end
+
+const ORIGINS = [
+    (w, s)
+    for w in W:CELL:(E - CELL), s in S:CELL:(N - CELL)
+    if in_corridor(w + CELL / 2, s + CELL / 2)
+]
+
+function build_grid()
+    cells = GridCell[]
+    for (w, s) in ORIGINS
+        st = try
+            OBIS.statistics(; geometry=cell_wkt(w, s))
+        catch err
+            err isa OBIS.OBISError || rethrow()
+            continue
+        end
+        push!(cells, GridCell(w, s, Int(st[&quot;records&quot;]), Int(st[&quot;species&quot;])))
+    end
+    return cells
+end
+
+# The progress indicator is for paging through occurrences; six hundred tiny requests print
+# nothing useful, so it is off for this stretch.
+OBIS.configure!(progress=false)
+println(&quot;querying &quot;, length(ORIGINS), &quot; cells…&quot;)
+grid = build_grid()
+OBIS.configure!(progress=true)
+
+nonempty = filter(c -&gt; c.records &gt; 0 &amp;&amp; c.species &gt; 0, grid)
+println(
+    length(grid), &quot; cells queried, &quot;, length(nonempty), &quot; with records; &quot;,
+    &quot;the busiest holds &quot;, maximum(c -&gt; c.records, nonempty), &quot; records and &quot;,
+    &quot;the emptiest &quot;, minimum(c -&gt; c.records, grid), &quot;.&quot;,
+)
+
+# Effort spans five orders of magnitude across cells, which is why every colour scale below
+# is logarithmic. On a linear scale the whole coast would be one colour and São Sebastião
+# another.
+let top = sort(nonempty; by=c -&gt; -c.records)[1:6]
+    println(&quot;\nthe six busiest cells:&quot;)
+    for c in top
+        @printf(
+            &quot;  %5.1f°–%5.1f°  %5.1f°–%5.1f°   %7d records  %5d species\n&quot;,
+            c.w, c.w + CELL, c.s, c.s + CELL, c.records, c.species
+        )
+    end
+end
+
+# ---------------------------------------------------------------------------------------
+rule(&quot;3. Dividing the effort out&quot;)
+
+# Species counts rise with record counts along a power law — the species–effort relation
+# that examples/orcas.jl fits across large marine ecosystems. Fitting it across cells and
+# taking the residual gives, for each cell, how much richer or poorer it is than a cell of
+# its sampling intensity usually is. That residual is the part of a richness map that is
+# not simply a map of where the boats went.
+#
+# A residual computed on a cell holding four records is noise, and a map of noise is
+# indistinguishable from a map of nothing. Cells below this are left out of both the fit
+# and the figure, which is a choice worth stating rather than hiding.
+const MIN_RECORDS = 100
+const FITTED = filter(c -&gt; c.records &gt;= MIN_RECORDS &amp;&amp; c.species &gt; 0, grid)
+
+const LOGREC = log10.([c.records for c in FITTED])
+const LOGSPP = log10.([c.species for c in FITTED])
+const SLOPE = cov(LOGREC, LOGSPP) / var(LOGREC)
+const INTERCEPT = mean(LOGSPP) - SLOPE * mean(LOGREC)
+const RESIDUAL = LOGSPP .- (INTERCEPT .+ SLOPE .* LOGREC)
+
+@printf(
+    &quot;log10(species) = %.2f + %.2f · log10(records)   across the %d cells with at least \
+%d records, r² = %.2f\n&quot;,
+    INTERCEPT, SLOPE, length(FITTED), MIN_RECORDS, cor(LOGREC, LOGSPP)^2
+)
+println(
+    &quot;A slope of &quot;, round(SLOPE; digits=2), &quot; means a cell with ten times the records &quot;,
+    &quot;holds &quot;, round(10^SLOPE; digits=1), &quot; times the species, not ten times. What is &quot;,
+    &quot;left over is the map worth looking at.&quot;,
+)
+
+# ---------------------------------------------------------------------------------------
+rule(&quot;4. Two taxa, retrieved once each per shelf&quot;)
+
+&quot;Retrieve `name` across the three shelves as one DataFrame, with the access date the
+tables carry. The date belongs to the data, not to the day the figure was drawn.&quot;
+function shelf_records(name)
+    tables = [OBIS.occurrence(name; areaid=id) for (id, _) in SHELVES]
+    accessed = maximum(OBIS.metadata(t).accessed for t in tables)
+    return vcat(DataFrame.(tables)...), accessed
+end
+
+corals, corals_accessed = shelf_records(&quot;Scleractinia&quot;)
+sharks, sharks_accessed = shelf_records(&quot;Chondrichthyes&quot;)
+println(&quot;\nScleractinia   : &quot;, nrow(corals), &quot; records, accessed &quot;, corals_accessed)
+println(&quot;Chondrichthyes : &quot;, nrow(sharks), &quot; records, accessed &quot;, sharks_accessed)
+
+# `Scleractinia` is an order, and querying at that rank quietly answers a different
+# question than &quot;where are the reefs&quot;. The order contains the zooxanthellate reef builders
+# and also the solitary, azooxanthellate deep-water corals, which live in cold water and
+# reach the southern end of the coast. `Mussismilia` — endemic to Brazil, and the genus the
+# Abrolhos reefs are built from — is the reef half of the answer.
+const CORALS_SOUTH = filter(
+    :decimalLatitude =&gt; x -&gt; !ismissing(x) &amp;&amp; x &lt; -27.0, corals
+)
+const SOUTHERN_FAMILIES = sort(
+    combine(groupby(dropmissing(CORALS_SOUTH, :family), :family), nrow =&gt; :records),
+    :records; rev=true,
+)
+const REEF = filter(:genus =&gt; isequal(&quot;Mussismilia&quot;), corals)
+
+println(&quot;\nof the &quot;, nrow(corals), &quot; Scleractinia records, &quot;, nrow(REEF),
+        &quot; are Mussismilia, the endemic reef-building genus.&quot;)
+println(&quot;south of 27°S there are &quot;, nrow(CORALS_SOUTH), &quot; Scleractinia records and &quot;,
+        count(x -&gt; !ismissing(x) &amp;&amp; x &lt; -27.0, REEF.decimalLatitude),
+        &quot; of them are Mussismilia; the families down there are&quot;)
+for r in eachrow(first(SOUTHERN_FAMILIES, 4))
+    @printf(&quot;  %-18s %4d\n&quot;, r.family, r.records)
+end
+println(
+    &quot;none of which build the Brazilian reefs. Read at the order, the data say corals &quot;,
+    &quot;reach 34°S; read at the genus, the reefs stop in the tropics.&quot;,
+)
+
+# Depth of the seabed under each shark record. `bathymetry` is filled by the OBIS pipeline
+# from a global grid, so it is present on essentially every record even where the provider
+# reported no depth of its own.
+const SHARK_BATHY = collect(skipmissing(sharks.bathymetry))
+# The shallowest band opens downward rather than starting at zero: some records sit where
+# the global depth grid says dry land, because a grid cell is coarser than a coastline.
+# They belong in the shallow band, not in a footnote, and certainly not silently dropped —
+# every band would then be a share of a total that is not the number of records.
+const DEPTH_BANDS = [
+    (&quot;0–50 m&quot;, -Inf, 50.0),
+    (&quot;50–200 m&quot;, 50.0, 200.0),
+    (&quot;200–1000 m&quot;, 200.0, 1000.0),
+    (&quot;1000–3000 m&quot;, 1000.0, 3000.0),
+    (&quot;&gt; 3000 m&quot;, 3000.0, Inf),
+]
+const BAND_COUNTS = [count(d -&gt; lo &lt;= d &lt; hi, SHARK_BATHY) for (_, lo, hi) in DEPTH_BANDS]
+println(&quot;\nseabed depth under the Chondrichthyes records:&quot;)
+for ((label, _, _), n) in zip(DEPTH_BANDS, BAND_COUNTS)
+    @printf(&quot;  %-12s %6d  %5.1f%%\n&quot;, label, n, 100n / length(SHARK_BATHY))
+end
+println(
+    &quot;the shallowest band includes &quot;, count(&lt;=(0), SHARK_BATHY),
+    &quot; records the depth grid places above sea level.&quot;,
+)
+
+# ---------------------------------------------------------------------------------------
+rule(&quot;5. Figures&quot;)
+
+const LAND = NaturalEarth.naturalearth(&quot;land&quot;, 10).geometry
+
+&quot;A cell as a polygon. Cell edges are lines of constant longitude and latitude, which stay
+straight under Mercator, so four corners are exact rather than an approximation.&quot;
+cell_polygon(c::GridCell) = Makie.Polygon(
+    Point2f[
+        (c.w, c.s),
+        (c.w + CELL, c.s),
+        (c.w + CELL, c.s + CELL),
+        (c.w, c.s + CELL),
+    ],
+)
+
+# GeoMakie 0.7 does not clip a plot to the axis limits: a land polygon drawn under a
+# regional map bleeds across the rest of the figure and paints over the tick labels, which
+# is why the panels below stack their content at explicit depths and then cover whatever
+# escaped. Decorations sit at z = 0, so everything the map draws goes below that.
+const Z_CELLS, Z_LAND, Z_POINTS, Z_MASK = -40, -30, -20, -10
+
+&quot;Position `v` on `grad`, clamped to `[lo, hi]`.&quot;
+ramp_at(grad, v, lo, hi) = grad[clamp((v - lo) / (hi - lo), 0, 1)]
+
+&quot;A GeoAxis over the Brazilian coast, at the shared extent and ticks.&quot;
+function coast_axis(
+    p::Palette, pos; limits=EXTENT, xticks=XTICKS, yticks=YTICKS, kwargs...,
+)
+    ga = GeoAxis(
+        pos;
+        dest=&quot;+proj=merc&quot;,
+        limits=limits,
+        xticks=xticks,
+        yticks=yticks,
+        xgridcolor=p.grid,
+        ygridcolor=p.grid,
+        xticklabelsize=10,
+        yticklabelsize=10,
+        xticklabelcolor=p.muted,
+        yticklabelcolor=p.muted,
+        kwargs...,
+    )
+    return ga
+end
+
+function draw_land!(ga, p::Palette; strokewidth=0.6)
+    plt = poly!(ga, LAND; color=p.landfill, strokecolor=p.axis, strokewidth=strokewidth)
+    translate!(plt, 0, 0, Z_LAND)
+    return plt
+end
+
+&quot;Hide everything that escaped the axis limits, behind the tick labels and the grid.&quot;
+function mask_outside!(ga, p::Palette, limits=EXTENT)
+    w, e, s, n = limits
+    rect(x0, x1, y0, y1) =
+        Makie.Polygon(Point2f[(x0, y0), (x1, y0), (x1, y1), (x0, y1)])
+    plt = poly!(
+        ga,
+        [
+            rect(-179.9, w, -85.0, 85.0),
+            rect(e, 179.9, -85.0, 85.0),
+            rect(w, e, -85.0, s),
+            rect(w, e, n, 85.0),
+        ];
+        color=p.surface, strokewidth=0,
+    )
+    translate!(plt, 0, 0, Z_MASK)
+    return plt
+end
+
+&quot;Name the places inside the axis limits. Every label is a dot plus text, never a colour.
+
+Each label is drawn twice. Makie strokes a glyph *over* its fill, so asking one `text!` for
+dark letters with a pale halo produces pale letters; the halo has to be its own pass
+underneath. Without it a label crossing from a filled cell onto the background changes from
+legible to invisible halfway through the word.&quot;
+function label_places!(ga, p::Palette; limits=EXTENT, fontsize=10, only=nothing)
+    w, e, s, n = limits
+    for (name, x, y, align, offset) in PLACES
+        only === nothing || name in only || continue
+        (w &lt;= x &lt;= e &amp;&amp; s &lt;= y &lt;= n) || continue
+        text!(
+            ga, x, y;
+            text=name, align=align, offset=offset, fontsize=fontsize, color=p.surface,
+            strokecolor=p.surface, strokewidth=2.5,
+        )
+        text!(
+            ga, x, y;
+            text=name, align=align, offset=offset, fontsize=fontsize, color=p.ink,
+        )
+        scatter!(
+            ga, [x], [y];
+            color=p.ink, markersize=4, strokewidth=1, strokecolor=p.surface,
+        )
+    end
+    return nothing
+end
+
+# --- Figure 1: effort and apparent richness, side by side --------------------------------
+#
+# Two panels of the same cells on two sequential scales. The point is that they are the
+# same map: whatever OBIS says about where Brazilian marine biodiversity is, it says first
+# about where the marine laboratories are.
+
+function figure_grid(p::Palette)
+    grad = cgrad(Makie.to_color.(p.seq))
+    polys = cell_polygon.(grid)
+
+    fig = Figure(; size=(900, 780))
+    Label(
+        fig[1, 1:2], &quot;The Brazilian shelf, one degree at a time&quot;;
+        color=p.ink, fontsize=15, font=:bold, halign=:left, tellwidth=false,
+    )
+    Label(
+        fig[2, 1:2],
+        &quot;$(length(grid)) cells, each priced by one `statistics` request · no occurrence \
+        record was downloaded for this figure&quot;;
+        color=p.ink2, fontsize=12, halign=:left, tellwidth=false,
+    )
+
+    for (col, (counts, title)) in enumerate((
+        ([c.records for c in grid], &quot;records&quot;),
+        ([c.species for c in grid], &quot;species&quot;),
+    ))
+        lo, hi = 0.0, log10(maximum(counts))
+        colors = [
+            v == 0 ? Makie.to_color(p.surface) : ramp_at(grad, log10(v), lo, hi)
+            for v in counts
+        ]
+        ga = coast_axis(
+            p, fig[3, col];
+            title=title, titlesize=12, titlecolor=p.ink2, titlealign=:left,
+        )
+        # Cells first, land over them, so the corridor&#39;s inland half is hidden and the
+        # coastline stays the reference the eye uses.
+        cells = poly!(
+            ga, polys; color=colors, strokecolor=(p.grid, 0.55), strokewidth=0.3
+        )
+        translate!(cells, 0, 0, Z_CELLS)
+        draw_land!(ga, p)
+        mask_outside!(ga, p)
+        col == 1 &amp;&amp; label_places!(ga, p)
+        Colorbar(
+            fig[4, col];
+            colormap=grad, colorrange=(1, maximum(counts)), scale=log10,
+            vertical=false, flipaxis=false, height=9, ticklabelsize=9,
+            ticklabelcolor=p.muted, tickcolor=p.muted, spinewidth=0,
+            label=&quot;$(title) per cell&quot;, labelsize=10, labelcolor=p.ink2,
+        )
+    end
+
+    Label(
+        fig[5, 1:2],
+        &quot;The bright cells are not the richest stretches of coast, they are the ones with a \
+        marine laboratory on them — São Sebastião, Cabo Frio, Todos os Santos — plus the \
+        oceanic islands, where a single expedition&#39;s records have nowhere else to fall. \
+        Cells drawn in the background colour were queried and returned nothing.&quot;;
+        color=p.muted, fontsize=11, halign=:left, justification=:left, tellwidth=false,
+        word_wrap=true,
+    )
+
+    rowsize!(fig.layout, 3, Relative(0.80))
+    rowgap!(fig.layout, 1, 2)
+    rowgap!(fig.layout, 2, 10)
+    rowgap!(fig.layout, 3, 6)
+    rowgap!(fig.layout, 4, 6)
+    colgap!(fig.layout, 1, 20)
+    return fig
+end
+
+# --- Figure 2: what is left once effort is divided out -----------------------------------
+#
+# A diverging scale, because the quantity has a meaningful zero: a cell exactly as rich as
+# its record count predicts. Neutral grey is that zero, and it has to read as nothing.
+
+function figure_residual(p::Palette)
+    grad = cgrad(Makie.to_color.(p.div))
+    span = maximum(abs, RESIDUAL)
+    colors = [ramp_at(grad, r, -span, span) for r in RESIDUAL]
+
+    fig = Figure(; size=(600, 840))
+    Label(
+        fig[1, 1], &quot;Richer or poorer than its sampling predicts&quot;;
+        color=p.ink, fontsize=15, font=:bold, halign=:left, tellwidth=false,
+    )
+    Label(
+        fig[2, 1],
+        @sprintf(
+            &quot;slope %.2f · r² %.2f · the %d cells holding at least %d records&quot;,
+            SLOPE, cor(LOGREC, LOGSPP)^2, length(FITTED), MIN_RECORDS
+        );
+        color=p.ink2, fontsize=12, halign=:left, tellwidth=false,
+    )
+
+    ga = coast_axis(p, fig[3, 1])
+    cells = poly!(
+        ga, cell_polygon.(FITTED);
+        color=colors, strokecolor=(p.grid, 0.55), strokewidth=0.3,
+    )
+    translate!(cells, 0, 0, Z_CELLS)
+    draw_land!(ga, p)
+    mask_outside!(ga, p)
+    label_places!(ga, p)
+
+    Colorbar(
+        fig[4, 1];
+        colormap=grad, colorrange=(-span, span),
+        vertical=false, flipaxis=false, height=9, ticklabelsize=9,
+        ticklabelcolor=p.muted, tickcolor=p.muted, spinewidth=0,
+        ticks=([-span, 0, span], [&quot;fewer species&quot;, &quot;as predicted&quot;, &quot;more species&quot;]),
+        label=&quot;departure from the species–effort relation&quot;, labelsize=10, labelcolor=p.ink2,
+    )
+
+    Label(
+        fig[5, 1],
+        &quot;The same cells with effort taken out. A band along the eastern shelf — Todos os \
+        Santos, Abrolhos, Cabo Frio — carries more species than its record count predicts; \
+        several offshore cells and the far south carry fewer, which is what a cell whose \
+        records come mostly from one large, taxonomically narrow dataset looks like. This \
+        is a residual, not a richness estimate: it says a cell is unusual for its effort, \
+        not how many species live there.&quot;;
+        color=p.muted, fontsize=11, halign=:left, justification=:left, tellwidth=false,
+        word_wrap=true,
+    )
+
+    rowsize!(fig.layout, 3, Relative(0.82))
+    rowgap!(fig.layout, 1, 2)
+    rowgap!(fig.layout, 2, 8)
+    rowgap!(fig.layout, 3, 6)
+    rowgap!(fig.layout, 4, 6)
+    return fig
+end
+
+# --- Figure 3: the rank you query at is the question you asked ---------------------------
+#
+# Two categorical hues carrying one distinction, with a legend and a zoom panel. The zoom
+# box is drawn on the parent map rather than left implicit, so the two panels are visibly
+# the same data at two scales.
+
+const ABROLHOS = (-40.0, -37.0, -19.0, -16.0)
+
+function figure_corals(p::Palette)
+    lon = collect(corals.decimalLongitude)
+    lat = collect(corals.decimalLatitude)
+    keep = .!ismissing.(lon) .&amp; .!ismissing.(lat)
+    reef = keep .&amp; (coalesce.(corals.genus, &quot;&quot;) .== &quot;Mussismilia&quot;)
+    other = keep .&amp; .!reef
+    w, e, s, n = ABROLHOS
+    inbox(sel) = sel .&amp; (lon .&gt;= w) .&amp; (lon .&lt;= e) .&amp; (lat .&gt;= s) .&amp; (lat .&lt;= n)
+
+    fig = Figure(; size=(940, 760))
+    Label(
+        fig[1, 1:2], &quot;One query, two very different questions&quot;;
+        color=p.ink, fontsize=15, font=:bold, halign=:left, tellwidth=false,
+    )
+    Label(
+        fig[2, 1:2],
+        &quot;$(count(keep)) Scleractinia records across the three Brazilian shelves · \
+        accessed $(corals_accessed)&quot;;
+        color=p.ink2, fontsize=12, halign=:left, tellwidth=false,
+    )
+
+    function draw!(ax, big)
+        draw_land!(ax, p; strokewidth=big ? 0.6 : 0.8)
+        for (sel, color, size, label) in (
+            (other, (p.series1, big ? 0.4 : 0.5), big ? 4 : 6,
+             &quot;Scleractinia, other genera  ($(count(other)))&quot;),
+            (reef, Makie.to_color(p.series2), big ? 4.5 : 6.5,
+             &quot;Mussismilia, the endemic reef builder  ($(count(reef)))&quot;),
+        )
+            plt = scatter!(
+                ax, lon[sel], lat[sel];
+                color=color, markersize=size, strokewidth=0, label=label,
+            )
+            translate!(plt, 0, 0, Z_POINTS)
+        end
+        mask_outside!(ax, p, big ? EXTENT : ABROLHOS)
+        return nothing
+    end
+
+    ga = coast_axis(p, fig[3, 1])
+    draw!(ga, true)
+    # 27°S: south of this line the order is present and the reef genus is all but absent.
+    lines!(
+        ga, [EXTENT[1], EXTENT[2]], [-27.0, -27.0];
+        color=p.ink2, linewidth=1.2, linestyle=:dash,
+    )
+    text!(
+        ga, EXTENT[2], -27.0;
+        text=&quot;27°S &quot;, align=(:right, :bottom), offset=(-6, 4), fontsize=10, color=p.ink2,
+    )
+    lines!(ga, [w, e, e, w, w], [s, s, n, n, s]; color=p.ink2, linewidth=1.2)
+    label_places!(ga, p; only=[&quot;Fernando de Noronha&quot;, &quot;Rio Grande&quot;])
+
+    gb = coast_axis(
+        p, fig[3, 2];
+        limits=ABROLHOS,
+        xticks=collect(-40.0:1.0:-37.0), yticks=collect(-19.0:1.0:-16.0),
+        title=&quot;the Abrolhos Bank  ·  $(count(inbox(keep))) records, \
+               $(count(inbox(reef))) of them Mussismilia&quot;,
+        titlesize=12, titlecolor=p.ink2, titlealign=:left,
+    )
+    draw!(gb, false)
+
+    Legend(
+        fig[4, 1:2], ga;
+        orientation=:horizontal, framevisible=false, labelcolor=p.ink2, labelsize=11,
+        patchsize=(12, 12), halign=:left, padding=(0, 0, 0, 0), unique=true,
+    )
+    Label(
+        fig[5, 1:2],
+        @sprintf(
+            &quot;Scleractinia is an order, and it holds both the reef builders and the \
+             solitary deep-water corals. South of 27°S the order is still present — %d \
+             records, in families such as %s — while the endemic reef genus is \
+             not. Query the order and the answer is \&quot;corals reach the Uruguayan \
+             border\&quot;; query the genus and it is \&quot;the reefs are tropical, and %d%% of \
+             the reef records are on one bank\&quot;. Both are in the same download.&quot;,
+            nrow(CORALS_SOUTH),
+            join(first(SOUTHERN_FAMILIES.family, 3), &quot;, &quot;, &quot; and &quot;),
+            round(Int, 100 * count(inbox(reef)) / max(count(reef), 1))
+        );
+        color=p.muted, fontsize=11, halign=:left, justification=:left, tellwidth=false,
+        word_wrap=true,
+    )
+
+    colsize!(fig.layout, 1, Relative(0.58))
+    rowsize!(fig.layout, 3, Relative(0.80))
+    rowgap!(fig.layout, 1, 2)
+    rowgap!(fig.layout, 2, 10)
+    rowgap!(fig.layout, 3, 6)
+    rowgap!(fig.layout, 4, 2)
+    colgap!(fig.layout, 1, 22)
+    return fig
+end
+
+# --- Figure 4: the covered part of the Blue Amazon ----------------------------------------
+#
+# A map plus its own marginal: the colour scale and the bar chart encode the same variable,
+# so the map shows where and the bars show how much.
+
+function figure_depth(p::Palette)
+    lon = collect(sharks.decimalLongitude)
+    lat = collect(sharks.decimalLatitude)
+    bathy = collect(sharks.bathymetry)
+    keep = .!ismissing.(lon) .&amp; .!ismissing.(lat) .&amp; .!ismissing.(bathy)
+    # Depths at or above sea level are the pipeline&#39;s grid disagreeing with the record&#39;s
+    # position, not a shark on a hill; they are drawn at the shallowest step rather than
+    # dropped, because a log scale has no room for them.
+    depth = [max(Float64(d), 1.0) for d in bathy[keep]]
+
+    grad = cgrad(Makie.to_color.(p.seq))
+    lo, hi = 0.0, log10(5000)
+    colors = [ramp_at(grad, log10(d), lo, hi) for d in depth]
+    order = sortperm(depth)   # deep records last, so they are not hidden by the shelf
+
+    fig = Figure(; size=(880, 760))
+    Label(
+        fig[1, 1:2], &quot;Sharks and rays, over the seabed they were recorded above&quot;;
+        color=p.ink, fontsize=15, font=:bold, halign=:left, tellwidth=false,
+    )
+    Label(
+        fig[2, 1:2],
+        &quot;$(count(keep)) Chondrichthyes records · accessed $(sharks_accessed) · colour is \
+        `bathymetry`, the depth the OBIS pipeline reads off a global grid at each \
+        record&#39;s position&quot;;
+        color=p.ink2, fontsize=12, halign=:left, tellwidth=false,
+    )
+
+    ga = coast_axis(p, fig[3, 1])
+    draw_land!(ga, p)
+    pts = scatter!(
+        ga, lon[keep][order], lat[keep][order];
+        color=colors[order], markersize=5, strokewidth=0.25, strokecolor=(p.surface, 0.6),
+    )
+    translate!(pts, 0, 0, Z_POINTS)
+    mask_outside!(ga, p)
+    label_places!(ga, p; only=[&quot;Foz do Amazonas&quot;, &quot;Cabo Frio&quot;, &quot;Rio Grande&quot;, &quot;Trindade&quot;])
+    Colorbar(
+        fig[4, 1];
+        colormap=grad, colorrange=(1, 5000), scale=log10,
+        vertical=false, flipaxis=false, height=9, ticklabelsize=9,
+        ticks=([10, 100, 1000, 5000], [&quot;10 m&quot;, &quot;100 m&quot;, &quot;1000 m&quot;, &quot;5000 m&quot;]),
+        ticklabelcolor=p.muted, tickcolor=p.muted, spinewidth=0,
+        label=&quot;seabed depth&quot;, labelsize=10, labelcolor=p.ink2,
+    )
+
+    # A fixed height keeps five bars from being stretched over the height of a map; the
+    # marginal is a companion to the map, not a second panel of equal weight.
+    ax = Axis(
+        fig[3, 2];
+        height=300, valign=:center, tellheight=false,
+        title=&quot;share of records&quot;, titlesize=12, titlecolor=p.ink2, titlealign=:left,
+        yticks=(1:length(DEPTH_BANDS), [b[1] for b in reverse(DEPTH_BANDS)]),
+        xlabel=&quot;% of records&quot;, ygridvisible=false,
+    )
+    # Plotted bottom-up, so the bands are reversed to put the shallowest at the top.
+    share = reverse(100 .* BAND_COUNTS ./ sum(BAND_COUNTS))
+    # One variable, one hue: each bar takes the step of the map&#39;s ramp at its band&#39;s
+    # midpoint, so the marginal and the map are read on the same scale.
+    barcolors = [
+        ramp_at(grad, log10(sqrt(max(band_lo, 1.0) * min(band_hi, 5000.0))), lo, hi)
+        for (_, band_lo, band_hi) in reverse(DEPTH_BANDS)
+    ]
+    barplot!(ax, 1:length(share), share; direction=:x, color=barcolors, width=0.62)
+    for (i, v) in enumerate(share)
+        text!(
+            ax, v, i; text=@sprintf(&quot; %.1f%%&quot;, v), align=(:left, :center),
+            color=p.ink2, fontsize=10,
+        )
+    end
+    xlims!(ax, 0, maximum(share) * 1.25)
+    hidespines!(ax, :l)
+
+    Label(
+        fig[5, 1:2],
+        @sprintf(
+            &quot;%.0f%% of the records sit over water shallower than 200 m. Brazil&#39;s exclusive \
+             economic zone is mostly abyssal, and on this evidence OBIS&#39;s coverage of it \
+             is a coverage of the shelf; the blank offshore is about ship time, \
+             not about sharks.&quot;,
+            sum(share[(end - 1):end])
+        );
+        color=p.muted, fontsize=11, halign=:left, justification=:left, tellwidth=false,
+        word_wrap=true,
+    )
+
+    colsize!(fig.layout, 1, Relative(0.48))
+    rowsize!(fig.layout, 3, Relative(0.82))
+    rowgap!(fig.layout, 1, 2)
+    rowgap!(fig.layout, 2, 10)
+    rowgap!(fig.layout, 3, 6)
+    rowgap!(fig.layout, 4, 6)
+    colgap!(fig.layout, 1, 26)
+    return fig
+end
+
+# --- Run ---------------------------------------------------------------------------------
+
+mkpath(OUT)
+println(&quot;Rendering…&quot;)
+save_both(&quot;brazil-effort&quot;, figure_grid)
+save_both(&quot;brazil-residual&quot;, figure_residual)
+save_both(&quot;brazil-corals&quot;, figure_corals)
+save_both(&quot;brazil-depth&quot;, figure_depth)
+
+mkpath(DOCS_ASSETS)
+for f in readdir(OUT)
+    endswith(f, &quot;.png&quot;) &amp;&amp; cp(joinpath(OUT, f), joinpath(DOCS_ASSETS, f); force=true)
+end
+println(&quot;\nDone.&quot;)</code></pre><h2 id="examples/theme.jl"><a class="docs-heading-anchor" href="#examples/theme.jl"><code>examples/theme.jl</code></a><a id="examples/theme.jl-1"></a><a class="docs-heading-anchor-permalink" href="#examples/theme.jl" title="Permalink"></a></h2><p>The shared colour palette and Makie theme the scripts include.</p><pre><code class="language-julia hljs"># Shared figure theme for the example scripts.
 #
 # Two categorical hues, validated against both chart surfaces for colour-vision deficiency
 # (worst-pair ΔE 24.7 light / 26.8 dark, well clear of the ΔE 8 floor). Identity is never
 # carried by colour alone: every figure also has a legend or direct labels.
 #
-# Included by figures.jl and orcas.jl; not a module, just definitions.
+# `seq` and `div` are the value scales the maps in brazil.jl need. A sequential ramp is one
+# hue, ordered so that &quot;near zero&quot; sits nearest the surface — light-to-dark on the light
+# surface, dark-to-light on the dark one, which is why the dark ramp is stepped rather than
+# flipped wholesale. A diverging ramp is two hues around a neutral grey midpoint, so that
+# &quot;no departure&quot; reads as nothing rather than as a colour. Both are checked for lightness
+# monotonicity, which is the check that applies to a value scale; the categorical ΔE gates
+# are not the right test for one.
+#
+# Included by figures.jl, orcas.jl and brazil.jl; not a module, just definitions.
 
 struct Palette
     surface::String
@@ -540,15 +1291,25 @@ struct Palette
     series2::String
     land::String
     sea::String
+    # Opaque land, for maps where filled cells are drawn underneath it: the translucent
+    # `land` above would let the data show through and read as a value.
+    landfill::String
+    # Value scales: one hue for magnitude, two hues around a neutral for polarity.
+    seq::Vector{String}
+    div::Vector{String}
 end
 
 const LIGHT = Palette(
     &quot;#fcfcfb&quot;, &quot;#0b0b0b&quot;, &quot;#52514e&quot;, &quot;#898781&quot;, &quot;#e1e0d9&quot;, &quot;#c3c2b7&quot;,
-    &quot;#2a78d6&quot;, &quot;#eb6834&quot;, &quot;#eeece6&quot;, &quot;#f7f7f5&quot;,
+    &quot;#2a78d6&quot;, &quot;#eb6834&quot;, &quot;#eeece6&quot;, &quot;#f7f7f5&quot;, &quot;#eeece6&quot;,
+    [&quot;#cde2fb&quot;, &quot;#9ec5f4&quot;, &quot;#6da7ec&quot;, &quot;#3987e5&quot;, &quot;#256abf&quot;, &quot;#184f95&quot;, &quot;#0d366b&quot;],
+    [&quot;#752322&quot;, &quot;#d2383a&quot;, &quot;#f9aaa3&quot;, &quot;#f0efec&quot;, &quot;#9ec5f4&quot;, &quot;#2a78d6&quot;, &quot;#104281&quot;],
 )
 const DARK = Palette(
     &quot;#1a1a19&quot;, &quot;#ffffff&quot;, &quot;#c3c2b7&quot;, &quot;#898781&quot;, &quot;#2c2c2a&quot;, &quot;#383835&quot;,
-    &quot;#3987e5&quot;, &quot;#d95926&quot;, &quot;#26262340&quot;, &quot;#212120&quot;,
+    &quot;#3987e5&quot;, &quot;#d95926&quot;, &quot;#26262340&quot;, &quot;#212120&quot;, &quot;#262623&quot;,
+    [&quot;#0d366b&quot;, &quot;#184f95&quot;, &quot;#256abf&quot;, &quot;#3987e5&quot;, &quot;#6da7ec&quot;, &quot;#9ec5f4&quot;, &quot;#cde2fb&quot;],
+    [&quot;#f9aaa3&quot;, &quot;#e34948&quot;, &quot;#a92126&quot;, &quot;#383835&quot;, &quot;#1c5cab&quot;, &quot;#3987e5&quot;, &quot;#9ec5f4&quot;],
 )
 
 function theme_for(p::Palette)
@@ -597,4 +1358,4 @@ save_both(name, build) =
             save(path, fig; px_per_unit=2)
             println(&quot;  wrote &quot;, relpath(path, dirname(@__DIR__)))
         end
-    end</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../worked-example/">« Worked example: killer whales</a><a class="docs-footer-nextpage" href="../licensing/">Licensing and citation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Monday 7 September 2026 14:44">Monday 7 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    end</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../mapping-a-coast/">« Mapping a coast</a><a class="docs-footer-nextpage" href="../licensing/">Licensing and citation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Tuesday 8 September 2026 00:06">Tuesday 8 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
