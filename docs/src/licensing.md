@@ -29,26 +29,25 @@ most restrictive one governs what may be done with the result as a whole.
 
 ## Knowing what you may do
 
-[`OceanBIS.licenses`](@ref) summarizes a result: one row per licence, with how many datasets
+[`OBISClient.licenses`](@ref) summarizes a result: one row per licence, with how many datasets
 and records fall under it and what it permits.
 
 ```julia
-using OceanBIS, Dates
+using OBISClient, Dates
 
-recs = OceanBIS.occurrence(;
+recs = OBISClient.occurrence(;
     scientificname = "Abra alba",
     geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
     startdate = Date(2000, 1, 1),
     enddate   = Date(2020, 12, 31),
 )
-rights = OceanBIS.licenses(recs)
+rights = OBISClient.licenses(recs)
 ```
 
 The summary is a table like any other, so
-[PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) prints it directly. This is
-the one worth laying out properly: it is what you read before building anything on the
-data, and the answer is a shape — which permissions hold over which share of the records —
-rather than a number.
+[PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) prints it directly. It repays
+being laid out properly, since what you need from it is which permissions hold over which
+share of the records.
 
 ```julia
 using PrettyTables
@@ -68,8 +67,8 @@ sheet = (
 pretty_table(
     sheet;
     title    = "Abra alba · southern North Sea · 2000-2020",
-    subtitle = "$(group(OceanBIS.nrow(recs))) records · " *
-               "accessed $(OceanBIS.metadata(recs).accessed)",
+    subtitle = "$(group(OBISClient.nrow(recs))) records · " *
+               "accessed $(OBISClient.metadata(recs).accessed)",
 
     # Licences as row labels: the question is what each one permits, so it is the stub.
     row_labels     = rights.license,
@@ -127,7 +126,7 @@ pretty_table(
 Ocean Biodiversity Information System, IOC-UNESCO — obis.org
 ```
 
-PrettyTables is not a dependency of OceanBIS.jl. It renders the result because results are
+PrettyTables is not a dependency of OBISClient.jl. It renders the result because results are
 Tables.jl sources, which is the same reason `DataFrame(rights)` works; in a terminal the
 highlighters do the reading for you, green where a permission is granted and red where it
 is refused.
@@ -140,14 +139,13 @@ is refused.
 ```
 
 Read the permission columns before building anything: a single CC BY-NC dataset makes the
-whole result non-commercial, and this query has six. A summary that showed only the
-majority licence would be worse than no summary, which is why the breakdown is per licence
-rather than a single verdict.
+whole result non-commercial, and this query has six. That is why the breakdown is per
+licence instead of a single verdict — showing only the majority licence would mislead.
 
 To check before retrieving anything, query the datasets first:
 
 ```julia
-OceanBIS.licenses(OceanBIS.dataset("Abra alba"))
+OBISClient.licenses(OBISClient.dataset("Abra alba"))
 ```
 
 ### The `unknown` category
@@ -158,34 +156,34 @@ version appears inside or outside the parentheses, whitespace is doubled, and a 
 entries are bare words. The package normalizes what it recognizes and reports the rest as
 `unknown`, keeping the original text in `intellectualrights` either way.
 
-`unknown` is not a technicality. Among the observed values are the literal strings
-`Restricted` and `Unrestricted`, and an `Attribution-ShareAlike (CC BY-SA)` licence that is
-not one of the three OBIS accepts. Filing any of those under a permissive default would be
-the one failure mode with consequences, so the package does not guess:
-`permits_redistribution` is `false` for `unknown`.
+`unknown` covers real cases. Among the observed values are the literal strings `Restricted`
+and `Unrestricted`, and an `Attribution-ShareAlike (CC BY-SA)` licence that is not one of
+the three OBIS accepts. Filing any of those under a permissive default is the failure mode
+with actual consequences, so the package does not guess: `permits_redistribution` is
+`false` for `unknown`.
 
 ```julia
-recs = OceanBIS.occurrence("Abra alba"; limit = 2000)
-unknown = [recs.intellectualrights[i] for i in 1:OceanBIS.nrow(recs) if recs.license[i] == "unknown"]
+recs = OBISClient.occurrence("Abra alba"; limit = 2000)
+unknown = [recs.intellectualrights[i] for i in 1:OBISClient.nrow(recs) if recs.license[i] == "unknown"]
 unique(unknown)   # read them and decide
 ```
 
 ## Producing the citations
 
-[`OceanBIS.citations`](@ref) builds one entry per dataset a result drew on.
+[`OBISClient.citations`](@ref) builds one entry per dataset a result drew on.
 
 ```julia
-recs = OceanBIS.occurrence("Abra alba"; limit = 2000)
+recs = OBISClient.occurrence("Abra alba"; limit = 2000)
 
 # As a table.
-cites = OceanBIS.citations(recs)
+cites = OBISClient.citations(recs)
 cites.dataset_id, cites.records, cites.license, cites.doi, cites.formatted
 
 # As text, ready to paste.
-print(OceanBIS.citations(recs; format = :text))
+print(OBISClient.citations(recs; format = :text))
 
 # As BibTeX, for a manuscript.
-write("obis-references.bib", OceanBIS.citations(recs; format = :bibtex))
+write("obis-references.bib", OBISClient.citations(recs; format = :bibtex))
 ```
 
 A BibTeX entry looks like this:
@@ -207,7 +205,7 @@ it is a property of the request. The package records it when the request is made
 it on the result, so the citation is correct without you tracking anything:
 
 ```julia
-OceanBIS.metadata(recs).accessed
+OBISClient.metadata(recs).accessed
 ```
 
 If you cached the responses (see [Reproducibility](reproducibility.md)) and re-run months
@@ -215,7 +213,7 @@ later, the citation should carry the date the data was actually retrieved. Read 
 cache metadata:
 
 ```julia
-for e in OceanBIS.cache_entries()
+for e in OBISClient.cache_entries()
     println(e["endpoint"], "  accessed ", e["accessed"])
 end
 ```
@@ -235,7 +233,7 @@ addition to** the individual datasets, taking each dataset's restrictions into a
 is not a substitute for them.
 
 ```julia
-OceanBIS.obis_citation(; description = "Distribution records of Abra alba")
+OBISClient.obis_citation(; description = "Distribution records of Abra alba")
 ```
 
 The general citation for the system:
@@ -246,15 +244,15 @@ The general citation for the system:
 ## A complete workflow
 
 ```julia
-using OceanBIS, DataFrames
+using OBISClient, DataFrames
 
-recs = OceanBIS.occurrence(;
+recs = OBISClient.occurrence(;
     scientificname = "Abra alba",
     geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
 )
 
 # 1. May I use these as I intend to?
-summary = OceanBIS.licenses(recs)
+summary = OBISClient.licenses(recs)
 if !all(summary.permits_commercial_use)
     @warn "This result contains non-commercial data."
 end
@@ -263,8 +261,8 @@ if !all(summary.permits_redistribution)
 end
 
 # 2. Record the credit alongside the analysis.
-write("references.bib", OceanBIS.citations(recs; format = :bibtex))
-CSV.write("citations.csv", OceanBIS.citations(recs))
+write("references.bib", OBISClient.citations(recs; format = :bibtex))
+CSV.write("citations.csv", OBISClient.citations(recs))
 
 # 3. Keep the data itself with its provenance.
 CSV.write("occurrences.csv", DataFrame(recs))

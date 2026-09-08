@@ -12,9 +12,9 @@ const EXPORT_ABSENCE = joinpath(FIXTURE_DIR, "export_absence.parquet")
     # The point of the reader: after it, the two access routes are interchangeable in
     # everything downstream. Same columns, same order, same element types.
     recs = with_mock() do
-        OceanBIS.occurrence("Abra alba"; limit=3, licenses=false)
+        OBISClient.occurrence("Abra alba"; limit=3, licenses=false)
     end
-    export_table = OceanBIS.read_export(EXPORT_DROPPED; licenses=false)
+    export_table = OBISClient.read_export(EXPORT_DROPPED; licenses=false)
 
     @test Tables.columnnames(export_table) == Tables.columnnames(recs)
     for name in Tables.columnnames(recs)
@@ -34,22 +34,22 @@ end
     # The export contains both, so a plain read would quietly mix them into an ordinary
     # count. Defaulting to `:exclude` makes the same query mean the same thing on both
     # routes; the file fixtures hold three of each against two ordinary records.
-    @test OceanBIS.nrow(OceanBIS.read_export(EXPORT_DROPPED; licenses=false)) == 2
-    @test OceanBIS.nrow(OceanBIS.read_export(EXPORT_ABSENCE; licenses=false)) == 2
+    @test OBISClient.nrow(OBISClient.read_export(EXPORT_DROPPED; licenses=false)) == 2
+    @test OBISClient.nrow(OBISClient.read_export(EXPORT_ABSENCE; licenses=false)) == 2
 
-    only_dropped = OceanBIS.read_export(EXPORT_DROPPED; dropped=:only, licenses=false)
-    @test OceanBIS.nrow(only_dropped) == 3
+    only_dropped = OBISClient.read_export(EXPORT_DROPPED; dropped=:only, licenses=false)
+    @test OBISClient.nrow(only_dropped) == 3
     @test all(only_dropped.dropped)
 
-    only_absence = OceanBIS.read_export(EXPORT_ABSENCE; absence=:only, licenses=false)
-    @test OceanBIS.nrow(only_absence) == 3
+    only_absence = OBISClient.read_export(EXPORT_ABSENCE; absence=:only, licenses=false)
+    @test OBISClient.nrow(only_absence) == 3
     @test all(only_absence.absence)
 
-    both = OceanBIS.read_export(EXPORT_ABSENCE; absence=:include, licenses=false)
-    @test OceanBIS.nrow(both) == 5
+    both = OBISClient.read_export(EXPORT_ABSENCE; absence=:include, licenses=false)
+    @test OBISClient.nrow(both) == 5
     @test count(both.absence) == 3
 
-    @test_throws OceanBIS.OBISValidationError OceanBIS.read_export(
+    @test_throws OBISClient.OBISValidationError OBISClient.read_export(
         EXPORT_ABSENCE; absence=:maybe, licenses=false
     )
 end
@@ -60,7 +60,7 @@ end
     # licence table published alongside it. This is what makes `licenses` and `citations`
     # work on the bulk route.
     with_mock() do
-        table = OceanBIS.read_export(EXPORT_DROPPED)
+        table = OBISClient.read_export(EXPORT_DROPPED)
         @test all(==("CC-BY-4.0"), table.license)
         # The URL is the one the licence table publishes, not the canonical form: the table
         # is the provider's statement, and normalizing it away would lose what was said.
@@ -72,45 +72,46 @@ end
         # This dataset published no citation text, and the column says so rather than the
         # read failing or inventing one; the other fixture's dataset did publish one.
         @test all(ismissing, table.dataset_citation)
-        other = OceanBIS.read_export(EXPORT_ABSENCE)
+        other = OBISClient.read_export(EXPORT_ABSENCE)
         @test all(!ismissing, other.dataset_citation)
         @test occursin("Posidonia oceanica", other.dataset_citation[1])
 
-        summary = OceanBIS.licenses(table)
-        @test OceanBIS.nrow(summary) == 1
+        summary = OBISClient.licenses(table)
+        @test OBISClient.nrow(summary) == 1
         @test summary.license == ["CC-BY-4.0"]
-        @test sum(summary.records) == OceanBIS.nrow(table)
+        @test sum(summary.records) == OBISClient.nrow(table)
         @test all(summary.permits_redistribution)
 
         # A licence table can be passed in, so reading many files costs one fetch.
-        reused = OceanBIS.export_licenses()
-        @test OceanBIS.read_export(EXPORT_DROPPED; licenses=reused).license == table.license
+        reused = OBISClient.export_licenses()
+        @test OBISClient.read_export(EXPORT_DROPPED; licenses=reused).license ==
+            table.license
 
-        @test all(ismissing, OceanBIS.read_export(EXPORT_DROPPED; licenses=false).license)
+        @test all(ismissing, OBISClient.read_export(EXPORT_DROPPED; licenses=false).license)
     end
 end
 
 @testset "several exports read as one table" begin
     # `download_exports` returns a vector of paths, so this is the shape that composes.
     with_mock() do
-        table = OceanBIS.read_export([EXPORT_DROPPED, EXPORT_ABSENCE])
-        @test OceanBIS.nrow(table) == 4          # two ordinary records from each file
+        table = OBISClient.read_export([EXPORT_DROPPED, EXPORT_ABSENCE])
+        @test OBISClient.nrow(table) == 4          # two ordinary records from each file
         @test length(unique(table.dataset_id)) == 2
 
         # Both datasets are CC-BY here, but the summary is still per licence rather than a
         # single verdict, and it accounts for every record.
-        @test sum(OceanBIS.licenses(table).records) == OceanBIS.nrow(table)
+        @test sum(OBISClient.licenses(table).records) == OBISClient.nrow(table)
     end
 end
 
 @testset "export provenance is the file's date, not today" begin
     # The records are as old as the export that carried them. A citation built from this
     # table has to say when the data was obtained, and that is when the file was written.
-    table = OceanBIS.read_export(EXPORT_DROPPED; licenses=false)
-    meta = OceanBIS.metadata(table)
+    table = OBISClient.read_export(EXPORT_DROPPED; licenses=false)
+    meta = OBISClient.metadata(table)
     @test meta.endpoint == "export/occurrence"
     @test meta.accessed == Date(unix2datetime(mtime(EXPORT_DROPPED)))
-    @test meta.base_url == OceanBIS.config().export_url
+    @test meta.base_url == OBISClient.config().export_url
     @test Dict(meta.params)["files"] == "export_dropped.parquet"
     @test Dict(meta.params)["dropped"] == "exclude"
 end
@@ -118,10 +119,10 @@ end
 @testset "the provider's own terms are opt-in" begin
     # `source` has 188 fields. Reading them costs more than the whole core schema does, so
     # the caller asks for them rather than paying by default.
-    plain = OceanBIS.read_export(EXPORT_DROPPED; licenses=false)
+    plain = OBISClient.read_export(EXPORT_DROPPED; licenses=false)
     @test all(isempty, plain.extra)
 
-    full = OceanBIS.read_export(EXPORT_DROPPED; licenses=false, source_terms=true)
+    full = OBISClient.read_export(EXPORT_DROPPED; licenses=false, source_terms=true)
     @test any(!isempty, full.extra)
     # The provider's name before the taxonomy match is a column of its own, so it is not
     # duplicated into `extra`.
@@ -130,14 +131,14 @@ end
 end
 
 @testset "limit stops the read rather than the table" begin
-    @test OceanBIS.nrow(
-        OceanBIS.read_export(EXPORT_ABSENCE; absence=:include, licenses=false, limit=2)
+    @test OBISClient.nrow(
+        OBISClient.read_export(EXPORT_ABSENCE; absence=:include, licenses=false, limit=2)
     ) == 2
 end
 
 @testset "a missing file is an error that names it" begin
     err = try
-        OceanBIS.read_export(joinpath(FIXTURE_DIR, "no_such_export.parquet"))
+        OBISClient.read_export(joinpath(FIXTURE_DIR, "no_such_export.parquet"))
         nothing
     catch e
         e
@@ -145,17 +146,17 @@ end
     @test err isa ArgumentError
     @test occursin("no_such_export.parquet", sprint(showerror, err))
 
-    @test_throws ArgumentError OceanBIS.read_export(String[])
+    @test_throws ArgumentError OBISClient.read_export(String[])
 end
 
 @testset "the SELECT list is built from the schema" begin
     # Built rather than written out, so a column added to the schema is read from the
     # export without a second list to remember.
-    selects = [OceanBIS.export_select(spec) for spec in OceanBIS.OCCURRENCE_SCHEMA]
-    @test length(selects) == length(OceanBIS.OCCURRENCE_SCHEMA)
+    selects = [OBISClient.export_select(spec) for spec in OBISClient.OCCURRENCE_SCHEMA]
+    @test length(selects) == length(OBISClient.OCCURRENCE_SCHEMA)
 
     # The four that sit at the top level of the file rather than under `interpreted`.
-    @test OceanBIS.export_select(OceanBIS.OCCURRENCE_SCHEMA[1]) == "_id AS \"id\""
+    @test OBISClient.export_select(OBISClient.OCCURRENCE_SCHEMA[1]) == "_id AS \"id\""
     @test any(s -> s == "flags AS \"flags\"", selects)
     @test any(s -> s == "absence AS \"absence\"", selects)
 

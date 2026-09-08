@@ -9,10 +9,10 @@ some are not, and the two ways of getting a large result differ in what they can
 would return, in one cheap request:
 
 ```julia
-using OceanBIS
+using OBISClient
 
-OceanBIS.statistics("Mollusca")["records"]
-OceanBIS.estimate_size(; scientificname = "Mollusca")
+OBISClient.statistics("Mollusca")["records"]
+OBISClient.estimate_size(; scientificname = "Mollusca")
 ```
 
 ## The limit, and why it is an error
@@ -33,41 +33,41 @@ Changing route silently would change the answer, so the package explains the opt
 lets you choose:
 
 ```julia
-OceanBIS.occurrence("Mollusca")
+OBISClient.occurrence("Mollusca")
 # ERROR: OBISLargeQueryError: this query matches about 12,345,678 records, above the
 # configured API limit of 100,000.
 #   Options, in the order most likely to help:
 #
 #   1. Narrow the query — add `geometry`, `startdate`/`enddate`, or a `datasetid`.
 #   2. Take only part of it, with `limit = n`.
-#   3. Stream it with `OceanBIS.occurrence_pages(...)`.
+#   3. Stream it with `OBISClient.occurrence_pages(...)`.
 #   4. Use the bulk export, which OBIS recommends at this volume.
 ```
 
 Adjust or bypass the guard as you see fit:
 
 ```julia
-OceanBIS.configure!(api_record_limit = 1_000_000)
-OceanBIS.occurrence("Mollusca"; check_size = false)
+OBISClient.configure!(api_record_limit = 1_000_000)
+OBISClient.occurrence("Mollusca"; check_size = false)
 ```
 
 ## Streaming
 
-[`OceanBIS.occurrence_pages`](@ref) yields one page at a time. Nothing is fetched until
+[`OBISClient.occurrence_pages`](@ref) yields one page at a time. Nothing is fetched until
 iteration begins, and only one page is in memory at once, so a query larger than memory is
 still workable.
 
 ```julia
 counts = Dict{String,Int}()
 
-for page in OceanBIS.occurrence_pages("Mollusca"; page_size = 10_000, progress = true)
+for page in OBISClient.occurrence_pages("Mollusca"; page_size = 10_000, progress = true)
     for name in page.scientificName
         ismissing(name) || (counts[name] = get(counts, name, 0) + 1)
     end
 end
 ```
 
-Every page is a full [`OceanBIS.OBISTable`](@ref) with the same schema, so anything that works
+Every page is a full [`OBISClient.OBISTable`](@ref) with the same schema, so anything that works
 on a complete result works on a page.
 
 ### Resuming
@@ -76,15 +76,15 @@ Pagination is keyset on the record UUID, so the entire cursor is one string. Sav
 resume — in the same session or a later one, after an interruption or a crash:
 
 ```julia
-pages = OceanBIS.occurrence_pages("Mollusca"; page_size = 10_000)
+pages = OBISClient.occurrence_pages("Mollusca"; page_size = 10_000)
 
 for page in pages
     process(page)
-    write("obis.cursor", OceanBIS.cursor(pages))
+    write("obis.cursor", OBISClient.cursor(pages))
 end
 
 # Later, on a different day:
-resumed = OceanBIS.occurrence_pages(
+resumed = OBISClient.occurrence_pages(
     "Mollusca"; page_size = 10_000, after = read("obis.cursor", String)
 )
 ```
@@ -100,7 +100,7 @@ source dataset, roughly 50 GB in total. The files are served over plain HTTPS wi
 credentials, so a query's worth can be fetched by resolving the query to its datasets:
 
 ```julia
-paths = OceanBIS.download_exports("Abra alba"; dir = "obis-export")
+paths = OBISClient.download_exports("Abra alba"; dir = "obis-export")
 ```
 
 ### Reading what you downloaded
@@ -110,16 +110,16 @@ own terms nested under `source`, the quality pipeline's under `interpreted`, the
 WKB, and the AphiaID spelled `aphiaid` rather than `aphiaID`. The field names are documented
 at [github.com/iobis/obis-open-data](https://github.com/iobis/obis-open-data).
 
-[`OceanBIS.read_export`](@ref) reads them into the canonical schema, so the two access routes
+[`OBISClient.read_export`](@ref) reads them into the canonical schema, so the two access routes
 become interchangeable in everything downstream:
 
 ```julia
 using DuckDB          # loads the extension that implements read_export
 
-recs = OceanBIS.read_export(paths)
+recs = OBISClient.read_export(paths)
 
-OceanBIS.licenses(recs)                          # works, as on an API result
-OceanBIS.citations(recs; format = :bibtex)       # likewise
+OBISClient.licenses(recs)                          # works, as on an API result
+OBISClient.citations(recs; format = :bibtex)       # likewise
 DataFrame(recs)
 ```
 
@@ -149,12 +149,12 @@ DBInterface.execute(con, """
 """)
 ```
 
-[`OceanBIS.export_covers`](@ref) reports whether the export can serve a query at all:
+[`OBISClient.export_covers`](@ref) reports whether the export can serve a query at all:
 
 ```julia
-OceanBIS.export_covers(; scientificname = "Abra alba")     # true
-OceanBIS.export_covers(; absence = :only)                  # true — the export carries them
-OceanBIS.export_covers(; event = :only)                    # false — API only
+OBISClient.export_covers(; scientificname = "Abra alba")     # true
+OBISClient.export_covers(; absence = :only)                  # true — the export carries them
+OBISClient.export_covers(; event = :only)                    # false — API only
 ```
 
 Absence and dropped records are in the export, despite the data access page saying
@@ -167,11 +167,11 @@ The full OBIS dataset is itself licensed CC BY-NC. The licence and citation for 
 source dataset are published alongside it:
 
 ```julia
-OceanBIS.export_licenses()
+OBISClient.export_licenses()
 ```
 
 That table is regenerated with the export and lags the live API, so for a live query take
-licences from the result or from `OceanBIS.dataset`.
+licences from the result or from `OBISClient.dataset`.
 
 ## Being a good client
 
@@ -182,12 +182,12 @@ naming the package and this repository, and backed off exponentially on failure.
 The courteous way to speed up a large pull is fewer, larger requests:
 
 ```julia
-OceanBIS.configure!(page_size = 10_000)     # the maximum the API accepts
+OBISClient.configure!(page_size = 10_000)     # the maximum the API accepts
 ```
 
 On a shared or metered connection, or if you are running many queries in a loop, space them
 out:
 
 ```julia
-OceanBIS.configure!(request_gap = 1.0)
+OBISClient.configure!(request_gap = 1.0)
 ```

@@ -10,14 +10,14 @@
 # one. Being a weak dependency means the ~52 MiB DuckDB artifact is paid for only by users
 # who take the export route.
 
-module OceanBISDuckDBExt
+module OBISClientDuckDBExt
 
 using Dates
 using DuckDB
-using OceanBIS
+using OBISClient
 using Tables
 
-using OceanBIS:
+using OBISClient:
     CONFIG,
     FieldSpec,
     OBISTable,
@@ -46,7 +46,7 @@ function file_list(path::AbstractString)
     isfile(path) || throw(
         ArgumentError(
             "No export file at $(path). `read_export` takes a path, or a vector of them " *
-            "as returned by `OceanBIS.download_exports`.",
+            "as returned by `OBISClient.download_exports`.",
         ),
     )
     return sql_string(path), [String(path)]
@@ -165,7 +165,7 @@ function build_export_table(raw, files, absence, dropped, licenses, source_terms
     table = OBISTable(names, columns, export_meta(files, absence, dropped, n))
     licenses === false && return table
     return attach_export_licenses(
-        table, licenses === true ? OceanBIS.export_licenses() : licenses
+        table, licenses === true ? OBISClient.export_licenses() : licenses
     )
 end
 
@@ -206,7 +206,7 @@ joins them from `/dataset`.
 """
 function attach_export_licenses(t::OBISTable, licence_table)
     index = Dict{String,NTuple{3,Union{Missing,String}}}()
-    for i in 1:OceanBIS.nrow(licence_table)
+    for i in 1:OBISClient.nrow(licence_table)
         id = licence_table.dataset_id[i]
         ismissing(id) && continue
         index[String(id)] = (

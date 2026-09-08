@@ -96,7 +96,7 @@ _lookup(t::OBISTable) = getfield(t, :lookup)
 Return the query, access date and reported total behind a result.
 
 ```julia
-julia> meta = OceanBIS.metadata(tbl);
+julia> meta = OBISClient.metadata(tbl);
 
 julia> meta.accessed        # the date to put in a citation
 2026-09-06
@@ -217,7 +217,7 @@ Which of them appear depends on the query, which is exactly why they are held ap
 the core columns.
 
 ```julia
-julia> OceanBIS.extra_names(tbl)
+julia> OBISClient.extra_names(tbl)
 12-element Vector{Symbol}:
  :day
  :eventTime
@@ -240,7 +240,7 @@ Lift one non-core field out of `extra` into a plain column, with `missing` where
 did not carry it.
 
 ```julia
-julia> OceanBIS.extra_column(tbl, :waterBody)
+julia> OBISClient.extra_column(tbl, :waterBody)
 ```
 """
 function extra_column(t::OBISTable, name)

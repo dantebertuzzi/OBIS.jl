@@ -14,7 +14,7 @@
 using Test
 using Dates
 using Tables
-using OceanBIS
+using OBISClient
 
 # The export reader lives in a package extension, so it is exercised only when DuckDB is
 # available. Running this file the documented way skips that testset; the scheduled job
@@ -27,12 +27,12 @@ catch
     false
 end
 
-OceanBIS.configure!(; request_gap=0.5, page_size=5)
+OBISClient.configure!(; request_gap=0.5, page_size=5)
 
 @testset "OBIS live API" begin
     @testset "the envelope and field names are unchanged" begin
-        recs = OceanBIS.occurrence("Abra alba"; limit=5, licenses=false, check_size=false)
-        @test OceanBIS.nrow(recs) == 5
+        recs = OBISClient.occurrence("Abra alba"; limit=5, licenses=false, check_size=false)
+        @test OBISClient.nrow(recs) == 5
 
         # Fields the package treats as always present. If one of these disappears, the
         # schema needs revisiting rather than silently filling with `missing`.
@@ -48,7 +48,9 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
     end
 
     @testset "timestamps are still milliseconds" begin
-        recs = OceanBIS.occurrence("Abra alba"; limit=20, licenses=false, check_size=false)
+        recs = OBISClient.occurrence(
+            "Abra alba"; limit=20, licenses=false, check_size=false
+        )
         dates = collect(skipmissing(recs.date_start))
         if !isempty(dates)
             # If the API ever switched to seconds, these would land near 1970.
@@ -59,30 +61,30 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
     @testset "flags are still upper case and case-sensitive" begin
         # This is the behaviour the package normalizes around; if it changed, the
         # normalization would become unnecessary rather than wrong, but we want to know.
-        upper = OceanBIS.statistics("Abra alba"; flags="ON_LAND")["records"]
+        upper = OBISClient.statistics("Abra alba"; flags="ON_LAND")["records"]
         @test upper > 0
 
-        params = OceanBIS.QueryParams()
+        params = OBISClient.QueryParams()
         params["scientificname"] = "Abra alba"
         params["flags"] = "on_land"
-        lower = OceanBIS.api_get("statistics", params)
+        lower = OBISClient.api_get("statistics", params)
         @test Int(lower[:records]) == 0
     end
 
     @testset "absence and dropped are still API-only and non-empty" begin
-        base = OceanBIS.statistics("Abra alba")["records"]
-        absence = OceanBIS.statistics("Abra alba"; absence=:only)["records"]
-        included = OceanBIS.statistics("Abra alba"; absence=:include)["records"]
+        base = OBISClient.statistics("Abra alba")["records"]
+        absence = OBISClient.statistics("Abra alba"; absence=:only)["records"]
+        included = OBISClient.statistics("Abra alba"; absence=:include)["records"]
 
         @test absence > 0
         @test included == base + absence
 
-        dropped = OceanBIS.statistics("Abra alba"; dropped=:only)["records"]
+        dropped = OBISClient.statistics("Abra alba"; dropped=:only)["records"]
         @test dropped > 0
     end
 
     @testset "pagination is still keyset on id" begin
-        pages = OceanBIS.occurrence_pages("Abra alba"; page_size=5)
+        pages = OBISClient.occurrence_pages("Abra alba"; page_size=5)
         p1, st = iterate(pages)
         p2, _ = iterate(pages, st)
         @test issorted(p1.id)
@@ -91,16 +93,16 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
     end
 
     @testset "the page size limit is still 10,000" begin
-        params = OceanBIS.QueryParams()
+        params = OBISClient.QueryParams()
         params["scientificname"] = "Abra alba"
         params["size"] = "10000"
         params["fields"] = "id"
-        payload = OceanBIS.api_get("occurrence", params)
-        @test length(OceanBIS.results_of(payload)) == 10_000
+        payload = OBISClient.api_get("occurrence", params)
+        @test length(OBISClient.results_of(payload)) == 10_000
     end
 
     @testset "an unmatched name still reports NAME_NOT_FOUND in a 200" begin
-        @test_throws OceanBIS.OBISNameNotFoundError OceanBIS.occurrence(
+        @test_throws OBISClient.OBISNameNotFoundError OBISClient.occurrence(
             "Notaspecies atallxyz"; limit=1, check_size=false
         )
     end
@@ -108,19 +110,19 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
     @testset "flags cannot be selected through fields" begin
         # The package rejects this locally; here we confirm the API behaviour it is
         # protecting against has not changed.
-        params = OceanBIS.QueryParams()
+        params = OBISClient.QueryParams()
         params["scientificname"] = "Abra alba"
         params["size"] = "1"
         params["fields"] = "id,flags"
-        rec = first(OceanBIS.results_of(OceanBIS.api_get("occurrence", params)))
+        rec = first(OBISClient.results_of(OBISClient.api_get("occurrence", params)))
         @test !haskey(rec, :flags)
     end
 
     @testset "dataset rights are still free text under intellectualrights" begin
-        ds = OceanBIS.dataset_by_id("8acba7e7-2e50-4490-8328-b78a30472508")
-        @test OceanBIS.nrow(ds) == 1
+        ds = OBISClient.dataset_by_id("8acba7e7-2e50-4490-8328-b78a30472508")
+        @test OBISClient.nrow(ds) == 1
         @test !ismissing(ds.intellectualrights[1])
-        @test ds.license[1] in OceanBIS.ACCEPTED_LICENSES
+        @test ds.license[1] in OBISClient.ACCEPTED_LICENSES
         @test !ismissing(ds.citation[1])
     end
 
@@ -133,26 +135,26 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
             (; scientificname="Abra alba", startdepth=10),
             (; scientificname="Abra alba", hasextensions="DNADerivedData"),
         )
-            est = OceanBIS.estimate_size(; kwargs...)
-            params = OceanBIS.build_params(; kwargs..., size=1)
-            actual = OceanBIS.total_of(OceanBIS.api_get("occurrence", params))
+            est = OBISClient.estimate_size(; kwargs...)
+            params = OBISClient.build_params(; kwargs..., size=1)
+            actual = OBISClient.total_of(OBISClient.api_get("occurrence", params))
             @test est == actual
         end
     end
 
     @testset "undocumented endpoints that the package relies on" begin
-        # `/node` as a list is not in the API specification but is used by `OceanBIS.node()`.
-        nodes = OceanBIS.node()
-        @test OceanBIS.nrow(nodes) > 10
+        # `/node` as a list is not in the API specification but is used by `OBISClient.node()`.
+        nodes = OBISClient.node()
+        @test OBISClient.nrow(nodes) > 10
 
         # `/dataset?datasetid=` is likewise undocumented and used by the rights lookup.
-        ds = OceanBIS.dataset(; datasetid="8acba7e7-2e50-4490-8328-b78a30472508")
-        @test OceanBIS.nrow(ds) == 1
+        ds = OBISClient.dataset(; datasetid="8acba7e7-2e50-4490-8328-b78a30472508")
+        @test OBISClient.nrow(ds) == 1
     end
 
     @testset "the export bucket is reachable without credentials" begin
-        licenses = OceanBIS.export_licenses()
-        @test OceanBIS.nrow(licenses) > 1000
+        licenses = OBISClient.export_licenses()
+        @test OBISClient.nrow(licenses) > 1000
         @test "CC-BY-NC-4.0" in Set(licenses.license)
     end
 
@@ -168,20 +170,20 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
             # A small dataset on purpose — 220 kB against the 232 MB of a large one.
             id = "0c44a7dc-7f06-4eab-b831-4cae103c9902"
             mktempdir() do dir
-                path = OceanBIS.download_export(id; dir=dir)
-                table = OceanBIS.read_export(path; licenses=false)
+                path = OBISClient.download_export(id; dir=dir)
+                table = OBISClient.read_export(path; licenses=false)
 
-                reference = OceanBIS.occurrence(; datasetid=id, licenses=false,
+                reference = OBISClient.occurrence(; datasetid=id, licenses=false,
                     limit=nothing,
                     check_size=false)
                 @test Tables.columnnames(table) == Tables.columnnames(reference)
-                @test OceanBIS.nrow(table) == OceanBIS.nrow(reference)
+                @test OBISClient.nrow(table) == OBISClient.nrow(reference)
                 @test Set(table.id) == Set(reference.id)
 
                 # `:exclude` is the default on both routes, so the counts have to agree.
-                dropped = OceanBIS.read_export(path; dropped=:only, licenses=false)
-                @test OceanBIS.nrow(dropped) ==
-                    OceanBIS.statistics(; datasetid=id, dropped=:only)["records"]
+                dropped = OBISClient.read_export(path; dropped=:only, licenses=false)
+                @test OBISClient.nrow(dropped) ==
+                    OBISClient.statistics(; datasetid=id, dropped=:only)["records"]
 
                 @test all(x -> x isa Float64, skipmissing(table.decimalLatitude))
                 @test all(f -> f isa Set{String}, table.flags)

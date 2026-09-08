@@ -1,36 +1,41 @@
-# OceanBIS.jl
+# OBISClient.jl
 
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
-Intergovernmental Oceanographic Commission of UNESCO — typed results with a schema that
-does not change between queries, licence and citation carried on every row, and access to
-the absence and dropped records the default view leaves out.
+Intergovernmental Oceanographic Commission of UNESCO. Results come back as typed tables
+with a fixed schema, carrying the licence and citation of the dataset each row came from.
 
 !!! note "Not an official OBIS product"
-    OceanBIS.jl is an independent, community-maintained client. It is not affiliated with,
+    OBISClient.jl is an independent, community-maintained client. It is not affiliated with,
     endorsed by, or maintained by OBIS, the Intergovernmental Oceanographic Commission, or
     UNESCO. The name identifies the service the package connects to; the data, the API and
     the quality control pipeline are the work of OBIS and its nodes.
+
+!!! note "Built with LLM assistance"
+    This package was written with Claude Code, and every commit in its history is
+    co-authored. The API behaviour it relies on was checked against the live service and
+    the suite runs on every push; the maintainer is responsible for the code. Please open
+    an issue for anything that looks wrong.
 
 ## Installation
 
 ```julia
 using Pkg
-Pkg.add("OceanBIS")
+Pkg.add("OBISClient")
 ```
 
 ## Quick start
 
 ```julia
-using OceanBIS
+using OBISClient
 
-recs = OceanBIS.occurrence("Abra alba"; limit = 500)
+recs = OBISClient.occurrence("Abra alba"; limit = 500)
 
 recs.scientificName        # a column
 recs.decimalLatitude       # Float64, always
 recs.flags                 # a Set{String} per record
 
-OceanBIS.licenses(recs)        # may these data be redistributed?
-OceanBIS.citations(recs)       # how to credit them, access date included
+OBISClient.licenses(recs)        # may these data be redistributed?
+OBISClient.citations(recs)       # how to credit them, access date included
 ```
 
 Results implement the Tables.jl interface, so `DataFrame(recs)`, `CSV.write("out.csv", recs)`,
@@ -40,23 +45,23 @@ Arrow and Parquet all work without the package depending on any of them.
 
 | Function | What it returns | Page |
 | --- | --- | --- |
-| [`occurrence`](@ref OceanBIS.occurrence) | Occurrence records, as a typed table | [Getting started](getting-started.md) |
-| [`occurrence_pages`](@ref OceanBIS.occurrence_pages) | Lazy, resumable pages of the same | [Large queries](large-queries.md) |
-| [`occurrence_by_id`](@ref OceanBIS.occurrence_by_id) | One record, by OBIS record UUID | [Getting started](getting-started.md) |
-| [`checklist`](@ref OceanBIS.checklist) | Which taxa occur in a selection | [Getting started](getting-started.md) |
-| [`taxon`](@ref OceanBIS.taxon) | A WoRMS taxon, by AphiaID or exact name | [Getting started](getting-started.md) |
-| [`dataset`](@ref OceanBIS.dataset) | Dataset metadata, including the rights statement | [Licensing and citation](licensing.md) |
-| [`node`](@ref OceanBIS.node), [`institute`](@ref OceanBIS.institute), [`area`](@ref OceanBIS.area), [`country`](@ref OceanBIS.country) | The identifiers the filters accept | [Getting started](getting-started.md) |
-| [`statistics`](@ref OceanBIS.statistics) | Counts for a query, without retrieving records | [Interpreting OBIS data](interpreting.md) |
-| [`statistics_years`](@ref OceanBIS.statistics_years) | Records per year | [Interpreting OBIS data](interpreting.md) |
-| [`statistics_qc`](@ref OceanBIS.statistics_qc) | Missing and invalid fields, on-land, non-marine | [Interpreting OBIS data](interpreting.md) |
-| [`facet`](@ref OceanBIS.facet) | Counts grouped by a field | [Interpreting OBIS data](interpreting.md) |
-| [`licenses`](@ref OceanBIS.licenses) | What a result may be used for | [Licensing and citation](licensing.md) |
-| [`citations`](@ref OceanBIS.citations) | The credit a result requires, as a table, text or BibTeX | [Licensing and citation](licensing.md) |
-| [`estimate_size`](@ref OceanBIS.estimate_size) | How many records a query would return | [Large queries](large-queries.md) |
-| [`download_exports`](@ref OceanBIS.download_exports) | The bulk GeoParquet route | [Large queries](large-queries.md) |
-| [`QueryCache`](@ref OceanBIS.QueryCache) | Reproducible re-runs against cached responses | [Reproducibility](reproducibility.md) |
-| [`configure!`](@ref OceanBIS.configure!) | Page size, pacing, retries, caching | [Getting started](getting-started.md) |
+| [`occurrence`](@ref OBISClient.occurrence) | Occurrence records, as a typed table | [Getting started](getting-started.md) |
+| [`occurrence_pages`](@ref OBISClient.occurrence_pages) | Lazy, resumable pages of the same | [Large queries](large-queries.md) |
+| [`occurrence_by_id`](@ref OBISClient.occurrence_by_id) | One record, by OBIS record UUID | [Getting started](getting-started.md) |
+| [`checklist`](@ref OBISClient.checklist) | Which taxa occur in a selection | [Getting started](getting-started.md) |
+| [`taxon`](@ref OBISClient.taxon) | A WoRMS taxon, by AphiaID or exact name | [Getting started](getting-started.md) |
+| [`dataset`](@ref OBISClient.dataset) | Dataset metadata, including the rights statement | [Licensing and citation](licensing.md) |
+| [`node`](@ref OBISClient.node), [`institute`](@ref OBISClient.institute), [`area`](@ref OBISClient.area), [`country`](@ref OBISClient.country) | The identifiers the filters accept | [Getting started](getting-started.md) |
+| [`statistics`](@ref OBISClient.statistics) | Counts for a query, without retrieving records | [Interpreting OBIS data](interpreting.md) |
+| [`statistics_years`](@ref OBISClient.statistics_years) | Records per year | [Interpreting OBIS data](interpreting.md) |
+| [`statistics_qc`](@ref OBISClient.statistics_qc) | Missing and invalid fields, on-land, non-marine | [Interpreting OBIS data](interpreting.md) |
+| [`facet`](@ref OBISClient.facet) | Counts grouped by a field | [Interpreting OBIS data](interpreting.md) |
+| [`licenses`](@ref OBISClient.licenses) | What a result may be used for | [Licensing and citation](licensing.md) |
+| [`citations`](@ref OBISClient.citations) | The credit a result requires, as a table, text or BibTeX | [Licensing and citation](licensing.md) |
+| [`estimate_size`](@ref OBISClient.estimate_size) | How many records a query would return | [Large queries](large-queries.md) |
+| [`download_exports`](@ref OBISClient.download_exports) | The bulk GeoParquet route | [Large queries](large-queries.md) |
+| [`QueryCache`](@ref OBISClient.QueryCache) | Reproducible re-runs against cached responses | [Reproducibility](reproducibility.md) |
+| [`configure!`](@ref OBISClient.configure!) | Page size, pacing, retries, caching | [Getting started](getting-started.md) |
 
 A full session — retrieve, map, group, pivot and test a relationship — is in
 [Worked example: killer whales](worked-example.md).
@@ -79,9 +84,9 @@ format requires and nothing in the data supplies.
 quality pipeline are excluded unless asked for, and the tri-state `absence`, `dropped` and
 `event` keywords ask for them.
 
-**A choice between access routes.** A query too large for the API raises an error naming
-the alternatives rather than switching routes silently, because the routes do not cover the
-same records.
+**A choice between access routes.** A query too large for the API raises an error listing
+the alternatives instead of switching routes on its own. The API and the bulk export don't
+cover the same records, so the choice is yours to make.
 
 ## Read this before analysing anything
 
@@ -98,29 +103,18 @@ a correct query becomes a wrong conclusion.
 
 ## How this manual was checked
 
-Every number, field name, error message and API behaviour stated here was verified against
-the live OBIS API rather than taken from documentation. Where a statement rests on
-observation rather than on something OBIS publishes, the text says so.
+The numbers, field names and error messages here were checked against the live OBIS API,
+not copied from its documentation. Where a statement rests on observation rather than on
+something OBIS publishes, the text says so.
 
-Four mechanisms keep it that way:
+Output in the examples was pasted back from actual runs. Docstring examples marked
+`jldoctest` run on every documentation build. An
+[integration suite](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/test/integration/runtests.jl)
+and a [link check](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/test/links/runtests.jl)
+run weekly against the live API and over every URL in the manual and the docstrings.
 
-- The examples that produce output were executed, and their output pasted back rather than
-  written by hand.
-- Docstring examples marked `jldoctest` are executed on every documentation build; a
-  changed return value fails the build.
-- A separate [integration suite](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/test/integration/runtests.jl)
-  runs weekly against the live API and checks the assumptions this manual is built on: that
-  timestamps are still milliseconds, that quality flags are still matched case-sensitively,
-  that `/statistics` still agrees with `/occurrence` filter for filter, and that the
-  endpoints the package relies on still exist.
-- A [link check](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/test/links/runtests.jl)
-  runs on the same weekly schedule over every URL in this manual, the README, the docstrings
-  and the CITATION files, and over the ones the package builds at run time — the licence
-  URLs above all, since those are what a user follows to decide whether they may
-  redistribute a dataset.
-
-The figures come from [`examples/figures.jl`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/examples/figures.jl)
-and [`examples/orcas.jl`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/examples/orcas.jl),
+The figures come from [`examples/figures.jl`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/examples/figures.jl)
+and [`examples/orcas.jl`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/examples/orcas.jl),
 which query the API when they run. Counts in the figures move as OBIS ingests data.
 
 ## Sources
@@ -138,7 +132,7 @@ This manual describes the package. For the service and the data behind it:
 | [github.com/iobis/obis-open-data](https://github.com/iobis/obis-open-data) | The bulk GeoParquet export on AWS |
 | [dwc.tdwg.org/terms](https://dwc.tdwg.org/terms/) | The Darwin Core standard |
 
-The repository also carries [`NOTES.md`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/NOTES.md),
+The repository also carries [`NOTES.md`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/NOTES.md),
 the research notes the package was built from: the endpoint and parameter inventory, the
 response shapes, the pagination and error semantics, and which statements are documented
 versus observed.
@@ -146,32 +140,32 @@ versus observed.
 ## Scope
 
 The package is a client. It does not model, plot, or ship data. Analysis belongs in
-packages built for it; OBIS records have a DOI and an access date, and freezing a copy
-inside a package would break the citation it exists to support.
+packages built for it, and OBIS records have a DOI and an access date that a frozen copy
+inside a package would misreport.
 
 ## How to cite
 
-Cite the **datasets you used** — `OceanBIS.citations(result)` builds those, with the access
+Cite the **datasets you used** — `OBISClient.citations(result)` builds those, with the access
 date filled in. See [Licensing and citation](licensing.md). Citing the package does not
 replace citing the data.
 
 For the package itself, the repository ships a
-[`CITATION.cff`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/CITATION.cff), which
+[`CITATION.cff`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/CITATION.cff), which
 GitHub's "Cite this repository" button reads, and a
-[`CITATION.bib`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/CITATION.bib):
+[`CITATION.bib`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/CITATION.bib):
 
 ```bibtex
 @software{bertuzzi_obis_jl_2026,
   author  = {Bertuzzi, Dante},
-  title   = {{OceanBIS.jl}: a {Julia} client for the {Ocean} {Biodiversity}
+  title   = {{OBISClient.jl}: a {Julia} client for the {Ocean} {Biodiversity}
              {Information} {System}},
   year    = {2026},
   version = {0.1.0},
-  url     = {https://github.com/dantebertuzzi/OceanBIS.jl},
+  url     = {https://github.com/dantebertuzzi/OBISClient.jl},
   note    = {Julia package}
 }
 ```
 
-Cite the version you actually ran: what the package returns depends on both its own release
-and the state of OBIS on the day you queried it, and the access date on your data citations
-records the second half of that.
+Cite the version you actually ran. What you get back depends on the release and on the
+state of OBIS the day you queried it; the access date on your data citations covers the
+second half of that.

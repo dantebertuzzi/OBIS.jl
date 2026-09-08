@@ -1,16 +1,16 @@
 # Worked example: killer whales
 
-A full session on one species — retrieve, map, group, pivot, and test a relationship —
-using nothing but the client, DataFrames and CairoMakie. Analysis and plotting are not part
-of OceanBIS.jl; they happen here on a table the client handed over, which is what implementing
-Tables.jl is for.
+A full session on one species: retrieve, map, group, pivot, and test a relationship, using
+the client together with DataFrames and CairoMakie. Analysis and plotting are not part of
+OBISClient.jl. They happen here on a table the client handed over, which is why it
+implements Tables.jl.
 
-The script is [`examples/orcas.jl`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/examples/orcas.jl).
+The script is [`examples/orcas.jl`](https://github.com/dantebertuzzi/OBISClient.jl/blob/main/examples/orcas.jl).
 Run it with `julia --project=examples examples/orcas.jl`. Every number and figure below came
 from that run; the counts move as OBIS ingests data.
 
 ```julia
-using OceanBIS, DataFrames, Statistics
+using OBISClient, DataFrames, Statistics
 ```
 
 ## 1. The query, and what it leaves out
@@ -18,9 +18,9 @@ using OceanBIS, DataFrames, Statistics
 Size the query before retrieving it, and ask what the default view is hiding:
 
 ```julia
-st = OceanBIS.statistics("Orcinus orca")
-OceanBIS.statistics("Orcinus orca"; absence = :only)["records"]
-OceanBIS.statistics("Orcinus orca"; dropped = :only)["records"]
+st = OBISClient.statistics("Orcinus orca")
+OBISClient.statistics("Orcinus orca"; absence = :only)["records"]
+OBISClient.statistics("Orcinus orca"; dropped = :only)["records"]
 ```
 
 ```
@@ -39,7 +39,7 @@ Retrieving the presences is one call. At 34,364 records it sits under the API li
 route decision is needed:
 
 ```julia
-records = OceanBIS.occurrence("Orcinus orca"; progress = true)
+records = OBISClient.occurrence("Orcinus orca"; progress = true)
 df = DataFrame(records)
 ```
 
@@ -116,14 +116,14 @@ pivot = unstack(
 </picture>
 ```
 
-Both columns climb steeply. Neither is a population estimate: they track the spread of
-digital recording, dedicated cetacean surveys and, latterly, citizen science. The southern
-dip in the 2000s is a survey programme ending, not whales leaving.
+Both columns climb steeply, but neither is a population estimate. They track the spread of
+digital recording, dedicated cetacean surveys and, more recently, citizen science. The
+southern dip in the 2000s is a survey programme ending.
 
 ## 4. Mapping
 
 Coordinates are `Float64` columns, so they go straight into a plotting call. Land comes
-from Natural Earth; nothing here is specific to OceanBIS.jl:
+from Natural Earth; nothing here is specific to OBISClient.jl:
 
 ```julia
 using CairoMakie, GeoMakie, NaturalEarth
@@ -195,24 +195,24 @@ by a dense block north of Scotland. Each is a survey footprint as much as a habi
 
 ## 5. A statistic worth computing
 
-A trend line through record counts over time is not worth computing — it measures
-observers. Something that *is* worth computing, because it quantifies exactly that problem:
-does apparent species richness track sampling effort across regions?
+Fitting a trend line to record counts over time would just measure observers. A more
+useful question, and one that quantifies the problem: does apparent species richness track
+sampling effort across regions?
 
 `statistics` returns both counts for an area in a single request, so this costs one request
 per region:
 
 ```julia
-areas = OceanBIS.area()
-lme = [i for i in 1:OceanBIS.nrow(areas)
+areas = OBISClient.area()
+lme = [i for i in 1:OBISClient.nrow(areas)
        if !ismissing(areas.type[i]) && areas.type[i] == "lme"]
 
 name, records, species = String[], Int[], Int[]
 for i in lme[1:26]
     s = try
-        OceanBIS.statistics(; areaid = areas.id[i])
+        OBISClient.statistics(; areaid = areas.id[i])
     catch err
-        err isa OceanBIS.OBISError || rethrow()
+        err isa OBISClient.OBISError || rethrow()
         continue                       # a region with no data is not a failure
     end
     (s["records"] > 0 && s["species"] > 0) || continue

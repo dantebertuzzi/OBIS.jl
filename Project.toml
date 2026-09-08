@@ -1,4 +1,4 @@
-name = "OceanBIS"
+name = "OBISClient"
 uuid = "bf4f0d90-9197-4e1e-85a0-d7f577e5c8e6"
 authors = ["Dante Bertuzzi <dantebertuzzi@users.noreply.github.com>"]
 version = "0.1.0"
@@ -16,8 +16,8 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DuckDB = "d2f5444f-75bc-4fdf-ac35-56f514c445e1"
 
 [extensions]
-OceanBISDataFramesExt = "DataFrames"
-OceanBISDuckDBExt = "DuckDB"
+OBISClientDataFramesExt = "DataFrames"
+OBISClientDuckDBExt = "DuckDB"
 
 [compat]
 Aqua = "0.8"

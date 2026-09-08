@@ -49,17 +49,17 @@ Each row carries the licence and citation of the dataset it came from, so
 
 ```julia
 # A species, with rights attached.
-recs = OceanBIS.occurrence("Abra alba"; limit = 500)
+recs = OBISClient.occurrence("Abra alba"; limit = 500)
 
 # Absence records: observations where the species was looked for and not found. These are
 # available through the API and not through the bulk downloads.
-absences = OceanBIS.occurrence("Abra alba"; absence = :only)
+absences = OBISClient.occurrence("Abra alba"; absence = :only)
 
 # Records the quality pipeline dropped, to see what a default query leaves out.
-dropped = OceanBIS.occurrence("Abra alba"; dropped = :only)
+dropped = OBISClient.occurrence("Abra alba"; dropped = :only)
 
 # An area and a period.
-recs = OceanBIS.occurrence(;
+recs = OBISClient.occurrence(;
     scientificname = "Delphinidae",
     geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))",
     startdate = Date(2010, 1, 1),
@@ -67,7 +67,7 @@ recs = OceanBIS.occurrence(;
 )
 
 # Exclude records the pipeline flagged as being on land.
-clean = OceanBIS.occurrence("Abra alba"; exclude = "ON_LAND", limit = 1000)
+clean = OBISClient.occurrence("Abra alba"; exclude = "ON_LAND", limit = 1000)
 ```
 """
 function occurrence(
@@ -143,17 +143,17 @@ one extra request per page and is therefore off by default.
 ```julia
 # Summarize a large query without materializing it.
 counts = Dict{String,Int}()
-for page in OceanBIS.occurrence_pages(scientificname = "Mollusca"; page_size = 10_000)
+for page in OBISClient.occurrence_pages(scientificname = "Mollusca"; page_size = 10_000)
     for name in page.scientificName
         ismissing(name) || (counts[name] = get(counts, name, 0) + 1)
     end
 end
 
 # Checkpoint after every page so an interrupted pull can resume.
-pages = OceanBIS.occurrence_pages(scientificname = "Mollusca")
+pages = OBISClient.occurrence_pages(scientificname = "Mollusca")
 for page in pages
     save(page)
-    write("obis.cursor", OceanBIS.cursor(pages))
+    write("obis.cursor", OBISClient.cursor(pages))
 end
 ```
 """

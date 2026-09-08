@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: >-
   If you use this package, please cite it. Citing the package does not replace citing the
-  OBIS datasets you used; generate those with `OceanBIS.citations(result)`.
-title: "OceanBIS.jl: a Julia client for the Ocean Biodiversity Information System"
+  OBIS datasets you used; generate those with `OBISClient.citations(result)`.
+title: "OBISClient.jl: a Julia client for the Ocean Biodiversity Information System"
 abstract: >-
   An independent Julia client for the OBIS (Ocean Biodiversity Information System) API, a
   programme of the Intergovernmental Oceanographic Commission of UNESCO. Not affiliated
@@ -14,8 +14,8 @@ authors:
   - given-names: Dante
     family-names: Bertuzzi
     orcid: "https://orcid.org/0009-0007-5223-2814"
-repository-code: "https://github.com/dantebertuzzi/OceanBIS.jl"
-url: "https://dantebertuzzi.github.io/OceanBIS.jl"
+repository-code: "https://github.com/dantebertuzzi/OBISClient.jl"
+url: "https://dantebertuzzi.github.io/OBISClient.jl"
 license: MIT
 version: 0.1.0
 keywords:

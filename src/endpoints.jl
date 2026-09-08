@@ -10,9 +10,9 @@ fuzzily. There is no taxon *search* endpoint — use [`checklist`](@ref) to disc
 taxa occur in a selection.
 
 ```julia
-julia> t = OceanBIS.taxon(141433);       # by AphiaID
+julia> t = OBISClient.taxon(141433);       # by AphiaID
 
-julia> t = OceanBIS.taxon("Abra alba");  # by exact name
+julia> t = OBISClient.taxon("Abra alba");  # by exact name
 ```
 """
 function taxon(id::Integer)
@@ -60,12 +60,12 @@ there as much as what lives there.
 
 ```julia
 # What has been recorded in this polygon?
-list = OceanBIS.checklist(;
+list = OBISClient.checklist(;
     geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))"
 )
 
 # Red List species in the same area.
-OceanBIS.checklist_redlist(; geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))")
+OBISClient.checklist_redlist(; geometry = "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.6 51.8, 2.3 51.8))")
 ```
 """
 checklist(scientificname=nothing; kwargs...) =
@@ -104,9 +104,9 @@ Nodes are the regional and thematic partners that curate the data. A node UUID i
 `nodeid` filter accepted elsewhere.
 
 ```julia
-julia> nodes = OceanBIS.node();          # all nodes
+julia> nodes = OBISClient.node();          # all nodes
 
-julia> n = OceanBIS.node("4bf79a01-65a9-4db6-b37b-18434f26ddfc");
+julia> n = OBISClient.node("4bf79a01-65a9-4db6-b37b-18434f26ddfc");
 ```
 """
 function node(id=nothing)
@@ -164,7 +164,7 @@ Areas include exclusive economic zones, marine protected areas and other named r
 area ID is what the `areaid` filter expects.
 
 ```julia
-julia> areas = OceanBIS.area();
+julia> areas = OBISClient.area();
 
 julia> belgian = [r for r in areas.name if occursin("Belg", r)]
 ```

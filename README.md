@@ -1,46 +1,49 @@
-# OceanBIS.jl
+# OBISClient.jl
 
-A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
-Intergovernmental Oceanographic Commission of UNESCO.
+A Julia client for [OBIS](https://obis.org), the Ocean Biodiversity Information System,
+a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 
-[![Tests](https://github.com/dantebertuzzi/OceanBIS.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dantebertuzzi/OceanBIS.jl/actions/workflows/CI.yml)
-[![Coverage](https://codecov.io/gh/dantebertuzzi/OceanBIS.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dantebertuzzi/OceanBIS.jl)
+[![Tests](https://github.com/dantebertuzzi/OBISClient.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dantebertuzzi/OBISClient.jl/actions/workflows/CI.yml)
+[![Coverage](https://codecov.io/gh/dantebertuzzi/OBISClient.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dantebertuzzi/OBISClient.jl)
 [![Julia](https://img.shields.io/badge/julia-1.10%2B-9558B2.svg?logo=julia&logoColor=white)](https://julialang.org)
-[![Docs (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OceanBIS.jl/stable)
-[![Docs (dev)](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://dantebertuzzi.github.io/OceanBIS.jl/dev)
+[![Docs (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/stable)
+[![Docs (dev)](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-> **Not an official OBIS product.** OceanBIS.jl is an independent, community-maintained client.
-> It is not affiliated with, endorsed by, or maintained by OBIS, the Intergovernmental
-> Oceanographic Commission, or UNESCO. The name identifies the service the package connects
-> to; the data, the API and the quality control pipeline are the work of OBIS and its nodes.
+> **Not an official OBIS product.** This is an independent, community-maintained client,
+> not affiliated with or endorsed by OBIS, the IOC, or UNESCO. The data, the API and the
+> quality control behind them are the work of OBIS and its nodes.
 
-The manual — installation, the filter set, how to read OBIS data, licensing, large queries
-and reproducibility — is at
-**[dantebertuzzi.github.io/OceanBIS.jl/stable](https://dantebertuzzi.github.io/OceanBIS.jl/stable)**.
+> **Built with LLM assistance.** This package was written with Claude Code, and every commit
+> in its history is co-authored. The API behaviour it relies on was checked against the live
+> service, the schema against sampled responses, and the suite runs on every push; the
+> maintainer is responsible for the code and reviews what goes in. Raise anything that looks
+> wrong as an issue.
+
+**Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
 
 ## Installation
 
 ```julia
 using Pkg
-Pkg.add("OceanBIS")
+Pkg.add("OBISClient")
 ```
 
 ## A first query
 
 ```julia
-using OceanBIS
+using OBISClient
 
-recs = OceanBIS.occurrence("Abra alba"; limit = 500)
+recs = OBISClient.occurrence("Abra alba"; limit = 500)
 
 recs.scientificName          # a column
-recs.decimalLatitude         # Float64, always
+recs.decimalLatitude         # Vector{Union{Missing,Float64}}
 recs.flags                   # a Set{String} per record
 
-OceanBIS.nrow(recs)
+OBISClient.nrow(recs)
 ```
 
-Results implement the Tables.jl interface, so they go straight into whatever you use:
+Results implement Tables.jl, so they go where you need them:
 
 ```julia
 using DataFrames
@@ -50,409 +53,128 @@ using CSV
 CSV.write("abra_alba.csv", recs)
 ```
 
-## Query, licences, citations
-
-Data from OBIS comes with obligations. Datasets carry different licences, and any use has
-to be cited with the date it was accessed. Both travel with the result.
+Filters combine, and take Julia types where OBIS takes strings:
 
 ```julia
-using OceanBIS, Dates
+using Dates
 
-# A query: one species, in the southern North Sea, over two decades.
-recs = OceanBIS.occurrence(;
+recs = OBISClient.occurrence(;
     scientificname = "Abra alba",
-    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
-    startdate = Date(2000, 1, 1),
-    enddate   = Date(2020, 12, 31),
-)                                    # 5,921 records from 43 datasets
-
-# What may be done with these data?
-rights = OceanBIS.licenses(recs)
-
-# How to credit them. The access date comes from the request, so it is already correct.
-print(OceanBIS.citations(recs; format = :text))
-
-# For a manuscript:
-write("obis-references.bib", OceanBIS.citations(recs; format = :bibtex))
-
-# The per-dataset breakdown, as a table.
-cites = OceanBIS.citations(recs)
-cites.dataset_id, cites.records, cites.license, cites.doi
-
-# Wageningen Marine Research (2019). WOT-schelpdieren: Dutch national shellfish monitoring
-# in the coastal zone. [Dataset] (Available: Ocean Biodiversity Information System.
-# Intergovernmental Oceanographic Commission of UNESCO. https://obis.org.
-# Accessed: 2026-09-06)
-```
-
-### The rights summary, rendered
-
-`rights` is a table like any other, so
-[PrettyTables.jl](https://github.com/ronisbr/PrettyTables.jl) prints it directly. This one
-is worth the trouble to lay out: it is what you read before building anything on the data,
-and the answer is a shape — which permissions hold across which share of the records —
-rather than a number.
-
-```julia
-using OceanBIS, PrettyTables, Dates
-
-recs   = OceanBIS.occurrence(;
-    scientificname = "Abra alba",
-    geometry = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
+    geometry  = "POLYGON ((2.0 52.5, 2.0 51.0, 4.5 51.0, 4.5 52.5, 2.0 52.5))",
     startdate = Date(2000, 1, 1),
     enddate   = Date(2020, 12, 31),
 )
-rights = OceanBIS.licenses(recs)
-
-# Digit grouping: record counts are the one thing here you read at a glance.
-group(n) = replace(string(n), r"(?<=[0-9])(?=(?:[0-9]{3})+$)" => ",")
-
-# The columns are plain vectors, so choosing and renaming them is a NamedTuple.
-sheet = (
-    datasets     = rights.datasets,
-    records      = rights.records,
-    redistribute = rights.permits_redistribution,
-    commercial   = rights.permits_commercial_use,
-    attribution  = rights.requires_attribution,
-)
-
-pretty_table(
-    sheet;
-    title    = "Abra alba · southern North Sea · 2000-2020",
-    subtitle = "$(group(OceanBIS.nrow(recs))) records · " *
-               "accessed $(OceanBIS.metadata(recs).accessed)",
-
-    # Licences as row labels: the question is what each one permits, so it is the stub.
-    row_labels     = rights.license,
-    stubhead_label = "Licence",
-    column_labels  = [["Datasets", "Records", "Redistribute", "Commercial", "Attribution"]],
-
-    # The combined result is what governs, so the totals get a row of their own.
-    summary_rows = [
-        (_, j) -> j == 1 ? sum(rights.datasets) :
-                  j == 2 ? group(sum(rights.records)) : "",
-    ],
-    summary_row_labels = ["All datasets"],
-
-    formatters = [
-        (v, i, j) -> j == 2 && v isa Integer ? group(v) : v,
-        (v, i, j) -> v isa Bool ? (v ? "✓" : "✗") : v,
-    ],
-
-    # Colour belongs to the terminal; the marks carry the same reading without it.
-    highlighters = [
-        TextHighlighter((_, i, _) -> rights.license[i] == "unknown", crayon"yellow bold"),
-        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === false, crayon"red"),
-        TextHighlighter((d, i, j) -> j >= 3 && d[j][i] === true, crayon"green"),
-    ],
-
-    # The two caveats belong to particular cells, so they are footnotes, not prose.
-    footnotes = [
-        (:column_label, 1, 4) =>
-            "Six CC BY-NC datasets make the combined result non-commercial.",
-        (:row_label, 4, 1) => "One provider's rights statement could not be identified.",
-    ],
-
-    alignment                  = [:r, :r, :c, :c, :c],
-    row_label_column_alignment = :l,
-    table_format = TextTableFormat(; borders = text_table_borders__unicode_rounded),
-    source_notes = "Ocean Biodiversity Information System, IOC-UNESCO — obis.org",
-)
 ```
 
-```text
-                   Abra alba · southern North Sea · 2000-2020
-                      5,921 records · accessed 2026-09-07
-╭──────────────┬──────────┬─────────┬──────────────┬─────────────┬─────────────╮
-│ Licence      │ Datasets │ Records │ Redistribute │ Commercial¹ │ Attribution │
-├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
-│ CC-BY-4.0    │       28 │   3,875 │      ✓       │      ✓      │      ✓      │
-│ CC0-1.0      │        8 │   1,136 │      ✓       │      ✓      │      ✗      │
-│ CC-BY-NC-4.0 │        6 │     907 │      ✓       │      ✗      │      ✓      │
-│ unknown²     │        1 │       3 │      ✗       │      ✗      │      ✓      │
-├──────────────┼──────────┼─────────┼──────────────┼─────────────┼─────────────┤
-│ All datasets │       43 │   5,921 │              │             │             │
-╰──────────────┴──────────┴─────────┴──────────────┴─────────────┴─────────────╯
-¹: Six CC BY-NC datasets make the combined result non-commercial.
-²: One provider's rights statement could not be identified.
-Ocean Biodiversity Information System, IOC-UNESCO — obis.org
-```
+See [Getting started](https://dantebertuzzi.github.io/OBISClient.jl/stable/getting-started/)
+for the full filter set and the other endpoints.
 
-Read down the `Commercial` column and the query answers its own question: 907 records
-carry a non-commercial licence, so the combined result is non-commercial whatever the
-other 5,014 permit. One dataset, three records, could not be identified at all, and
-`unknown` is a refusal rather than a guess: that row reads `✗` under both permissions.
+## Licences and citations
 
-In a terminal the highlighters do that reading for you: green where a permission is
-granted, red where it is refused, the unidentified row in yellow. PrettyTables is not a
-dependency of OceanBIS.jl — it renders the result because results are Tables.jl sources, which
-is the same reason `DataFrame(recs)` and `CSV.write(path, recs)` work.
-
-Records the default view leaves out are available too. Absence records — a species looked
-for and not found — and records the quality pipeline dropped are excluded unless asked for,
-on either access route:
+OBIS data comes with conditions. Licences vary by dataset, and any use has to be cited with
+the date it was accessed. Both travel with the result, so you can check them before you
+build anything:
 
 ```julia
-absences = OceanBIS.occurrence("Abra alba"; absence = :only)
-dropped  = OceanBIS.occurrence("Abra alba"; dropped = :only)
+rights = OBISClient.licenses(recs)      # what the result permits, per licence
+print(OBISClient.citations(recs; format = :text))
+write("obis-references.bib", OBISClient.citations(recs; format = :bibtex))
 ```
 
-## The bulk export
+One query usually spans several datasets, and the most restrictive licence governs the
+whole. Where a provider's rights statement can't be identified, it is reported as
+`unknown`, never assumed permissive.
 
-OBIS recommends its GeoParquet export rather than the API for large volumes, and a query
-estimated to exceed `api_record_limit` raises an error naming that route instead of
-switching to it silently. The files are per dataset and served over plain HTTPS, so a
-query's worth is fetched by resolving the query to its datasets:
+[Licensing and citation](https://dantebertuzzi.github.io/OBISClient.jl/stable/licensing/)
+covers the data policy and shows the rights summary laid out with PrettyTables.
+
+## Large queries and the bulk export
+
+For big volumes OBIS recommends its GeoParquet export over the API. A query estimated to
+exceed the configured limit raises an error listing your options rather than quietly
+switching routes, since the two don't return the same thing: the export is a periodic
+snapshot, the API is live.
 
 ```julia
-using OceanBIS, DuckDB          # DuckDB loads the extension that reads the files
+using OBISClient, DuckDB          # DuckDB loads the extension that reads the files
 
-# One file per dataset the query touches — scoped here to a single dataset, because a
-# species query can run to many files and tens of gigabytes.
-paths = OceanBIS.download_exports(; datasetid = "0c44a7dc-7f06-4eab-b831-4cae103c9902",
-                                dir = "obis-export")
-
-recs = OceanBIS.read_export(paths)
+paths = OBISClient.download_exports(; datasetid = "0c44a7dc-7f06-4eab-b831-4cae103c9902",
+                                    dir = "obis-export")
+recs = OBISClient.read_export(paths)
 ```
 
-```text
-OBISTable: 235 records, 62 columns
-  endpoint:  export/occurrence
-  accessed:  2026-09-07
-  query:     absence=exclude, dropped=exclude, files=0c44a7dc-7f06-4eab-b831-4cae103c9902.parquet
-  licenses:  CC-BY-4.0
-  columns:   id, dataset_id, license, license_url, dataset_citation, occurrenceID, eventID, catalogNumber, … (53 more)
-```
+`read_export` maps the export's 622-column schema onto the same table an API query returns,
+rights and citations included, so `licenses`, `citations` and `DataFrame` all work on it
+unchanged. To stream a query instead, `occurrence_pages` yields one page at a time and its
+cursor is a single string you can save and resume from.
 
-That is the same table an API query returns — same columns, in the same order, with the same
-element types — so everything downstream works on it unchanged:
-
-```julia
-OceanBIS.licenses(recs)
-OceanBIS.citations(recs; format = :bibtex)
-DataFrame(recs)
-```
-
-```text
-OBISTable: 1 record, 7 columns
-  endpoint:  licenses
-  accessed:  2026-09-07
-  query:     absence=exclude, dropped=exclude, files=0c44a7dc-7f06-4eab-b831-4cae103c9902.parquet
-  licenses:  CC-BY-4.0
-  columns:   license, datasets, records, permits_redistribution, permits_commercial_use, requires_attribution, url
-```
-
-The export's own schema is nothing like this: 622 columns, the provider's terms nested under
-`source`, the pipeline's under `interpreted`, geometry as WKB, and the AphiaID spelled
-`aphiaid`. `read_export` maps it, coercing every value through the same function the API
-path uses, so the two routes cannot drift in how they read one.
-
-Three things are worth knowing about it:
-
-- **`absence` and `dropped` default to `:exclude`, as on the API.** The export *contains*
-  those records, despite what the OBIS data access page says, so a plain `select *` would
-  mix them into an ordinary count without saying so. Pass `:include` or `:only` for the
-  other views; the filter is pushed into the read rather than applied afterwards.
-- **The access date is the file's, not today's.** The records are as old as the export that
-  carried them, and a citation built from the table has to say when the data was obtained.
-- **`freshwater` and `terrestrial` are always `missing`.** The export carries `marine` and
-  `brackish` and not those two.
-
-DuckDB is a weak dependency, so it is installed only if you ask for it. Parquet2.jl is not
-an alternative: it does not support the nested struct columns the export is built from.
+More in [Large queries](https://dantebertuzzi.github.io/OBISClient.jl/stable/large-queries/).
 
 ## What the data looks like
 
-The figures below are produced by [`examples/figures.jl`](examples/figures.jl) from live
-queries; regenerate them with `julia --project=examples examples/figures.jl`. Plotting is
-not part of the package — CairoMakie and GeoMakie belong to the example environment only.
+Figures come from [`examples/figures.jl`](examples/figures.jl), run against live queries.
+Plotting isn't part of the package; CairoMakie and GeoMakie belong to the example
+environment.
 
-**Where the records are, and which ones the pipeline flagged.** A default query returns
-flagged records alongside clean ones. Here the `ON_LAND` records are not scattered at
-random: they sit on the Dutch coast and in the Zeeland estuaries, which is what a
-georeferencing error looks like for a marine bivalve.
+A default query returns flagged records alongside clean ones. The `ON_LAND` records here
+sit on the Dutch coast and in the Zeeland estuaries, which is what a georeferencing error
+looks like for a marine bivalve.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="examples/figures/map-north-sea-dark.png">
   <img alt="Occurrences of Abra alba in the southern North Sea, with records flagged ON_LAND shown separately" src="examples/figures/map-north-sea.png">
 </picture>
 
-**Record counts measure sampling effort.** The rise through the late twentieth century is
-survey programmes and digitization campaigns, not a population increase; the fall at the
-right-hand end is publication lag. Neither is biology.
+Record counts track sampling effort. The rise through the late twentieth century is survey
+programmes and digitization campaigns; the fall at the recent end is publication lag.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="examples/figures/records-per-year-dark.png">
   <img alt="Records of Abra alba per year worldwide, rising steeply from the 1970s and falling at the recent end" src="examples/figures/records-per-year.png">
 </picture>
 
-**What a result may be used for.** Licences are per dataset, so one query usually spans
-several, and the most restrictive governs the whole. `OceanBIS.licenses(result)` reports this
-before you build anything on the data.
+Two longer examples are written up in the manual:
+[killer whales](https://dantebertuzzi.github.io/OBISClient.jl/stable/worked-example/)
+([`examples/orcas.jl`](examples/orcas.jl)) and
+[the Brazilian shelf](https://dantebertuzzi.github.io/OBISClient.jl/stable/mapping-a-coast/)
+([`examples/brazil.jl`](examples/brazil.jl)).
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/licenses-dark.png">
-  <img alt="Records per licence in one query, split by whether commercial use is permitted" src="examples/figures/licenses.png">
-</picture>
+## Design
 
+A few decisions you'll notice in daily use, covered at length under
+[What the package guarantees](https://dantebertuzzi.github.io/OBISClient.jl/stable/#What-the-package-guarantees)
+and [Internals](https://dantebertuzzi.github.io/OBISClient.jl/stable/internals/):
 
-## A worked example
-
-[`examples/orcas.jl`](examples/orcas.jl) runs a full session on killer whales — retrieve,
-map, group, pivot, and test whether apparent species richness tracks sampling effort across
-26 large marine ecosystems (it does: Spearman's ρ = 0.77, slope 0.45). Written up in the
-manual under [Worked example: killer whales](https://dantebertuzzi.github.io/OceanBIS.jl/stable/worked-example/).
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/orca-global-dark.png">
-  <img alt="Every killer whale record in OBIS, on a Robinson projection" src="examples/figures/orca-global.png">
-</picture>
-
-Once the table is in hand the client's job is done, and `groupby`, `unstack`, `cor` and
-`log10` all work on it without a cleaning step:
-
-```julia
-using OceanBIS, DataFrames
-
-df = DataFrame(OceanBIS.occurrence("Orcinus orca"))
-
-# Drop the missings first: both columns are Union{Missing,...} by schema, and `ifelse`
-# on a missing condition throws.
-work = dropmissing(df, [:date_year, :decimalLatitude])
-work.decade     = (work.date_year .÷ 10) .* 10
-work.hemisphere = ifelse.(work.decimalLatitude .>= 0, "northern", "southern")
-
-unstack(combine(groupby(work, [:decade, :hemisphere]), nrow => :records),
-        :decade, :hemisphere, :records; fill = 0)
-```
-
-## Mapping a coast
-
-[`examples/brazil.jl`](examples/brazil.jl) maps the Brazilian shelf four ways, none of them
-a scatter of one query. It also caches every response into `~/.cache/OceanBIS.jl`, so the
-second run rebuilds the same figures from the same responses rather than from whatever
-OBIS holds that day. Written up in the manual under
-[Mapping a coast](https://dantebertuzzi.github.io/OceanBIS.jl/stable/mapping-a-coast/).
-
-**A choropleth costs no occurrence records.** `statistics` honours `geometry`, so one cheap
-request per grid cell returns that cell's record and species counts. Six hundred requests
-buy the map below, and the two panels are the same map: the bright cells are the ones with
-a marine laboratory on them, plus the oceanic islands.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/brazil-effort-dark.png">
-  <img alt="Records and species per one-degree cell along the Brazilian coast, on a logarithmic colour scale" src="examples/figures/brazil-effort.png">
-</picture>
-
-**The rank you query at is the question you asked.** `Scleractinia` is an order, and it
-holds the reef builders together with the solitary deep-water corals that reach the
-southern end of the coast. Read at the order the data say corals reach 34°S; read at
-`Mussismilia`, the reef genus endemic to Brazil, they say the reefs are tropical and 93% of
-the reef records sit on the Abrolhos Bank. Both answers come out of the same download.
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/brazil-corals-dark.png">
-  <img alt="Scleractinia records along the Brazilian coast with Mussismilia highlighted, and a zoom on the Abrolhos Bank" src="examples/figures/brazil-corals.png">
-</picture>
-
-The other two figures divide sampling effort back out of the richness map, and colour
-sharks and rays by the depth of the seabed under them — 77% of those records sit over water
-shallower than 200 m, so OBIS's coverage of Brazil's exclusive economic zone is a coverage
-of its shelf.
-
-## How it fits Julia
-
-The package is written for the way Julia code is normally written, and the four points
-below are the ones that show up in day-to-day use.
-
-**Columns have concrete element types.** JSON has a single number type, and the encoder
-drops a zero fractional part, so about 2% of `decimalLatitude` values arrive as integers.
-Inferring types per value would give a `Union{Int64,Float64}` coordinate column, which
-neither dispatches nor vectorizes well. Every numeric field is coerced, so
-`recs.decimalLatitude isa Vector{Union{Missing,Float64}}` holds for every query, and
-`Tables.schema` is known before a single row is read.
-
-**`missing` means missing, and nothing else.** Absent values are `missing`; a column never
-disappears because a query happened to return no value for it. Collection-valued columns go
-further and are never `missing`: `flags` is a `Set{String}` that is empty when the quality
-pipeline raised nothing, because "no flags" is a fact about the record rather than a gap in
-it. So `count(fs -> "ON_LAND" in fs, recs.flags)` needs no missing-handling.
-
-**Tables.jl is the interface, not DataFrames.** Results implement Tables.jl directly, so
-the package depends on none of DataFrames, CSV, Arrow or Parquet while working with all of
-them. DataFrames-specific behaviour — flattening the `extra` column, and the DataAPI
-`nrow`/`ncol` generics — lives in a package extension under `ext/` that loads only if you
-already have DataFrames. Installing the client pulls in HTTP, JSON3, StructTypes, Tables
-and two stdlibs, and nothing else.
-
-**Large pulls are an iterator.** `occurrence_pages` implements the iterator protocol, so it
-composes with `for`, `Iterators.take`, `Iterators.filter` and everything else in Base
-without materializing the query. The client is native Julia end to end; there is no foreign
-runtime to install or marshal across.
-
-## Design notes
-
-**The schema is stable across queries.** OBIS returns only the fields a record has a value
-for, so the field set differs from query to query: a sample of 2,000 records across five
-taxa contained 188 distinct field names, of which 25 appeared in every record. A result
-here always has the same columns in the same order, with concrete types — dates as
-`DateTime`, coordinates and depths as `Float64`, quality flags as a `Set{String}`, absent
-values as `missing`. Darwin Core fields outside the core schema are preserved per row in an
-`extra` column, so nothing the provider supplied is lost and the main schema stays
-predictable.
-
-**Licence and citation are part of the result.** An occurrence record carries a dataset
-identifier and no rights information, so the package joins the licence and citation from
-the dataset and records the access date at request time. `licenses(result)` reports what
-the result may be used for; `citations(result)` produces the credit its licences require,
-in text or BibTeX. OBIS publishes the licence as free prose — 63 distinct strings across
-the corpus — so it is normalized to an identifier, the original text is kept alongside, and
-statements that cannot be identified are reported as `unknown` rather than assumed
-permissive.
-
-**Two access routes, chosen by you.** The API serves filtered queries; OBIS recommends its
-bulk GeoParquet export for large volumes. A query estimated to exceed a configurable
-threshold raises an error naming the alternatives instead of switching routes, because the
-routes do not answer the same question: the export is a periodic snapshot and the API is
-live, pure event records can be selected only on the API, and the export is per dataset and
-unfiltered. Silently changing route would change the answer. Once you have chosen, though,
-the routes are interchangeable downstream: `OceanBIS.read_export` reads the GeoParquet files
-into the same schema an API query returns, rights and citations included, through a package
-extension on DuckDB that only export users install.
-
-**Large queries stream and resume.** `occurrence_pages` yields one page at a time, so a
-query larger than memory is still workable. Pagination is keyset on the record UUID, so the
-whole of the cursor is one string: save it, and resume in another session.
-
-**Responses can be cached for reproducibility.** An optional local cache stores the raw
-response addressed by a hash of the query, with the retrieval date. OBIS ingests records
-continuously, so re-running an analysis months later otherwise returns different data.
-
-**Network use is conservative.** Requests are serial and identified by a `User-Agent`
-naming the package, its version and this repository. Failures back off exponentially and
-honour `Retry-After`. OBIS asks that downloads not be parallelized, and the package does
-not offer it.
+- **The schema is stable.** OBIS returns only the fields a record has values for, so the
+  field set shifts from query to query. Results here always have the same columns, in the
+  same order, with concrete element types. Darwin Core fields outside that schema are kept
+  per row in an `extra` column.
+- **`missing` means missing.** Collection-valued columns are never `missing`: `flags` is an
+  empty `Set{String}` when nothing was raised, so `count(fs -> "ON_LAND" in fs, recs.flags)`
+  needs no missing-handling.
+- **Tables.jl is the interface, not DataFrames.** Installing the client pulls in HTTP,
+  JSON3, StructTypes, Tables and two stdlibs. DataFrames and DuckDB support live in package
+  extensions that load only if you already have them.
+- **Requests are conservative.** Serial, identified by a `User-Agent` naming the package and
+  this repository, with exponential backoff that honours `Retry-After`. OBIS asks that
+  downloads not be parallelized, so the package doesn't offer it.
+- **Responses can be cached.** OBIS ingests continuously, so re-running an analysis months
+  later otherwise gives you different data. See
+  [Reproducibility](https://dantebertuzzi.github.io/OBISClient.jl/stable/reproducibility/).
 
 ## Scope
 
-The package is a client. It does not:
+This is a client, and only that. It doesn't analyse, model, or draw anything, and it ships
+no OBIS data — a frozen copy inside a package would break the citation it's meant to
+support.
 
-- perform statistical analysis, species distribution modelling, or any modelling;
-- draw maps or plots;
-- ship any OBIS data. OBIS records have a DOI and an access date; a frozen copy inside a
-  package would break the citation it is supposed to support.
+## Before you analyse anything
 
-## Interpreting the results
-
-Two points bear on any analysis, and are covered in the documentation:
-
-- **Record counts measure sampling effort as much as biology.** A rise in records over time
-  tracks survey programmes and digitization campaigns; it is not evidence that a taxon
-  became more abundant. `statistics_years` shows this directly.
-- **The default view is filtered.** Records with quality flags are included, records the
-  pipeline dropped are not, and absence records are excluded unless asked for. Analysing
-  presences alone without knowing whether absences exist gives a different answer than the
-  data supports.
+Two things bear on any result, both covered in
+[Interpreting OBIS data](https://dantebertuzzi.github.io/OBISClient.jl/stable/interpreting/):
+record counts measure sampling effort as much as biology, and the default view is filtered
+(quality-flagged records are in, dropped records are out, absences are excluded unless you
+ask for them).
 
 OBIS states the general caution itself:
 
@@ -460,42 +182,25 @@ OBIS states the general caution itself:
 > Users must recognize that the analysis and interpretation of data require background
 > knowledge and expertise about marine biodiversity (including ecosystems and taxonomy).
 
-Print the full disclaimer with `OceanBIS.disclaimer()`.
+`OBISClient.disclaimer()` prints it in full.
 
-## Citing OBIS data
+## Citing
 
-Cite the datasets you used. `OceanBIS.citations(result)` builds them, with the access date
-filled in. The OBIS data policy asks that any use — software applications included — be
-cited, and each dataset's own licence conditions continue to apply.
+Cite the datasets you used; `OBISClient.citations(result)` builds them with the access date
+filled in. Where a result draws on many datasets, the database as a whole may be cited in
+addition to — never instead of — the individual datasets, with
+`OBISClient.obis_citation(...)`. See [manual.obis.org/citing.html](https://manual.obis.org/citing.html).
 
-Where a result draws on many datasets, the database as a whole may be cited **in addition
-to**, never instead of, the individual datasets:
-
-```julia
-OceanBIS.obis_citation(; description = "Distribution records of Abra alba")
-```
-
-The general citation for the system:
-
-> OBIS (YEAR) Ocean Biodiversity Information System. Intergovernmental Oceanographic
-> Commission of UNESCO. https://obis.org.
-
-See [manual.obis.org/citing.html](https://manual.obis.org/citing.html).
-
-## Citing this package
-
-If the package itself was useful, cite it as described in [CITATION.cff](CITATION.cff).
-Citing the package does not replace citing the data.
+If the package itself was useful, [CITATION.cff](CITATION.cff) says how to cite it. That
+doesn't replace citing the data.
 
 ## Acknowledgements
 
-OBIS is built by the OBIS secretariat and its network of regional and thematic nodes, and
-by the thousands of data providers who publish their observations through them. The data
-this package retrieves is theirs; the quality control, taxonomy matching against the World
-Register of Marine Species, and the infrastructure that serves it are their work. Thanks to
-the IOC of UNESCO for sustaining the programme, and to every node listed by `OceanBIS.node()`.
+OBIS is built by its secretariat, its regional and thematic nodes, and the thousands of
+providers who publish observations through them. The data, the quality control, the
+taxonomy matching against WoRMS and the infrastructure serving it are all their work.
 
 ## License
 
-The package is released under the MIT License; see [LICENSE](LICENSE). The data it
-retrieves is licensed by its providers, under the terms each result reports.
+MIT for the package; see [LICENSE](LICENSE). The data it retrieves is licensed by its
+providers, under the terms each result reports.

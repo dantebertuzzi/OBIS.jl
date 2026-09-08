@@ -113,17 +113,17 @@ end
 Run `f` with the mock transport and downloader installed and their logs cleared.
 """
 function with_mock(f)
-    old_transport = OceanBIS.TRANSPORT[]
-    old_downloader = OceanBIS.DOWNLOADER[]
-    OceanBIS.TRANSPORT[] = mock_transport
-    OceanBIS.DOWNLOADER[] = mock_downloader
+    old_transport = OBISClient.TRANSPORT[]
+    old_downloader = OBISClient.DOWNLOADER[]
+    OBISClient.TRANSPORT[] = mock_transport
+    OBISClient.DOWNLOADER[] = mock_downloader
     empty!(REQUEST_LOG)
     empty!(DOWNLOAD_LOG)
     try
         return f()
     finally
-        OceanBIS.TRANSPORT[] = old_transport
-        OceanBIS.DOWNLOADER[] = old_downloader
+        OBISClient.TRANSPORT[] = old_transport
+        OBISClient.DOWNLOADER[] = old_downloader
     end
 end
 

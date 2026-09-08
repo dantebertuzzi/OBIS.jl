@@ -24,13 +24,13 @@ analysis against the data as it stood in March". Remove entries explicitly with
 
 ```julia
 # Cache into the default location for the rest of the session.
-OceanBIS.configure!(cache = OceanBIS.QueryCache())
+OBISClient.configure!(cache = OBISClient.QueryCache())
 
 # Keep an analysis's data alongside the analysis.
-OceanBIS.configure!(cache = OceanBIS.QueryCache("data/obis-cache"))
+OBISClient.configure!(cache = OBISClient.QueryCache("data/obis-cache"))
 
 # Re-run later against exactly what was fetched, refusing to reach the network.
-OceanBIS.configure!(cache = OceanBIS.QueryCache("data/obis-cache"; readonly = true))
+OBISClient.configure!(cache = OBISClient.QueryCache("data/obis-cache"; readonly = true))
 ```
 """
 struct QueryCache
@@ -50,7 +50,7 @@ Default cache location, honouring `XDG_CACHE_HOME` where it is set.
 function default_cache_dir()
     xdg = get(ENV, "XDG_CACHE_HOME", "")
     base = isempty(xdg) ? joinpath(homedir(), ".cache") : xdg
-    return joinpath(base, "OceanBIS.jl")
+    return joinpath(base, "OBISClient.jl")
 end
 
 """
@@ -151,7 +151,7 @@ end
 List what a cache holds: endpoint, parameters, retrieval time and size for each entry.
 
 ```julia
-for e in OceanBIS.cache_entries()
+for e in OBISClient.cache_entries()
     println(e["endpoint"], "  ", e["retrieved"])
 end
 ```

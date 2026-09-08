@@ -15,8 +15,13 @@ a default query leaves out.
 
 Developed before this release under the name `OBIS`, which the General registry does not
 accept: a package name must be at least five characters and must not be entirely upper
-case. Only the package, module and repository changed. `OBISTable` and the `OBIS*` error
-types keep their names, because they are named for the service rather than for the package.
+case, and `OBIS` also sits within Damerau-Levenshtein distance 2 of eleven registered
+names. A first attempt at `OceanBIS` cleared those checks but dropped the acronym the
+service is actually known by. `OBISClient` follows the registry's own advice on acronyms —
+keep the one people search for, and pair it with a word that says what the package is.
+
+Only the package, module and repository changed. `OBISTable` and the `OBIS*` error types
+keep their names, since they are named for the service, not for the package.
 
 ### Added
 
@@ -35,10 +40,10 @@ types keep their names, because they are named for the service rather than for t
   docstrings, the CITATION files and the example scripts, and over the ones the package
   builds at run time from a prefix and an identifier. It runs weekly alongside the
   integration suite, never on every push.
-- `OceanBIS.DOWNLOADER`, a swappable seam for the bulk-export download, matching
-  `OceanBIS.TRANSPORT` on the request path. The export route is now testable without reaching
+- `OBISClient.DOWNLOADER`, a swappable seam for the bulk-export download, matching
+  `OBISClient.TRANSPORT` on the request path. The export route is now testable without reaching
   the bucket; the default behaviour is unchanged.
-- `OceanBIS.read_export`, which reads the bulk GeoParquet export into the same canonical schema
+- `OBISClient.read_export`, which reads the bulk GeoParquet export into the same canonical schema
   an API query returns — so `licenses`, `citations`, `DataFrame` and everything else
   downstream work on the bulk route too. It lives in a package extension on DuckDB, which is
   therefore installed only by users who take that route. `absence` and `dropped` default to

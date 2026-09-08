@@ -1,7 +1,7 @@
 # Environment for the example scripts only.
 #
-# CairoMakie and GeoMakie are deliberately not dependencies of OceanBIS itself: the package is
-# a client and does not plot. Keeping them here means `Pkg.add("OceanBIS")` stays small, and
+# CairoMakie and GeoMakie are deliberately not dependencies of OBISClient itself: the package is
+# a client and does not plot. Keeping them here means `Pkg.add("OBISClient")` stays small, and
 # the figures in the README can still be regenerated from source.
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
@@ -9,5 +9,5 @@ DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 GeoMakie = "db073c08-6b98-4ee5-b6a4-5efafb3259c6"
 NaturalEarth = "436b0209-26ab-4e65-94a9-6526d86fea76"
-OceanBIS = "bf4f0d90-9197-4e1e-85a0-d7f577e5c8e6"
+OBISClient = "bf4f0d90-9197-4e1e-85a0-d7f577e5c8e6"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"

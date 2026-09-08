@@ -1,9 +1,11 @@
 using Documenter
 using Documenter: Remotes
 using Dates
-using OceanBIS
+using OBISClient
 
-DocMeta.setdocmeta!(OceanBIS, :DocTestSetup, :(using OceanBIS; using Dates); recursive=true)
+DocMeta.setdocmeta!(
+    OBISClient, :DocTestSetup, :(using OBISClient; using Dates); recursive=true
+)
 
 # Embed the example scripts verbatim, read from the files themselves, so the manual cannot
 # drift from the code it documents. The page is generated, not committed.
@@ -37,7 +39,7 @@ are in the repository — this page is generated from the files at build time, s
 cannot fall out of step with them.
 
 They live in `examples/`, which has its own environment: CairoMakie, GeoMakie,
-NaturalEarth and DataFrames are dependencies of the examples, never of OceanBIS.jl. Run
+NaturalEarth and DataFrames are dependencies of the examples, never of OBISClient.jl. Run
 them with `julia --project=examples examples/<script>.jl`; each one queries the live
 API.
 """,
@@ -56,15 +58,15 @@ end
 write_example_scripts()
 
 makedocs(;
-    modules=[OceanBIS],
+    modules=[OBISClient],
     authors="Dante Bertuzzi",
-    sitename="OceanBIS.jl",
+    sitename="OBISClient.jl",
     # Named explicitly so the build works from a source tree with no configured git
     # remote — a fresh clone, a release tarball, or a repository that has not been pushed
     # yet — while still producing correct "edit on GitHub" links.
-    remotes=Dict(dirname(@__DIR__) => Remotes.GitHub("dantebertuzzi", "OceanBIS.jl")),
+    remotes=Dict(dirname(@__DIR__) => Remotes.GitHub("dantebertuzzi", "OBISClient.jl")),
     format=Documenter.HTML(;
-        canonical="https://dantebertuzzi.github.io/OceanBIS.jl",
+        canonical="https://dantebertuzzi.github.io/OBISClient.jl",
         edit_link="main",
         assets=String[],
     ),
@@ -84,4 +86,4 @@ makedocs(;
     checkdocs=:all,
 )
 
-deploydocs(; repo="github.com/dantebertuzzi/OceanBIS.jl", devbranch="main")
+deploydocs(; repo="github.com/dantebertuzzi/OBISClient.jl", devbranch="main")

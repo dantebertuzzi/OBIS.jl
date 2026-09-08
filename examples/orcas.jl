@@ -2,15 +2,15 @@
 #
 #     julia --project=examples examples/orcas.jl
 #
-# Covers the things a user actually does with a result once it is in hand — map it, group
-# it, pivot it, and test a relationship — and shows where each of those goes wrong if the
-# nature of the data is ignored.
+# Covers what you actually do with a result once it is in hand: map it, group it, pivot it,
+# and test a relationship. It also shows where each of those goes wrong if you ignore the
+# nature of the data.
 #
-# Plotting and analysis are not part of OceanBIS.jl. Everything below happens in DataFrames and
-# CairoMakie, on a table the client handed over; that is the point of implementing
-# Tables.jl rather than bundling this.
+# Plotting and analysis are not part of OBISClient.jl. Everything below happens in
+# DataFrames and CairoMakie, on a table the client handed over, which is why the package
+# implements Tables.jl instead of bundling any of this.
 
-using OceanBIS
+using OBISClient
 using CairoMakie
 using GeoMakie
 using NaturalEarth
@@ -29,9 +29,9 @@ rule(s) = println("\n", s, "\n", "-"^length(s))
 # ---------------------------------------------------------------------------------------
 rule("1. The query, and what it leaves out")
 
-st = OceanBIS.statistics(SPECIES)
-absences = OceanBIS.statistics(SPECIES; absence=:only)["records"]
-dropped = OceanBIS.statistics(SPECIES; dropped=:only)["records"]
+st = OBISClient.statistics(SPECIES)
+absences = OBISClient.statistics(SPECIES; absence=:only)["records"]
+dropped = OBISClient.statistics(SPECIES; dropped=:only)["records"]
 
 println("presence records returned by default : ", st["records"])
 println("datasets                             : ", st["datasets"])
@@ -41,12 +41,12 @@ println(
 println("absence records, excluded by default : ", absences)
 println("dropped records, excluded by default : ", dropped)
 
-records = OceanBIS.occurrence(SPECIES; progress=true)
+records = OBISClient.occurrence(SPECIES; progress=true)
 println(
     "\nretrieved ",
-    OceanBIS.nrow(records),
+    OBISClient.nrow(records),
     " records, accessed ",
-    OceanBIS.metadata(records).accessed,
+    OBISClient.metadata(records).accessed,
 )
 
 df = DataFrame(records)
@@ -67,10 +67,10 @@ println(by_basis)
 # provider and some are missing or shared, which would merge distinct datasets.
 by_dataset = combine(groupby(df, :dataset_id), nrow => :records)
 sort!(by_dataset, :records; rev=true)
-println("\n", OceanBIS.nrow(records), " records come from ", nrow(by_dataset), " datasets ",
+println("\n", OBISClient.nrow(records), " records come from ", nrow(by_dataset), " datasets ",
     "(statistics reports ", st["datasets"], "); the largest contributes ",
     by_dataset.records[1], " (",
-    round(100 * by_dataset.records[1] / OceanBIS.nrow(records); digits=1), "%).")
+    round(100 * by_dataset.records[1] / OBISClient.nrow(records); digits=1), "%).")
 
 # ---------------------------------------------------------------------------------------
 rule("3. pivot: decade against hemisphere")
@@ -94,8 +94,8 @@ rule("4. a statistic worth computing, and one that is not")
 # Worth computing: whether apparent species richness tracks sampling effort across regions.
 # One `statistics` call per region returns both, so this costs one request each.
 
-areas = OceanBIS.area()
-lme = [i for i in 1:OceanBIS.nrow(areas) if !ismissing(areas.type[i]) && areas.type[i] == "lme"]
+areas = OBISClient.area()
+lme = [i for i in 1:OBISClient.nrow(areas) if !ismissing(areas.type[i]) && areas.type[i] == "lme"]
 sample_regions = lme[1:min(26, length(lme))]
 
 region_name = String[]
@@ -103,9 +103,9 @@ region_records = Int[]
 region_species = Int[]
 for i in sample_regions
     s = try
-        OceanBIS.statistics(; areaid=areas.id[i])
+        OBISClient.statistics(; areaid=areas.id[i])
     catch err
-        err isa OceanBIS.OBISError || rethrow()
+        err isa OBISClient.OBISError || rethrow()
         continue
     end
     (s["records"] > 0 && s["species"] > 0) || continue
@@ -154,7 +154,7 @@ function figure_global(p::Palette)
     Label(fig[1, 1], "$(SPECIES): every record in OBIS"; color=p.ink, fontsize=15,
         font=:bold, halign=:left, tellwidth=false)
     Label(fig[2, 1],
-        "$(OceanBIS.nrow(records)) records from $(st["datasets"]) datasets · accessed $(OceanBIS.metadata(records).accessed)";
+        "$(OBISClient.nrow(records)) records from $(st["datasets"]) datasets · accessed $(OBISClient.metadata(records).accessed)";
         color=p.ink2, fontsize=12, halign=:left, tellwidth=false)
 
     ga = GeoAxis(fig[3, 1]; dest="+proj=robin", xgridcolor=p.grid, ygridcolor=p.grid,

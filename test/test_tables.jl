@@ -1,6 +1,6 @@
 @testset "Tables.jl interface" begin
     with_mock() do
-        t = OceanBIS.occurrence("Abra alba"; limit=3)
+        t = OBISClient.occurrence("Abra alba"; limit=3)
 
         @test Tables.istable(typeof(t))
         @test Tables.columnaccess(typeof(t))
@@ -8,8 +8,8 @@
         @test Tables.rowcount(t) == 3
 
         sch = Tables.schema(t)
-        @test length(sch.names) == OceanBIS.ncol(t)
-        @test length(sch.types) == OceanBIS.ncol(t)
+        @test length(sch.names) == OBISClient.ncol(t)
+        @test length(sch.types) == OBISClient.ncol(t)
 
         # Access by name, by index, and through the interface all reach the same column.
         @test t.scientificName === Tables.getcolumn(t, :scientificName)
@@ -31,8 +31,8 @@ end
 
 @testset "size, keys and display" begin
     with_mock() do
-        t = OceanBIS.occurrence("Abra alba"; limit=3)
-        @test size(t) == (3, OceanBIS.ncol(t))
+        t = OBISClient.occurrence("Abra alba"; limit=3)
+        @test size(t) == (3, OBISClient.ncol(t))
         @test size(t, 1) == 3
         @test !isempty(t)
         @test :flags in keys(t)
@@ -51,8 +51,8 @@ end
 
 @testset "extra fields are preserved, not dropped" begin
     with_mock() do
-        t = OceanBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
-        names = OceanBIS.extra_names(t)
+        t = OBISClient.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
+        names = OBISClient.extra_names(t)
         @test !isempty(names)
         @test issorted(names)
 
@@ -60,40 +60,40 @@ end
         core = Set(Tables.columnnames(t))
         @test isempty(intersect(Set(names), core))
 
-        col = OceanBIS.extra_column(t, first(names))
-        @test length(col) == OceanBIS.nrow(t)
+        col = OBISClient.extra_column(t, first(names))
+        @test length(col) == OBISClient.nrow(t)
 
         # An absent extra field yields a full column of missings, never an error.
-        @test all(ismissing, OceanBIS.extra_column(t, :definitely_not_a_field))
+        @test all(ismissing, OBISClient.extra_column(t, :definitely_not_a_field))
     end
 end
 
 @testset "provenance travels with the result" begin
     with_mock() do
-        t = OceanBIS.occurrence("Abra alba"; limit=3)
-        m = OceanBIS.metadata(t)
+        t = OBISClient.occurrence("Abra alba"; limit=3)
+        m = OBISClient.metadata(t)
         @test m.endpoint == "occurrence"
         @test m.accessed == today()
-        @test m.total > OceanBIS.nrow(t)
-        @test m.base_url == OceanBIS.config().base_url
+        @test m.total > OBISClient.nrow(t)
+        @test m.base_url == OBISClient.config().base_url
         @test ("scientificname" => "Abra alba") in m.params
-        @test m.package_version == string(OceanBIS.package_version())
+        @test m.package_version == string(OBISClient.package_version())
     end
 end
 
 @testset "DataFrames extension" begin
     with_mock() do
-        t = OceanBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
+        t = OBISClient.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
 
         df = DataFrame(t)
-        @test DataFrames.nrow(df) == OceanBIS.nrow(t)
+        @test DataFrames.nrow(df) == OBISClient.nrow(t)
         @test :extra in propertynames(df)
         @test eltype(df.decimalLatitude) === Union{Missing,Float64}
 
         flat = DataFrame(t; flatten_extra=true)
         @test :extra ∉ propertynames(flat)
-        @test DataFrames.nrow(flat) == OceanBIS.nrow(t)
-        for nm in OceanBIS.extra_names(t)
+        @test DataFrames.nrow(flat) == OBISClient.nrow(t)
+        for nm in OBISClient.extra_names(t)
             @test nm in propertynames(flat) || Symbol("extra_", nm) in propertynames(flat)
         end
     end
@@ -101,10 +101,10 @@ end
 
 @testset "DataAPI generics work when DataFrames is loaded" begin
     with_mock() do
-        t = OceanBIS.occurrence("Abra alba"; limit=3, licenses=false)
+        t = OBISClient.occurrence("Abra alba"; limit=3, licenses=false)
         # OBIS does not export these names, to avoid clashing with DataFrames. The
         # extension makes the DataFrames-provided generics work on an OBIS result.
         @test DataFrames.nrow(t) == 3
-        @test DataFrames.ncol(t) == OceanBIS.ncol(t)
+        @test DataFrames.ncol(t) == OBISClient.ncol(t)
     end
 end

@@ -14,19 +14,19 @@ An optional local cache stores each raw response, addressed by a hash of the que
 the retrieval date and the response `ETag`:
 
 ```julia
-using OceanBIS
+using OBISClient
 
-OceanBIS.configure!(cache = OceanBIS.QueryCache("data/obis-cache"))
+OBISClient.configure!(cache = OBISClient.QueryCache("data/obis-cache"))
 
-recs = OceanBIS.occurrence("Abra alba"; limit = 5000)   # fetched and stored
-again = OceanBIS.occurrence("Abra alba"; limit = 5000)  # served from disk, no request
+recs = OBISClient.occurrence("Abra alba"; limit = 5000)   # fetched and stored
+again = OBISClient.occurrence("Abra alba"; limit = 5000)  # served from disk, no request
 ```
 
-Entries never expire. An expiring cache cannot answer "re-run this against the data as it
-stood in March", which is the point. Remove entries explicitly:
+Entries never expire, since an expiring cache cannot answer "re-run this against the data
+as it stood in March". Remove entries explicitly:
 
 ```julia
-OceanBIS.clear_cache!()
+OBISClient.clear_cache!()
 ```
 
 What is stored is the **raw response body**, not the parsed table. So a re-run reproduces
@@ -37,8 +37,8 @@ The cache key covers the base URL, the endpoint and the parameters, sorted, so k
 order does not matter:
 
 ```julia
-OceanBIS.occurrence("Abra alba"; startdepth = 5, limit = 100)
-OceanBIS.occurrence(; startdepth = 5, scientificname = "Abra alba", limit = 100)  # same entry
+OBISClient.occurrence("Abra alba"; startdepth = 5, limit = 100)
+OBISClient.occurrence(; startdepth = 5, scientificname = "Abra alba", limit = 100)  # same entry
 ```
 
 ## Keeping the cache with the analysis
@@ -46,14 +46,14 @@ OceanBIS.occurrence(; startdepth = 5, scientificname = "Abra alba", limit = 100)
 Put the cache in the project directory and commit it, or archive it alongside the results:
 
 ```julia
-OceanBIS.configure!(cache = OceanBIS.QueryCache(joinpath(@__DIR__, "data", "obis-cache")))
+OBISClient.configure!(cache = OBISClient.QueryCache(joinpath(@__DIR__, "data", "obis-cache")))
 ```
 
 The directory holds one `.json` response and one `.meta.json` per query. The metadata
 records what was asked and when:
 
 ```julia
-for e in OceanBIS.cache_entries()
+for e in OBISClient.cache_entries()
     println(e["endpoint"], "  ", e["accessed"], "  ", e["bytes"], " bytes")
     println("  ", e["parameters"])
 end
@@ -65,11 +65,11 @@ A cache that silently falls back to the network is not a guarantee. Open it read
 any query that is not already cached fails loudly instead of fetching today's data:
 
 ```julia
-OceanBIS.configure!(cache = OceanBIS.QueryCache("data/obis-cache"; readonly = true))
+OBISClient.configure!(cache = OBISClient.QueryCache("data/obis-cache"; readonly = true))
 
-recs = OceanBIS.occurrence("Abra alba"; limit = 5000)   # from disk
+recs = OBISClient.occurrence("Abra alba"; limit = 5000)   # from disk
 
-OceanBIS.occurrence("Zostera marina")                    # OBISAPIError: not in the cache
+OBISClient.occurrence("Zostera marina")                    # OBISAPIError: not in the cache
 ```
 
 This is the mode to use when re-running a published analysis: it turns "the numbers changed
@@ -82,7 +82,7 @@ The access date belongs to the request, so the citation should carry the date th
 retrieved, not the date the script was last run. Read it from the cache:
 
 ```julia
-for e in OceanBIS.cache_entries()
+for e in OBISClient.cache_entries()
     println(e["endpoint"], " accessed ", e["accessed"])
 end
 ```
@@ -91,7 +91,7 @@ A dataset DOI, where the provider registered one, is a stable pointer to the sou
 independent of OBIS's current state, and is included in the citation output:
 
 ```julia
-cites = OceanBIS.citations(recs)
+cites = OBISClient.citations(recs)
 collect(skipmissing(cites.doi))
 ```
 

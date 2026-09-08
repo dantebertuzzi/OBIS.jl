@@ -1,5 +1,5 @@
 """
-    OceanBIS
+    OBISClient
 
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
 Intergovernmental Oceanographic Commission of UNESCO.
@@ -18,13 +18,13 @@ retrieved.
 # Getting started
 
 ```julia
-using OceanBIS, DataFrames
+using OBISClient, DataFrames
 
-recs = OceanBIS.occurrence("Abra alba"; limit = 1000)
+recs = OBISClient.occurrence("Abra alba"; limit = 1000)
 df = DataFrame(recs)
 
-OceanBIS.licenses(recs)                        # may these data be redistributed?
-print(OceanBIS.citations(recs; format = :text))  # how to credit them
+OBISClient.licenses(recs)                        # may these data be redistributed?
+print(OBISClient.citations(recs; format = :text))  # how to credit them
 ```
 
 # Interpreting the results
@@ -34,7 +34,7 @@ excludes two classes of record that change what a result means. See the "Interpr
 data" section of the documentation, and the disclaimer in [`OBIS_DISCLAIMER`](@ref), before
 drawing conclusions.
 """
-module OceanBIS
+module OBISClient
 
 using Dates
 using Dates: DateTime, Date, today, now, UTC
@@ -116,8 +116,8 @@ export citations, licenses, obis_citation
 # Results.
 #
 # `nrow`, `ncol` and `metadata` are deliberately not exported: DataFrames exports the same
-# names through DataAPI, and exporting them here would make `using OceanBIS, DataFrames` an
-# ambiguity error at every call site. Reach them as `OceanBIS.nrow(t)`, or load the DataFrames
+# names through DataAPI, and exporting them here would make `using OBISClient, DataFrames` an
+# ambiguity error at every call site. Reach them as `OBISClient.nrow(t)`, or load the DataFrames
 # extension, which makes the DataAPI versions work on an `OBISTable` directly.
 export OBISTable, extra_names, extra_column, cursor
 

@@ -8,7 +8,7 @@
 """
     OBISError
 
-Abstract supertype for every error raised by OceanBIS.jl. Catch this to handle any failure
+Abstract supertype for every error raised by OBISClient.jl. Catch this to handle any failure
 from the package without catching unrelated exceptions.
 """
 abstract type OBISError <: Exception end
@@ -110,7 +110,7 @@ function Base.showerror(io::IO, e::OBISConnectionError)
         """
 
           If this persists, check https://obis.org for service status. To retry more
-          patiently, raise the retry budget with `OceanBIS.configure!(retries = 8)`.""",
+          patiently, raise the retry budget with `OBISClient.configure!(retries = 8)`.""",
     )
     return nothing
 end

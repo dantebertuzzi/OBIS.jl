@@ -7,9 +7,9 @@ request layer behave.
 ## Reference material
 
 ```@docs
-OceanBIS.disclaimer
-OceanBIS.OBIS_DISCLAIMER
-OceanBIS.RECORD_SELECTIONS
+OBISClient.disclaimer
+OBISClient.OBIS_DISCLAIMER
+OBISClient.RECORD_SELECTIONS
 ```
 
 ## The schema
@@ -19,108 +19,108 @@ endpoint. Each entry declares a column name, a concrete element type, and how th
 value is converted.
 
 ```@docs
-OceanBIS.FieldSpec
-OceanBIS.OCCURRENCE_SCHEMA
-OceanBIS.TAXON_SCHEMA
-OceanBIS.DATASET_SCHEMA
-OceanBIS.NODE_SCHEMA
-OceanBIS.INSTITUTE_SCHEMA
-OceanBIS.AREA_SCHEMA
-OceanBIS.COUNTRY_SCHEMA
-OceanBIS.coerce_field
-OceanBIS.coerce_scalar
-OceanBIS.coerce_strlist
-OceanBIS.coerce_named_list
-OceanBIS.column_type
-OceanBIS.schema_names
-OceanBIS.coerce_epoch_ms
-OceanBIS.coerce_iso_datetime
-OceanBIS.coerce_flagset
-OceanBIS.build_table
-OceanBIS.json_to_julia
-OceanBIS.empty_table
-OceanBIS.take_rows
-OceanBIS.concat_tables
+OBISClient.FieldSpec
+OBISClient.OCCURRENCE_SCHEMA
+OBISClient.TAXON_SCHEMA
+OBISClient.DATASET_SCHEMA
+OBISClient.NODE_SCHEMA
+OBISClient.INSTITUTE_SCHEMA
+OBISClient.AREA_SCHEMA
+OBISClient.COUNTRY_SCHEMA
+OBISClient.coerce_field
+OBISClient.coerce_scalar
+OBISClient.coerce_strlist
+OBISClient.coerce_named_list
+OBISClient.column_type
+OBISClient.schema_names
+OBISClient.coerce_epoch_ms
+OBISClient.coerce_iso_datetime
+OBISClient.coerce_flagset
+OBISClient.build_table
+OBISClient.json_to_julia
+OBISClient.empty_table
+OBISClient.take_rows
+OBISClient.concat_tables
 ```
 
 ## Request layer
 
 ```@docs
-OceanBIS.api_get
-OceanBIS.raw_request
-OceanBIS.build_url
-OceanBIS.request_headers
-OceanBIS.retryable
-OceanBIS.backoff_delay
-OceanBIS.throttle!
-OceanBIS.check_response
-OceanBIS.results_of
-OceanBIS.total_of
-OceanBIS.TRANSPORT
-OceanBIS.default_transport
-OceanBIS.DOWNLOADER
-OceanBIS.default_downloader
-OceanBIS.http_error_advice
-OceanBIS.LAST_REQUEST
+OBISClient.api_get
+OBISClient.raw_request
+OBISClient.build_url
+OBISClient.request_headers
+OBISClient.retryable
+OBISClient.backoff_delay
+OBISClient.throttle!
+OBISClient.check_response
+OBISClient.results_of
+OBISClient.total_of
+OBISClient.TRANSPORT
+OBISClient.default_transport
+OBISClient.DOWNLOADER
+OBISClient.default_downloader
+OBISClient.http_error_advice
+OBISClient.LAST_REQUEST
 ```
 
 ## Parameter handling
 
 ```@docs
-OceanBIS.build_params
-OceanBIS.QueryParams
-OceanBIS.selection_value
-OceanBIS.validate_geometry
-OceanBIS.format_date
-OceanBIS.validate_depth
-OceanBIS.validate_uuid
-OceanBIS.validate_size
-OceanBIS.validate_fields
-OceanBIS.sorted_pairs
+OBISClient.build_params
+OBISClient.QueryParams
+OBISClient.selection_value
+OBISClient.validate_geometry
+OBISClient.format_date
+OBISClient.validate_depth
+OBISClient.validate_uuid
+OBISClient.validate_size
+OBISClient.validate_fields
+OBISClient.sorted_pairs
 ```
 
 ## Rights and citation
 
 ```@docs
-OceanBIS.CitationEntry
-OceanBIS.citation_entries
-OceanBIS.format_citation
-OceanBIS.bibtex_escape
-OceanBIS.dataset_counts
-OceanBIS.dataset_info
-OceanBIS.dataset_filters
-OceanBIS.attach_licenses
-OceanBIS.finalize_dataset_table
-OceanBIS.fetch_dataset_records
-OceanBIS.DatasetInfo
+OBISClient.CitationEntry
+OBISClient.citation_entries
+OBISClient.format_citation
+OBISClient.bibtex_escape
+OBISClient.dataset_counts
+OBISClient.dataset_info
+OBISClient.dataset_filters
+OBISClient.attach_licenses
+OBISClient.finalize_dataset_table
+OBISClient.fetch_dataset_records
+OBISClient.DatasetInfo
 ```
 
 ## Access routes
 
 ```@docs
-OceanBIS.guard_query_size
-OceanBIS.stats_filters
-OceanBIS.parse_licenses_tsv
-OceanBIS.raw_request_absolute
-OceanBIS.download_file
-OceanBIS.EXPORT_COLUMN_SOURCES
-OceanBIS.export_select
+OBISClient.guard_query_size
+OBISClient.stats_filters
+OBISClient.parse_licenses_tsv
+OBISClient.raw_request_absolute
+OBISClient.download_file
+OBISClient.EXPORT_COLUMN_SOURCES
+OBISClient.export_select
 ```
 
 ## Cache
 
 ```@docs
-OceanBIS.cache_key
-OceanBIS.cached_body
-OceanBIS.store_body!
+OBISClient.cache_key
+OBISClient.cached_body
+OBISClient.store_body!
 ```
 
 ## Constants and helpers
 
 ```@docs
-OceanBIS.DEFAULT_BASE_URL
-OceanBIS.DEFAULT_EXPORT_URL
-OceanBIS.REPO_URL
-OceanBIS.MAX_PAGE_SIZE
-OceanBIS.format_count
+OBISClient.DEFAULT_BASE_URL
+OBISClient.DEFAULT_EXPORT_URL
+OBISClient.REPO_URL
+OBISClient.MAX_PAGE_SIZE
+OBISClient.format_count
 ```
