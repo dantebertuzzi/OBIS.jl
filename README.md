@@ -14,12 +14,6 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 > not affiliated with or endorsed by OBIS, the IOC, or UNESCO. The data, the API and the
 > quality control behind them are the work of OBIS and its nodes.
 
-> **Built with LLM assistance.** This package was written with Claude Code, and every commit
-> in its history is co-authored. The API behaviour it relies on was checked against the live
-> service, the schema against sampled responses, and the suite runs on every push; the
-> maintainer is responsible for the code and reviews what goes in. Raise anything that looks
-> wrong as an issue.
-
 **Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
 
 ## Installation

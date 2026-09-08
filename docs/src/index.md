@@ -10,12 +10,6 @@ with a fixed schema, carrying the licence and citation of the dataset each row c
     UNESCO. The name identifies the service the package connects to; the data, the API and
     the quality control pipeline are the work of OBIS and its nodes.
 
-!!! note "Built with LLM assistance"
-    This package was written with Claude Code, and every commit in its history is
-    co-authored. The API behaviour it relies on was checked against the live service and
-    the suite runs on every push; the maintainer is responsible for the code. Please open
-    an issue for anything that looks wrong.
-
 ## Installation
 
 ```julia
