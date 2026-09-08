@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-07
+
+First release. A Julia client for the OBIS API with a stable typed schema, licence and
+citation carried on every result, streaming and resumable pagination, an optional
+reproducibility cache, the bulk-export route, and access to the absence and dropped records
+a default query leaves out.
+
 ### Added
 
 - `examples/brazil.jl`, four maps of the Brazilian shelf that are not scatters of one
@@ -32,23 +39,6 @@ All notable changes to this project are documented here. The format follows
   therefore installed only by users who take that route. `absence` and `dropped` default to
   `:exclude`, matching the API, and the access date on the result is the file's date rather
   than today.
-
-### Changed
-
-- `export_covers` now accepts `absence` and `dropped` selections. The bulk export does
-  contain those records, contrary to the OBIS data access page: across five datasets the
-  export's `absence` and `dropped` row counts matched the API's `absence = :only` and
-  `dropped = :only` counts exactly, and each export's total came to the default count plus
-  them. `download_exports` no longer refuses such a query, and the large-query error offers
-  the export route for it. Only a pure `event` selection is still API-only — the export has
-  no column identifying those records.
-
-## [0.1.0]
-
-Initial release; not yet registered.
-
-### Added
-
 - Occurrence queries with the full filter set: taxon name and AphiaID, WKT geometry, date
   and depth ranges, dataset, node, institute and area identifiers, quality flags, and the
   measurement and extension filters.
@@ -88,3 +78,10 @@ Initial release; not yet registered.
 - A manual organized around a table mapping each function to what it returns and where it
   is explained, with the reference split into a public API and an internals page, and
   `checkdocs = :all` so every docstring has to be reachable from it.
+- `export_covers` reports the bulk export as covering `absence` and `dropped` selections,
+  contrary to the OBIS data access page. Across five datasets the export's `absence` and
+  `dropped` row counts matched the API's `absence = :only` and `dropped = :only` counts
+  exactly, and each export's total came to the default count plus them, so
+  `download_exports` serves those queries and the large-query error offers the export route
+  for them. Only a pure `event` selection is API-only — the export has no column
+  identifying those records.
