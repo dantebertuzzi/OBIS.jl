@@ -1,0 +1,35 @@
+name: Register
+
+# Registration in the General registry, triggered from the Actions tab rather than from a
+# comment, so the version to release is typed once and the commit it is cut from is the one
+# CI just tested.
+#
+# The action updates `version` in Project.toml and comments `@JuliaRegistrator register` on
+# the resulting commit. That comment only does something if the JuliaRegistrator GitHub App
+# is installed on this repository — https://github.com/apps/juliateam-registrator — so the
+# app is a prerequisite, not an alternative to this workflow.
+#
+# What happens after: Registrator opens a pull request against JuliaRegistries/General.
+# Once it is merged, TagBot.yml creates the `v<version>` tag and the GitHub release, and
+# the tag push makes CI deploy the versioned documentation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to register, or "major" / "minor" / "patch" to bump'
+        required: true
+        default: patch
+
+permissions:
+  contents: write
+
+jobs:
+  register:
+    name: Register ${{ inputs.version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: julia-actions/RegisterAction@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

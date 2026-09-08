@@ -1,33 +1,43 @@
 name: TagBot
 
+# TagBot does not register the package; Register.yml does that. This reacts to a version
+# that has already been registered in General, creating the `v<version>` tag and the GitHub
+# release for it, so the repository stays in step with the registry.
+#
+# The release notes are the ones written in the `Release notes:` block of the registration
+# comment. Without that block TagBot falls back to a changelog assembled from the issues and
+# pull requests closed since the previous release, which for a repository that commits
+# straight to main is close to empty.
+
 on:
   issue_comment:
     types: [created]
   workflow_dispatch:
     inputs:
       lookback:
+        description: "[DEPRECATED] No longer has any effect"
         default: "3"
 
+# Upstream's example carries no `permissions:` block, because it assumes the repository
+# grants workflows read and write by default. This one does not — the default here is read
+# only — so the block stays, and lists what TagBot actually uses: write to push the tag and
+# publish the release, read to assemble the changelog from issues and pull requests.
 permissions:
-  actions: read
-  checks: read
   contents: write
-  deployments: read
   issues: read
-  discussions: read
-  packages: read
-  pages: read
   pull-requests: read
-  repository-projects: read
-  security-events: read
-  statuses: read
 
 jobs:
   TagBot:
     if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot'
+    # ubuntu-slim has no container support, which TagBot requires.
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: JuliaRegistries/TagBot@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # A tag pushed with GITHUB_TOKEN does not start another workflow, so without a
+          # deploy key CI never sees the tag and the versioned documentation is never
+          # built. The key is the one Documenter deploys with, reused here.
           ssh: ${{ secrets.DOCUMENTER_KEY }}
