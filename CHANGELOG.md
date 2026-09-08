@@ -13,6 +13,11 @@ citation carried on every result, streaming and resumable pagination, an optiona
 reproducibility cache, the bulk-export route, and access to the absence and dropped records
 a default query leaves out.
 
+Developed before this release under the name `OBIS`, which the General registry does not
+accept: a package name must be at least five characters and must not be entirely upper
+case. Only the package, module and repository changed. `OBISTable` and the `OBIS*` error
+types keep their names, because they are named for the service rather than for the package.
+
 ### Added
 
 - `examples/brazil.jl`, four maps of the Brazilian shelf that are not scatters of one
