@@ -42,12 +42,17 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
+      # Uploaded from one job only, so a matrix of nine does not send nine reports of
+      # the same run. A failed upload fails the job: this step spent the repository's
+      # whole history silently swallowing errors, first an upload with no token at all
+      # and later one naming a repository Codecov had not heard of, and the only symptom
+      # either time was a badge reading "unknown".
       - uses: codecov/codecov-action@v4
         if: matrix.version == '1' && matrix.os == 'ubuntu-latest'
         with:
           files: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   format:
     name: Format check
