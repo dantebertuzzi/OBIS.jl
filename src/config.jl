@@ -64,7 +64,9 @@ function package_version()
 end
 
 function default_user_agent()
-    return string("OceanBIS.jl/", package_version(), " (", REPO_URL, "; Julia ", VERSION, ")")
+    return string(
+        "OceanBIS.jl/", package_version(), " (", REPO_URL, "; Julia ", VERSION, ")"
+    )
 end
 
 const CONFIG = ClientConfig(

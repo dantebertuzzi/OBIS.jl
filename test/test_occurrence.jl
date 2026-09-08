@@ -46,7 +46,8 @@ end
         # The Delphinidae fixture carries fields the Abra alba one does not; they are kept,
         # in `extra`, rather than being dropped or added as columns.
         @test !isempty(OceanBIS.extra_names(c))
-        @test length(OceanBIS.extra_column(c, first(OceanBIS.extra_names(c)))) == OceanBIS.nrow(c)
+        @test length(OceanBIS.extra_column(c, first(OceanBIS.extra_names(c)))) ==
+            OceanBIS.nrow(c)
     end
 end
 

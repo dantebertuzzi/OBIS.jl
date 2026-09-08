@@ -35,7 +35,9 @@ end
 
             # A limited or explicitly unchecked pull is allowed through.
             OceanBIS.configure!(; api_record_limit=1000)
-            @test OceanBIS.nrow(OceanBIS.occurrence("Abra alba"; limit=3, licenses=false)) == 3
+            @test OceanBIS.nrow(
+                OceanBIS.occurrence("Abra alba"; limit=3, licenses=false)
+            ) == 3
         finally
             OceanBIS.configure!(; api_record_limit=old)
         end
@@ -65,8 +67,12 @@ end
 
     # The route heuristic reads the same rule from a built parameter set, so the guard's
     # advice cannot drift from what this function reports.
-    @test OceanBIS.export_covers(OceanBIS.build_params(; scientificname="Abra alba", absence=:only))
-    @test !OceanBIS.export_covers(OceanBIS.build_params(; scientificname="Abra alba", event=:only))
+    @test OceanBIS.export_covers(
+        OceanBIS.build_params(; scientificname="Abra alba", absence=:only)
+    )
+    @test !OceanBIS.export_covers(
+        OceanBIS.build_params(; scientificname="Abra alba", event=:only)
+    )
 end
 
 @testset "export URLs" begin
@@ -79,7 +85,9 @@ end
 end
 
 @testset "an API-only query cannot be sent to the export" begin
-    @test_throws OceanBIS.OBISValidationError OceanBIS.download_exports("Abra alba"; event=:only)
+    @test_throws OceanBIS.OBISValidationError OceanBIS.download_exports(
+        "Abra alba"; event=:only
+    )
 end
 
 @testset "the export licence table parses" begin
@@ -128,7 +136,9 @@ end
         # A limit of one record: any estimate that came back at all would refuse the
         # query, so passing proves the failed estimate was the reason it went through.
         OceanBIS.configure!(; api_record_limit=1)
-        @test OceanBIS.guard_query_size(OceanBIS.build_params(; scientificname="Abra alba")) ===
+        @test OceanBIS.guard_query_size(
+            OceanBIS.build_params(; scientificname="Abra alba")
+        ) ===
             nothing
     finally
         OceanBIS.TRANSPORT[] = old
@@ -251,7 +261,9 @@ end
 
             # These files run to megabytes, so re-running a script must not re-fetch one
             # that is already on disk.
-            again = @test_logs (:info, r"already present") OceanBIS.download_export(id; dir=dir)
+            again = @test_logs (:info, r"already present") OceanBIS.download_export(
+                id; dir=dir
+            )
             @test again == path
             @test length(DOWNLOAD_LOG) == 1
 

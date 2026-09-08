@@ -8,7 +8,9 @@
     @test OceanBIS.build_url("occurrence", OceanBIS.QueryParams(); base_url="https://x/") ==
         "https://x/occurrence"
     # A leading slash on the endpoint must not produce a doubled one.
-    @test OceanBIS.build_url("/occurrence", OceanBIS.QueryParams(); base_url="https://x/") ==
+    @test OceanBIS.build_url(
+        "/occurrence", OceanBIS.QueryParams(); base_url="https://x/"
+    ) ==
         "https://x/occurrence"
 end
 
@@ -29,7 +31,9 @@ end
 
     # The API answers permanent client mistakes with 5xx and an `error` field. Retrying
     # those only wastes the server's time.
-    @test !OceanBIS.retryable(500, """{"total":0,"results":[],"error":"Invalid date format"}""")
+    @test !OceanBIS.retryable(
+        500, """{"total":0,"results":[],"error":"Invalid date format"}"""
+    )
 end
 
 @testset "backoff grows and is bounded" begin
@@ -100,7 +104,8 @@ end
     # Most endpoints use {total, results}, but several answer with a bare object or array.
     @test OceanBIS.total_of(JSON3.read("""{"total":7,"results":[]}""")) == 7
     @test OceanBIS.total_of(JSON3.read("""{"records":7}"""), 3) == 3
-    @test length(OceanBIS.results_of(JSON3.read("""{"total":1,"results":[{"a":1}]}"""))) == 1
+    @test length(OceanBIS.results_of(JSON3.read("""{"total":1,"results":[{"a":1}]}"""))) ==
+        1
     @test length(OceanBIS.results_of(JSON3.read("""[{"year":1841}]"""))) == 1
     @test isempty(OceanBIS.results_of(JSON3.read("""{"lat":1.0,"lon":2.0}""")))
     @test isempty(OceanBIS.results_of(JSON3.read("""{"total":0,"results":null}""")))

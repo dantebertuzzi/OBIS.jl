@@ -33,7 +33,9 @@
         "http://creativecommons.org/licenses/by-nc/4.0/legalcode"
     ) ==
         "CC-BY-NC-4.0"
-    @test OceanBIS.normalize_license("https://creativecommons.org/licenses/by/4.0/legalcode") ==
+    @test OceanBIS.normalize_license(
+        "https://creativecommons.org/licenses/by/4.0/legalcode"
+    ) ==
         "CC-BY-4.0"
 
     @test OceanBIS.normalize_license("Attribution-ShareAlike (CC BY-SA)") == "CC-BY-SA-4.0"

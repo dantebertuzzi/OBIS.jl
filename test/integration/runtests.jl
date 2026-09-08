@@ -171,7 +171,8 @@ OceanBIS.configure!(; request_gap=0.5, page_size=5)
                 path = OceanBIS.download_export(id; dir=dir)
                 table = OceanBIS.read_export(path; licenses=false)
 
-                reference = OceanBIS.occurrence(; datasetid=id, licenses=false, limit=nothing,
+                reference = OceanBIS.occurrence(; datasetid=id, licenses=false,
+                    limit=nothing,
                     check_size=false)
                 @test Tables.columnnames(table) == Tables.columnnames(reference)
                 @test OceanBIS.nrow(table) == OceanBIS.nrow(reference)

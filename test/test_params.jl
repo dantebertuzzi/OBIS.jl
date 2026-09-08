@@ -7,7 +7,8 @@
 
     # An unknown flag is passed through, because OBIS adds checks over time, but it warns:
     # the API would accept it silently and return nothing.
-    @test (@test_logs (:warn,) OceanBIS.normalize_flag("NOT_A_REAL_FLAG")) == "NOT_A_REAL_FLAG"
+    @test (@test_logs (:warn,) OceanBIS.normalize_flag("NOT_A_REAL_FLAG")) ==
+        "NOT_A_REAL_FLAG"
 
     @test OceanBIS.drops_record("NO_MATCH")
     @test OceanBIS.drops_record("no_coord")
@@ -28,14 +29,18 @@ end
 end
 
 @testset "geometry validation" begin
-    @test OceanBIS.validate_geometry("POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.3 51.8))") isa
+    @test OceanBIS.validate_geometry(
+        "POLYGON ((2.3 51.8, 2.3 51.6, 2.6 51.6, 2.3 51.8))"
+    ) isa
         String
     @test OceanBIS.validate_geometry("point(3 51)") isa String
 
     # The API answers invalid WKT with HTTP 200 and an empty result set, so these must be
     # caught locally or they become a silent "no records here".
     @test_throws OceanBIS.OBISValidationError OceanBIS.validate_geometry("NOTWKT")
-    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_geometry("POLYGON ((1 2, 3 4)")
+    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_geometry(
+        "POLYGON ((1 2, 3 4)"
+    )
     @test_throws OceanBIS.OBISValidationError OceanBIS.validate_geometry("")
 end
 
@@ -55,7 +60,9 @@ end
 
     @test OceanBIS.validate_uuid(:datasetid, "8acba7e7-2e50-4490-8328-b78a30472508") ==
         "8acba7e7-2e50-4490-8328-b78a30472508"
-    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_uuid(:datasetid, "not-a-uuid")
+    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_uuid(
+        :datasetid, "not-a-uuid"
+    )
 
     @test OceanBIS.validate_size(1000) == 1000
     @test_throws OceanBIS.OBISValidationError OceanBIS.validate_size(20_000)
@@ -95,7 +102,9 @@ end
     @test_throws OceanBIS.OBISValidationError OceanBIS.build_params(;
         startdate=Date(2020, 1, 1), enddate=Date(2010, 1, 1)
     )
-    @test_throws OceanBIS.OBISValidationError OceanBIS.build_params(; startdepth=100, enddepth=10)
+    @test_throws OceanBIS.OBISValidationError OceanBIS.build_params(;
+        startdepth=100, enddepth=10
+    )
     @test_throws OceanBIS.OBISValidationError OceanBIS.build_params(; scientificname="   ")
 end
 
@@ -116,7 +125,9 @@ end
     @test_throws OceanBIS.OBISValidationError OceanBIS.validate_size(2.5)
     @test OceanBIS.validate_size(10.0) == 10
     @test_throws OceanBIS.OBISValidationError OceanBIS.validate_size(0)
-    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_size(OceanBIS.MAX_PAGE_SIZE + 1)
+    @test_throws OceanBIS.OBISValidationError OceanBIS.validate_size(
+        OceanBIS.MAX_PAGE_SIZE + 1
+    )
 end
 
 @testset "tags accept one value or several" begin
@@ -135,6 +146,8 @@ end
 
     # Some checks are about an absent value rather than a wrong one, and those say so
     # without an empty parenthesis.
-    absent = sprint(showerror, OceanBIS.OBISValidationError(:datasetid, nothing, "Required."))
+    absent = sprint(
+        showerror, OceanBIS.OBISValidationError(:datasetid, nothing, "Required.")
+    )
     @test !occursin("(got", absent)
 end

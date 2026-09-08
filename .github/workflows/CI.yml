@@ -93,7 +93,7 @@ jobs:
       - name: Run doctests
         run: |
           julia --project=docs -e '
-            using Documenter, OBIS, Dates
+            using Documenter, OceanBIS, Dates
             DocMeta.setdocmeta!(OceanBIS, :DocTestSetup, :(using OceanBIS; using Dates); recursive=true)
             doctest(OceanBIS)'
       - name: Build and deploy
