@@ -2,14 +2,14 @@
 #
 #     julia --project=examples examples/figures.jl
 #
-# Plotting is not part of OBIS.jl. CairoMakie and GeoMakie are dependencies of this
+# Plotting is not part of OceanBIS.jl. CairoMakie and GeoMakie are dependencies of this
 # example environment only, so installing the package stays small. The script queries the
 # live API, so the exact numbers move as OBIS ingests data; the shapes do not.
 #
 # Each figure is written twice, for light and dark reading. The dark variant is stepped for
 # the dark surface rather than being an inverted copy of the light one.
 
-using OBIS
+using OceanBIS
 using CairoMakie
 using GeoMakie
 using NaturalEarth
@@ -25,10 +25,10 @@ include(joinpath(@__DIR__, "theme.jl"))
 # --- Data -------------------------------------------------------------------------------
 
 println("Querying OBIS…")
-records = OBIS.occurrence(; scientificname=SPECIES, geometry=BOX)
-years = OBIS.statistics_years(SPECIES)
-license_summary = OBIS.licenses(records)
-println("  ", OBIS.nrow(records), " records, accessed ", OBIS.metadata(records).accessed)
+records = OceanBIS.occurrence(; scientificname=SPECIES, geometry=BOX)
+years = OceanBIS.statistics_years(SPECIES)
+license_summary = OceanBIS.licenses(records)
+println("  ", OceanBIS.nrow(records), " records, accessed ", OceanBIS.metadata(records).accessed)
 
 flagged(fs, flag) = flag in fs
 
@@ -54,7 +54,7 @@ function figure_map(p::Palette)
     )
     Label(
         fig[2, 1],
-        "$(OBIS.nrow(records)) records from $(length(unique(skipmissing(records.dataset_id)))) datasets · accessed $(OBIS.metadata(records).accessed)";
+        "$(OceanBIS.nrow(records)) records from $(length(unique(skipmissing(records.dataset_id)))) datasets · accessed $(OceanBIS.metadata(records).accessed)";
         color=p.ink2, fontsize=12, halign=:left, tellwidth=false,
     )
 

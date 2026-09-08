@@ -22,10 +22,10 @@ thousand.
 
 ```julia
 # Datasets behind a species.
-ds = OBIS.dataset("Abra alba")
+ds = OceanBIS.dataset("Abra alba")
 
 # Which licences are in play, before downloading any occurrences.
-OBIS.licenses(ds)
+OceanBIS.licenses(ds)
 ```
 """
 function dataset(scientificname=nothing; kwargs...)
@@ -42,7 +42,7 @@ end
 Fetch one dataset by its UUID.
 
 ```julia
-julia> ds = OBIS.dataset_by_id("8acba7e7-2e50-4490-8328-b78a30472508");
+julia> ds = OceanBIS.dataset_by_id("8acba7e7-2e50-4490-8328-b78a30472508");
 ```
 """
 function dataset_by_id(id)
@@ -124,7 +124,7 @@ function dataset_info(params::QueryParams, ids::Vector{String})
             @warn """
             Rights information is missing for $(length(remaining)) datasets and would need \
             one request each, so it is being skipped. The `license` column will be \
-            `missing` for those records. Narrow the query, or call `OBIS.dataset(...)` \
+            `missing` for those records. Narrow the query, or call `OceanBIS.dataset(...)` \
             with the same filters to retrieve the rights separately.""" maxlog = 1
             return out
         end

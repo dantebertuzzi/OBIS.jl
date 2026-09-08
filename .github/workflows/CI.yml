@@ -94,8 +94,8 @@ jobs:
         run: |
           julia --project=docs -e '
             using Documenter, OBIS, Dates
-            DocMeta.setdocmeta!(OBIS, :DocTestSetup, :(using OBIS; using Dates); recursive=true)
-            doctest(OBIS)'
+            DocMeta.setdocmeta!(OceanBIS, :DocTestSetup, :(using OceanBIS; using Dates); recursive=true)
+            doctest(OceanBIS)'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

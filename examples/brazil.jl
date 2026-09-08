@@ -15,15 +15,15 @@
 #      exclusive economic zone OBIS actually covers.
 #
 # The first run makes about 600 small requests and retrieves some 26 000 records, which
-# takes a few minutes. It caches into `~/.cache/OBIS.jl`, so a second run costs nothing and
+# takes a few minutes. It caches into `~/.cache/OceanBIS.jl`, so a second run costs nothing and
 # rebuilds exactly the same figures from exactly the same responses — that is what
 # `QueryCache` is for, and a script that queries this many times is the case it was written
 # for.
 #
-# Plotting is not part of OBIS.jl. CairoMakie, GeoMakie and DataFrames belong to the
+# Plotting is not part of OceanBIS.jl. CairoMakie, GeoMakie and DataFrames belong to the
 # example environment only.
 
-using OBIS
+using OceanBIS
 using CairoMakie
 using GeoMakie
 using NaturalEarth
@@ -39,7 +39,7 @@ include(joinpath(@__DIR__, "theme.jl"))
 # Cache every response. Beyond saving the reruns, it is what makes the figures
 # reproducible: OBIS ingests continuously, so without this the same script run tomorrow
 # draws different maps and there is no copy of what today's were based on.
-OBIS.configure!(cache=OBIS.QueryCache(), progress=true)
+OceanBIS.configure!(cache=OceanBIS.QueryCache(), progress=true)
 
 rule(s) = println("\n", s, "\n", "-"^length(s))
 
@@ -82,7 +82,7 @@ const PLACES = [
 rule("1. The region, priced before anything is downloaded")
 
 for (id, name) in SHELVES
-    st = OBIS.statistics(; areaid=id)
+    st = OceanBIS.statistics(; areaid=id)
     @printf(
         "%-20s %8d records  %6d species  %4d datasets  %d–%d\n",
         name, st["records"], st["species"], st["datasets"],
@@ -153,9 +153,9 @@ function build_grid()
     cells = GridCell[]
     for (w, s) in ORIGINS
         st = try
-            OBIS.statistics(; geometry=cell_wkt(w, s))
+            OceanBIS.statistics(; geometry=cell_wkt(w, s))
         catch err
-            err isa OBIS.OBISError || rethrow()
+            err isa OceanBIS.OBISError || rethrow()
             continue
         end
         push!(cells, GridCell(w, s, Int(st["records"]), Int(st["species"])))
@@ -165,10 +165,10 @@ end
 
 # The progress indicator is for paging through occurrences; six hundred tiny requests print
 # nothing useful, so it is off for this stretch.
-OBIS.configure!(progress=false)
+OceanBIS.configure!(progress=false)
 println("querying ", length(ORIGINS), " cells…")
 grid = build_grid()
-OBIS.configure!(progress=true)
+OceanBIS.configure!(progress=true)
 
 nonempty = filter(c -> c.records > 0 && c.species > 0, grid)
 println(
@@ -228,8 +228,8 @@ rule("4. Two taxa, retrieved once each per shelf")
 "Retrieve `name` across the three shelves as one DataFrame, with the access date the
 tables carry. The date belongs to the data, not to the day the figure was drawn."
 function shelf_records(name)
-    tables = [OBIS.occurrence(name; areaid=id) for (id, _) in SHELVES]
-    accessed = maximum(OBIS.metadata(t).accessed for t in tables)
+    tables = [OceanBIS.occurrence(name; areaid=id) for (id, _) in SHELVES]
+    accessed = maximum(OceanBIS.metadata(t).accessed for t in tables)
     return vcat(DataFrame.(tables)...), accessed
 end
 

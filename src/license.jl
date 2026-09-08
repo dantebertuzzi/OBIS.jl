@@ -47,16 +47,16 @@ Non-commercial is tested before attribution: every `CC-BY-NC` statement also con
 word "Attribution", so the looser test would swallow the stricter licence.
 
 ```jldoctest
-julia> OBIS.normalize_license("This work is licensed under a  Creative Commons Attribution (CC-BY) 4.0 License")
+julia> OceanBIS.normalize_license("This work is licensed under a  Creative Commons Attribution (CC-BY) 4.0 License")
 "CC-BY-4.0"
 
-julia> OBIS.normalize_license("This work is licensed under a  Creative Commons Attribution Non Commercial (CC-BY-NC) 4.0 License")
+julia> OceanBIS.normalize_license("This work is licensed under a  Creative Commons Attribution Non Commercial (CC-BY-NC) 4.0 License")
 "CC-BY-NC-4.0"
 
-julia> OBIS.normalize_license("http://creativecommons.org/publicdomain/zero/1.0/legalcode")
+julia> OceanBIS.normalize_license("http://creativecommons.org/publicdomain/zero/1.0/legalcode")
 "CC0-1.0"
 
-julia> OBIS.normalize_license("Restricted")
+julia> OceanBIS.normalize_license("Restricted")
 "unknown"
 ```
 """
@@ -103,10 +103,10 @@ end
 Canonical URL for a licence identifier, or `missing` when it is not recognized.
 
 ```jldoctest
-julia> OBIS.license_url("CC-BY-NC-4.0")
+julia> OceanBIS.license_url("CC-BY-NC-4.0")
 "https://creativecommons.org/licenses/by-nc/4.0/"
 
-julia> OBIS.license_url("unknown")
+julia> OceanBIS.license_url("unknown")
 missing
 ```
 """
@@ -152,13 +152,13 @@ This describes the legal obligation. The OBIS data policy asks that providers be
 regardless of licence, so `false` is not advice to omit the credit.
 
 ```jldoctest
-julia> OBIS.requires_attribution("CC0-1.0")
+julia> OceanBIS.requires_attribution("CC0-1.0")
 false
 
-julia> OBIS.requires_attribution("CC-BY-4.0")
+julia> OceanBIS.requires_attribution("CC-BY-4.0")
 true
 
-julia> OBIS.requires_attribution("unknown")
+julia> OceanBIS.requires_attribution("unknown")
 true
 ```
 """

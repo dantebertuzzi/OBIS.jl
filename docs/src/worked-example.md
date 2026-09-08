@@ -2,15 +2,15 @@
 
 A full session on one species — retrieve, map, group, pivot, and test a relationship —
 using nothing but the client, DataFrames and CairoMakie. Analysis and plotting are not part
-of OBIS.jl; they happen here on a table the client handed over, which is what implementing
+of OceanBIS.jl; they happen here on a table the client handed over, which is what implementing
 Tables.jl is for.
 
-The script is [`examples/orcas.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/orcas.jl).
+The script is [`examples/orcas.jl`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/examples/orcas.jl).
 Run it with `julia --project=examples examples/orcas.jl`. Every number and figure below came
 from that run; the counts move as OBIS ingests data.
 
 ```julia
-using OBIS, DataFrames, Statistics
+using OceanBIS, DataFrames, Statistics
 ```
 
 ## 1. The query, and what it leaves out
@@ -18,9 +18,9 @@ using OBIS, DataFrames, Statistics
 Size the query before retrieving it, and ask what the default view is hiding:
 
 ```julia
-st = OBIS.statistics("Orcinus orca")
-OBIS.statistics("Orcinus orca"; absence = :only)["records"]
-OBIS.statistics("Orcinus orca"; dropped = :only)["records"]
+st = OceanBIS.statistics("Orcinus orca")
+OceanBIS.statistics("Orcinus orca"; absence = :only)["records"]
+OceanBIS.statistics("Orcinus orca"; dropped = :only)["records"]
 ```
 
 ```
@@ -39,7 +39,7 @@ Retrieving the presences is one call. At 34,364 records it sits under the API li
 route decision is needed:
 
 ```julia
-records = OBIS.occurrence("Orcinus orca"; progress = true)
+records = OceanBIS.occurrence("Orcinus orca"; progress = true)
 df = DataFrame(records)
 ```
 
@@ -123,7 +123,7 @@ dip in the 2000s is a survey programme ending, not whales leaving.
 ## 4. Mapping
 
 Coordinates are `Float64` columns, so they go straight into a plotting call. Land comes
-from Natural Earth; nothing here is specific to OBIS.jl:
+from Natural Earth; nothing here is specific to OceanBIS.jl:
 
 ```julia
 using CairoMakie, GeoMakie, NaturalEarth
@@ -203,16 +203,16 @@ does apparent species richness track sampling effort across regions?
 per region:
 
 ```julia
-areas = OBIS.area()
-lme = [i for i in 1:OBIS.nrow(areas)
+areas = OceanBIS.area()
+lme = [i for i in 1:OceanBIS.nrow(areas)
        if !ismissing(areas.type[i]) && areas.type[i] == "lme"]
 
 name, records, species = String[], Int[], Int[]
 for i in lme[1:26]
     s = try
-        OBIS.statistics(; areaid = areas.id[i])
+        OceanBIS.statistics(; areaid = areas.id[i])
     catch err
-        err isa OBIS.OBISError || rethrow()
+        err isa OceanBIS.OBISError || rethrow()
         continue                       # a region with no data is not a failure
     end
     (s["records"] > 0 && s["species"] > 0) || continue

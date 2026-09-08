@@ -11,7 +11,7 @@ const DEFAULT_BASE_URL = "https://api.obis.org/v3/"
 const DEFAULT_EXPORT_URL = "https://obis-open-data.s3.amazonaws.com/"
 
 "Repository URL, sent in the `User-Agent` header so OBIS can identify the client."
-const REPO_URL = "https://github.com/dantebertuzzi/OBIS.jl"
+const REPO_URL = "https://github.com/dantebertuzzi/OceanBIS.jl"
 
 "Largest page the API accepts for `/occurrence`."
 const MAX_PAGE_SIZE = 10_000
@@ -64,7 +64,7 @@ function package_version()
 end
 
 function default_user_agent()
-    return string("OBIS.jl/", package_version(), " (", REPO_URL, "; Julia ", VERSION, ")")
+    return string("OceanBIS.jl/", package_version(), " (", REPO_URL, "; Julia ", VERSION, ")")
 end
 
 const CONFIG = ClientConfig(
@@ -88,7 +88,7 @@ const CONFIG = ClientConfig(
 Return the active client configuration.
 
 ```jldoctest
-julia> OBIS.config().base_url
+julia> OceanBIS.config().base_url
 "https://api.obis.org/v3/"
 ```
 """
@@ -108,13 +108,13 @@ asks users not to parallelize downloads.
 
 ```julia
 # Fewer, larger requests for a long pull.
-OBIS.configure!(page_size = 10_000, progress = true)
+OceanBIS.configure!(page_size = 10_000, progress = true)
 
 # Cache raw responses so an analysis can be re-run against identical data.
-OBIS.configure!(cache = OBIS.QueryCache())
+OceanBIS.configure!(cache = OceanBIS.QueryCache())
 
 # Wait longer between requests on a shared or metered connection.
-OBIS.configure!(request_gap = 0.5)
+OceanBIS.configure!(request_gap = 0.5)
 ```
 """
 function configure!(;

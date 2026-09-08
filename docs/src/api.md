@@ -6,128 +6,128 @@ Everything a caller needs. Functions the package uses internally are in
 ## The module
 
 ```@docs
-OBIS.OBIS
+OceanBIS
 ```
 
 ## Occurrences
 
 ```@docs
-OBIS.occurrence
-OBIS.occurrence_pages
-OBIS.occurrence_by_id
-OBIS.OccurrencePages
-OBIS.cursor
-OBIS.fetched
-OBIS.expected
+OceanBIS.occurrence
+OceanBIS.occurrence_pages
+OceanBIS.occurrence_by_id
+OceanBIS.OccurrencePages
+OceanBIS.cursor
+OceanBIS.fetched
+OceanBIS.expected
 ```
 
 ## Taxa and checklists
 
 ```@docs
-OBIS.taxon
-OBIS.taxon_annotations
-OBIS.checklist
-OBIS.checklist_redlist
-OBIS.checklist_newest
+OceanBIS.taxon
+OceanBIS.taxon_annotations
+OceanBIS.checklist
+OceanBIS.checklist_redlist
+OceanBIS.checklist_newest
 ```
 
 ## Datasets, nodes, institutes, areas, countries
 
 ```@docs
-OBIS.dataset
-OBIS.dataset_by_id
-OBIS.dataset_errors
-OBIS.node
-OBIS.node_activities
-OBIS.institute
-OBIS.institute_by_id
-OBIS.area
-OBIS.country
-OBIS.metrics
-OBIS.metrics_downloads
+OceanBIS.dataset
+OceanBIS.dataset_by_id
+OceanBIS.dataset_errors
+OceanBIS.node
+OceanBIS.node_activities
+OceanBIS.institute
+OceanBIS.institute_by_id
+OceanBIS.area
+OceanBIS.country
+OceanBIS.metrics
+OceanBIS.metrics_downloads
 ```
 
 ## Statistics and facets
 
 ```@docs
-OBIS.statistics
-OBIS.statistics_years
-OBIS.statistics_env
-OBIS.statistics_qc
-OBIS.statistics_composition
-OBIS.facet
-OBIS.estimate_size
+OceanBIS.statistics
+OceanBIS.statistics_years
+OceanBIS.statistics_env
+OceanBIS.statistics_qc
+OceanBIS.statistics_composition
+OceanBIS.facet
+OceanBIS.estimate_size
 ```
 
 ## Results
 
 ```@docs
-OBIS.OBISTable
-OBIS.QueryMeta
-OBIS.metadata
-OBIS.nrow
-OBIS.ncol
-OBIS.extra_names
-OBIS.extra_column
+OceanBIS.OBISTable
+OceanBIS.QueryMeta
+OceanBIS.metadata
+OceanBIS.nrow
+OceanBIS.ncol
+OceanBIS.extra_names
+OceanBIS.extra_column
 ```
 
 ## Licensing and citation
 
 ```@docs
-OBIS.licenses
-OBIS.citations
-OBIS.obis_citation
-OBIS.normalize_license
-OBIS.license_url
-OBIS.permits_redistribution
-OBIS.permits_commercial_use
-OBIS.requires_attribution
-OBIS.ACCEPTED_LICENSES
-OBIS.LICENSE_URLS
+OceanBIS.licenses
+OceanBIS.citations
+OceanBIS.obis_citation
+OceanBIS.normalize_license
+OceanBIS.license_url
+OceanBIS.permits_redistribution
+OceanBIS.permits_commercial_use
+OceanBIS.requires_attribution
+OceanBIS.ACCEPTED_LICENSES
+OceanBIS.LICENSE_URLS
 ```
 
 ## Quality flags
 
 ```@docs
-OBIS.KNOWN_FLAGS
-OBIS.DROPPING_FLAGS
-OBIS.normalize_flag
-OBIS.normalize_flags
-OBIS.drops_record
+OceanBIS.KNOWN_FLAGS
+OceanBIS.DROPPING_FLAGS
+OceanBIS.normalize_flag
+OceanBIS.normalize_flags
+OceanBIS.drops_record
 ```
 
 ## The bulk export
 
 ```@docs
-OBIS.export_covers
-OBIS.export_url
-OBIS.export_archive_url
-OBIS.download_export
-OBIS.download_exports
-OBIS.export_licenses
-OBIS.read_export
+OceanBIS.export_covers
+OceanBIS.export_url
+OceanBIS.export_archive_url
+OceanBIS.download_export
+OceanBIS.download_exports
+OceanBIS.export_licenses
+OceanBIS.read_export
 ```
 
 ## Configuration and caching
 
 ```@docs
-OBIS.config
-OBIS.configure!
-OBIS.ClientConfig
-OBIS.QueryCache
-OBIS.cache_entries
-OBIS.clear_cache!
-OBIS.default_cache_dir
-OBIS.package_version
+OceanBIS.config
+OceanBIS.configure!
+OceanBIS.ClientConfig
+OceanBIS.QueryCache
+OceanBIS.cache_entries
+OceanBIS.clear_cache!
+OceanBIS.default_cache_dir
+OceanBIS.package_version
 ```
 
 ## Errors
 
 ```@docs
-OBIS.OBISError
-OBIS.OBISValidationError
-OBIS.OBISNameNotFoundError
-OBIS.OBISAPIError
-OBIS.OBISConnectionError
-OBIS.OBISLargeQueryError
+OceanBIS.OBISError
+OceanBIS.OBISValidationError
+OceanBIS.OBISNameNotFoundError
+OceanBIS.OBISAPIError
+OceanBIS.OBISConnectionError
+OceanBIS.OBISLargeQueryError
 ```

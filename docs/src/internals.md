@@ -7,9 +7,9 @@ request layer behave.
 ## Reference material
 
 ```@docs
-OBIS.disclaimer
-OBIS.OBIS_DISCLAIMER
-OBIS.RECORD_SELECTIONS
+OceanBIS.disclaimer
+OceanBIS.OBIS_DISCLAIMER
+OceanBIS.RECORD_SELECTIONS
 ```
 
 ## The schema
@@ -19,108 +19,108 @@ endpoint. Each entry declares a column name, a concrete element type, and how th
 value is converted.
 
 ```@docs
-OBIS.FieldSpec
-OBIS.OCCURRENCE_SCHEMA
-OBIS.TAXON_SCHEMA
-OBIS.DATASET_SCHEMA
-OBIS.NODE_SCHEMA
-OBIS.INSTITUTE_SCHEMA
-OBIS.AREA_SCHEMA
-OBIS.COUNTRY_SCHEMA
-OBIS.coerce_field
-OBIS.coerce_scalar
-OBIS.coerce_strlist
-OBIS.coerce_named_list
-OBIS.column_type
-OBIS.schema_names
-OBIS.coerce_epoch_ms
-OBIS.coerce_iso_datetime
-OBIS.coerce_flagset
-OBIS.build_table
-OBIS.json_to_julia
-OBIS.empty_table
-OBIS.take_rows
-OBIS.concat_tables
+OceanBIS.FieldSpec
+OceanBIS.OCCURRENCE_SCHEMA
+OceanBIS.TAXON_SCHEMA
+OceanBIS.DATASET_SCHEMA
+OceanBIS.NODE_SCHEMA
+OceanBIS.INSTITUTE_SCHEMA
+OceanBIS.AREA_SCHEMA
+OceanBIS.COUNTRY_SCHEMA
+OceanBIS.coerce_field
+OceanBIS.coerce_scalar
+OceanBIS.coerce_strlist
+OceanBIS.coerce_named_list
+OceanBIS.column_type
+OceanBIS.schema_names
+OceanBIS.coerce_epoch_ms
+OceanBIS.coerce_iso_datetime
+OceanBIS.coerce_flagset
+OceanBIS.build_table
+OceanBIS.json_to_julia
+OceanBIS.empty_table
+OceanBIS.take_rows
+OceanBIS.concat_tables
 ```
 
 ## Request layer
 
 ```@docs
-OBIS.api_get
-OBIS.raw_request
-OBIS.build_url
-OBIS.request_headers
-OBIS.retryable
-OBIS.backoff_delay
-OBIS.throttle!
-OBIS.check_response
-OBIS.results_of
-OBIS.total_of
-OBIS.TRANSPORT
-OBIS.default_transport
-OBIS.DOWNLOADER
-OBIS.default_downloader
-OBIS.http_error_advice
-OBIS.LAST_REQUEST
+OceanBIS.api_get
+OceanBIS.raw_request
+OceanBIS.build_url
+OceanBIS.request_headers
+OceanBIS.retryable
+OceanBIS.backoff_delay
+OceanBIS.throttle!
+OceanBIS.check_response
+OceanBIS.results_of
+OceanBIS.total_of
+OceanBIS.TRANSPORT
+OceanBIS.default_transport
+OceanBIS.DOWNLOADER
+OceanBIS.default_downloader
+OceanBIS.http_error_advice
+OceanBIS.LAST_REQUEST
 ```
 
 ## Parameter handling
 
 ```@docs
-OBIS.build_params
-OBIS.QueryParams
-OBIS.selection_value
-OBIS.validate_geometry
-OBIS.format_date
-OBIS.validate_depth
-OBIS.validate_uuid
-OBIS.validate_size
-OBIS.validate_fields
-OBIS.sorted_pairs
+OceanBIS.build_params
+OceanBIS.QueryParams
+OceanBIS.selection_value
+OceanBIS.validate_geometry
+OceanBIS.format_date
+OceanBIS.validate_depth
+OceanBIS.validate_uuid
+OceanBIS.validate_size
+OceanBIS.validate_fields
+OceanBIS.sorted_pairs
 ```
 
 ## Rights and citation
 
 ```@docs
-OBIS.CitationEntry
-OBIS.citation_entries
-OBIS.format_citation
-OBIS.bibtex_escape
-OBIS.dataset_counts
-OBIS.dataset_info
-OBIS.dataset_filters
-OBIS.attach_licenses
-OBIS.finalize_dataset_table
-OBIS.fetch_dataset_records
-OBIS.DatasetInfo
+OceanBIS.CitationEntry
+OceanBIS.citation_entries
+OceanBIS.format_citation
+OceanBIS.bibtex_escape
+OceanBIS.dataset_counts
+OceanBIS.dataset_info
+OceanBIS.dataset_filters
+OceanBIS.attach_licenses
+OceanBIS.finalize_dataset_table
+OceanBIS.fetch_dataset_records
+OceanBIS.DatasetInfo
 ```
 
 ## Access routes
 
 ```@docs
-OBIS.guard_query_size
-OBIS.stats_filters
-OBIS.parse_licenses_tsv
-OBIS.raw_request_absolute
-OBIS.download_file
-OBIS.EXPORT_COLUMN_SOURCES
-OBIS.export_select
+OceanBIS.guard_query_size
+OceanBIS.stats_filters
+OceanBIS.parse_licenses_tsv
+OceanBIS.raw_request_absolute
+OceanBIS.download_file
+OceanBIS.EXPORT_COLUMN_SOURCES
+OceanBIS.export_select
 ```
 
 ## Cache
 
 ```@docs
-OBIS.cache_key
-OBIS.cached_body
-OBIS.store_body!
+OceanBIS.cache_key
+OceanBIS.cached_body
+OceanBIS.store_body!
 ```
 
 ## Constants and helpers
 
 ```@docs
-OBIS.DEFAULT_BASE_URL
-OBIS.DEFAULT_EXPORT_URL
-OBIS.REPO_URL
-OBIS.MAX_PAGE_SIZE
-OBIS.format_count
+OceanBIS.DEFAULT_BASE_URL
+OceanBIS.DEFAULT_EXPORT_URL
+OceanBIS.REPO_URL
+OceanBIS.MAX_PAGE_SIZE
+OceanBIS.format_count
 ```

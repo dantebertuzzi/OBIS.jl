@@ -225,13 +225,13 @@ Turn an HTTP status into a sentence the caller can act on.
 function http_error_advice(status::Integer, body::AbstractString)
     if status == 400
         return "The API rejected the request. Its explanation is below; if it mentions a " *
-               "size limit, lower `page_size` with `OBIS.configure!`."
+               "size limit, lower `page_size` with `OceanBIS.configure!`."
     elseif status == 404
         return "No such endpoint. Check the path against the endpoints listed in the " *
                "package documentation."
     elseif status == 429
         return "Rate limited, and the retry budget is exhausted. Slow down with " *
-               "`OBIS.configure!(request_gap = 1.0)` and try again."
+               "`OceanBIS.configure!(request_gap = 1.0)` and try again."
     elseif status >= 500
         return "The OBIS service reported a server error. When the body names a specific " *
                "parameter, the request itself is at fault and retrying will not help."

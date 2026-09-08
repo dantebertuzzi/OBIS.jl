@@ -27,7 +27,7 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       # In a temporary environment rather than the project's, so the export reader — which
       # lives in a package extension — is exercised without DuckDB becoming a dependency of
-      # OBIS.jl or the repository's Project.toml being edited by the run.
+      # OceanBIS.jl or the repository's Project.toml being edited by the run.
       - name: Run integration tests
         run: |
           julia --project=. -e '

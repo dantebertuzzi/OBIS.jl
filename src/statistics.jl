@@ -14,12 +14,12 @@ Accepts the same filters as [`occurrence`](@ref) and counts exactly the records 
 would return, so it is the cheap way to size a query before running it.
 
 ```julia
-julia> st = OBIS.statistics("Abra alba");
+julia> st = OceanBIS.statistics("Abra alba");
 
 julia> st["records"], st["datasets"]
 (75356, 216)
 
-julia> OBIS.statistics("Abra alba"; absence = :only)["records"]
+julia> OceanBIS.statistics("Abra alba"; absence = :only)["records"]
 18387
 ```
 """
@@ -38,7 +38,7 @@ tracks survey programmes, digitization projects and the growth of OBIS itself; i
 evidence that a taxon became more abundant.
 
 ```julia
-julia> years = OBIS.statistics_years("Abra alba");
+julia> years = OceanBIS.statistics_years("Abra alba");
 
 julia> first(years)
 Dict{String, Any}("year" => 1841, "records" => 8)
@@ -93,10 +93,10 @@ Record counts grouped by one or more fields.
 
 The API truncates each facet's value list, so a facet result is a ranking of the most
 common values, not a complete enumeration. In particular the `flags` facet does not list
-every flag OBIS uses; `OBIS.KNOWN_FLAGS` is the fuller reference.
+every flag OBIS uses; `OceanBIS.KNOWN_FLAGS` is the fuller reference.
 
 ```julia
-julia> f = OBIS.facet("flags"; scientificname = "Abra alba");
+julia> f = OceanBIS.facet("flags"; scientificname = "Abra alba");
 
 julia> first(f["flags"])
 Dict{String, Any}("key" => "NO_DEPTH", "records" => 29772)
@@ -120,7 +120,7 @@ end
 Number of records a query would return, from one `/statistics` request.
 
 ```julia
-julia> OBIS.estimate_size(scientificname = "Mollusca") > 1_000_000
+julia> OceanBIS.estimate_size(scientificname = "Mollusca") > 1_000_000
 true
 ```
 """
@@ -184,11 +184,11 @@ function guard_query_size(params::QueryParams)
     println(io)
     println(io, "  1. Narrow the query — add `geometry`, `startdate`/`enddate`, or a")
     println(
-        io, "     `datasetid`. `OBIS.statistics(...)` prices a query before you run it."
+        io, "     `datasetid`. `OceanBIS.statistics(...)` prices a query before you run it."
     )
     println(io, "  2. Take only part of it, with `limit = n`. Records arrive ordered by")
     println(io, "     UUID, so this is an arbitrary subset, not the earliest records.")
-    println(io, "  3. Stream it with `OBIS.occurrence_pages(...)`, which processes one")
+    println(io, "  3. Stream it with `OceanBIS.occurrence_pages(...)`, which processes one")
     println(io, "     page at a time and can resume after an interruption.")
     if wants_api_only
         println(io)
@@ -198,13 +198,13 @@ function guard_query_size(params::QueryParams)
         println(io)
         println(io, "  4. Use the bulk export, which OBIS recommends at this volume:")
         println(
-            io, "     `OBIS.download_exports(...)` fetches the GeoParquet files for the"
+            io, "     `OceanBIS.download_exports(...)` fetches the GeoParquet files for the"
         )
         println(io, "     datasets a query touches. Note that the export is a periodic")
         println(io, "     snapshot, so it lags whatever the API has ingested since.")
     end
     println(io)
-    print(io, "  To proceed on the API anyway: `OBIS.configure!(api_record_limit = ")
+    print(io, "  To proceed on the API anyway: `OceanBIS.configure!(api_record_limit = ")
     print(io, estimate + 1)
     print(io, ")`, or pass `check_size = false`.")
 

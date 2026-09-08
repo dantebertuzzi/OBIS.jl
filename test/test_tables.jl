@@ -1,6 +1,6 @@
 @testset "Tables.jl interface" begin
     with_mock() do
-        t = OBIS.occurrence("Abra alba"; limit=3)
+        t = OceanBIS.occurrence("Abra alba"; limit=3)
 
         @test Tables.istable(typeof(t))
         @test Tables.columnaccess(typeof(t))
@@ -8,8 +8,8 @@
         @test Tables.rowcount(t) == 3
 
         sch = Tables.schema(t)
-        @test length(sch.names) == OBIS.ncol(t)
-        @test length(sch.types) == OBIS.ncol(t)
+        @test length(sch.names) == OceanBIS.ncol(t)
+        @test length(sch.types) == OceanBIS.ncol(t)
 
         # Access by name, by index, and through the interface all reach the same column.
         @test t.scientificName === Tables.getcolumn(t, :scientificName)
@@ -31,8 +31,8 @@ end
 
 @testset "size, keys and display" begin
     with_mock() do
-        t = OBIS.occurrence("Abra alba"; limit=3)
-        @test size(t) == (3, OBIS.ncol(t))
+        t = OceanBIS.occurrence("Abra alba"; limit=3)
+        @test size(t) == (3, OceanBIS.ncol(t))
         @test size(t, 1) == 3
         @test !isempty(t)
         @test :flags in keys(t)
@@ -51,8 +51,8 @@ end
 
 @testset "extra fields are preserved, not dropped" begin
     with_mock() do
-        t = OBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
-        names = OBIS.extra_names(t)
+        t = OceanBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
+        names = OceanBIS.extra_names(t)
         @test !isempty(names)
         @test issorted(names)
 
@@ -60,40 +60,40 @@ end
         core = Set(Tables.columnnames(t))
         @test isempty(intersect(Set(names), core))
 
-        col = OBIS.extra_column(t, first(names))
-        @test length(col) == OBIS.nrow(t)
+        col = OceanBIS.extra_column(t, first(names))
+        @test length(col) == OceanBIS.nrow(t)
 
         # An absent extra field yields a full column of missings, never an error.
-        @test all(ismissing, OBIS.extra_column(t, :definitely_not_a_field))
+        @test all(ismissing, OceanBIS.extra_column(t, :definitely_not_a_field))
     end
 end
 
 @testset "provenance travels with the result" begin
     with_mock() do
-        t = OBIS.occurrence("Abra alba"; limit=3)
-        m = OBIS.metadata(t)
+        t = OceanBIS.occurrence("Abra alba"; limit=3)
+        m = OceanBIS.metadata(t)
         @test m.endpoint == "occurrence"
         @test m.accessed == today()
-        @test m.total > OBIS.nrow(t)
-        @test m.base_url == OBIS.config().base_url
+        @test m.total > OceanBIS.nrow(t)
+        @test m.base_url == OceanBIS.config().base_url
         @test ("scientificname" => "Abra alba") in m.params
-        @test m.package_version == string(OBIS.package_version())
+        @test m.package_version == string(OceanBIS.package_version())
     end
 end
 
 @testset "DataFrames extension" begin
     with_mock() do
-        t = OBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
+        t = OceanBIS.occurrence("Delphinidae"; limit=25, licenses=false, check_size=false)
 
         df = DataFrame(t)
-        @test DataFrames.nrow(df) == OBIS.nrow(t)
+        @test DataFrames.nrow(df) == OceanBIS.nrow(t)
         @test :extra in propertynames(df)
         @test eltype(df.decimalLatitude) === Union{Missing,Float64}
 
         flat = DataFrame(t; flatten_extra=true)
         @test :extra ∉ propertynames(flat)
-        @test DataFrames.nrow(flat) == OBIS.nrow(t)
-        for nm in OBIS.extra_names(t)
+        @test DataFrames.nrow(flat) == OceanBIS.nrow(t)
+        for nm in OceanBIS.extra_names(t)
             @test nm in propertynames(flat) || Symbol("extra_", nm) in propertynames(flat)
         end
     end
@@ -101,10 +101,10 @@ end
 
 @testset "DataAPI generics work when DataFrames is loaded" begin
     with_mock() do
-        t = OBIS.occurrence("Abra alba"; limit=3, licenses=false)
+        t = OceanBIS.occurrence("Abra alba"; limit=3, licenses=false)
         # OBIS does not export these names, to avoid clashing with DataFrames. The
         # extension makes the DataFrames-provided generics work on an OBIS result.
         @test DataFrames.nrow(t) == 3
-        @test DataFrames.ncol(t) == OBIS.ncol(t)
+        @test DataFrames.ncol(t) == OceanBIS.ncol(t)
     end
 end

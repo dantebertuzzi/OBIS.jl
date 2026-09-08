@@ -15,7 +15,7 @@
 URL of the GeoParquet export for one dataset.
 
 ```jldoctest
-julia> OBIS.export_url("8acba7e7-2e50-4490-8328-b78a30472508")
+julia> OceanBIS.export_url("8acba7e7-2e50-4490-8328-b78a30472508")
 "https://obis-open-data.s3.amazonaws.com/occurrence/8acba7e7-2e50-4490-8328-b78a30472508.parquet"
 ```
 """
@@ -76,7 +76,7 @@ export_covers(params::QueryParams) = !haskey(params, "event")
 Download one dataset's GeoParquet export and return the local path.
 
 ```julia
-path = OBIS.download_export("8acba7e7-2e50-4490-8328-b78a30472508"; dir = "data")
+path = OceanBIS.download_export("8acba7e7-2e50-4490-8328-b78a30472508"; dir = "data")
 ```
 
 Read it with whichever Parquet reader you prefer; the package does not impose one. The
@@ -108,7 +108,7 @@ pure event records cannot be selected at all. [`export_covers`](@ref) reports wh
 query is in.
 
 ```julia
-paths = OBIS.download_exports("Abra alba"; dir = "obis-export")
+paths = OceanBIS.download_exports("Abra alba"; dir = "obis-export")
 ```
 """
 function download_exports(
@@ -121,7 +121,7 @@ function download_exports(
                 nothing,
                 "This query selects absence, dropped or event records, which the bulk " *
                 "export does not cover. Retrieve it through the API instead, with " *
-                "`OBIS.occurrence(...)` or `OBIS.occurrence_pages(...)`.",
+                "`OceanBIS.occurrence(...)` or `OceanBIS.occurrence_pages(...)`.",
             ),
         )
     end
@@ -234,12 +234,12 @@ old as the export, and a citation built from it should say so.
 function read_export(
     path::Union{AbstractString,AbstractVector{<:AbstractString}}; kwargs...
 )
-    ext = Base.get_extension(@__MODULE__, :OBISDuckDBExt)
+    ext = Base.get_extension(@__MODULE__, :OceanBISDuckDBExt)
     ext === nothing && throw(
         ArgumentError(
-            "OBIS.read_export needs DuckDB. Run `using DuckDB` (add it with " *
+            "OceanBIS.read_export needs DuckDB. Run `using DuckDB` (add it with " *
             "`import Pkg; Pkg.add(\"DuckDB\")`) and call this again; the reader lives in " *
-            "a package extension so that OBIS.jl itself does not depend on it.",
+            "a package extension so that OceanBIS.jl itself does not depend on it.",
         ),
     )
     return ext.read_export_impl(path; kwargs...)

@@ -4,11 +4,11 @@ using JSON3
 using Tables
 using DataFrames
 using DuckDB
-using OBIS
+using OceanBIS
 
 include("mock.jl")
 
-@testset "OBIS.jl" begin
+@testset "OceanBIS.jl" begin
     @testset "parameters" begin
         include("test_params.jl")
     end

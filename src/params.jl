@@ -190,7 +190,7 @@ function validate_uuid(name::Symbol, value)
                 value,
                 "Expected a UUID such as \"8acba7e7-2e50-4490-8328-b78a30472508\". " *
                 "A dataset UUID appears in the URL of its page on obis.org; a node UUID " *
-                "is listed by `OBIS.node()`.",
+                "is listed by `OceanBIS.node()`.",
             ),
         )
     end

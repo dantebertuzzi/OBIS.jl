@@ -1,5 +1,5 @@
 """
-    OBIS
+    OceanBIS
 
 A Julia client for OBIS, the Ocean Biodiversity Information System, a programme of the
 Intergovernmental Oceanographic Commission of UNESCO.
@@ -11,18 +11,20 @@ retrieved.
 !!! note "Not an official OBIS product"
     This is an independent, community-maintained client. It is not affiliated with,
     endorsed by, or maintained by OBIS, the Intergovernmental Oceanographic Commission, or
-    UNESCO. The name identifies the service the package connects to.
+    UNESCO. The name contracts Ocean Biodiversity Information System, the service the
+    package connects to; the General registry does not accept `OBIS` itself, being four
+    characters and all upper case.
 
 # Getting started
 
 ```julia
-using OBIS, DataFrames
+using OceanBIS, DataFrames
 
-recs = OBIS.occurrence("Abra alba"; limit = 1000)
+recs = OceanBIS.occurrence("Abra alba"; limit = 1000)
 df = DataFrame(recs)
 
-OBIS.licenses(recs)                        # may these data be redistributed?
-print(OBIS.citations(recs; format = :text))  # how to credit them
+OceanBIS.licenses(recs)                        # may these data be redistributed?
+print(OceanBIS.citations(recs; format = :text))  # how to credit them
 ```
 
 # Interpreting the results
@@ -32,7 +34,7 @@ excludes two classes of record that change what a result means. See the "Interpr
 data" section of the documentation, and the disclaimer in [`OBIS_DISCLAIMER`](@ref), before
 drawing conclusions.
 """
-module OBIS
+module OceanBIS
 
 using Dates
 using Dates: DateTime, Date, today, now, UTC
@@ -114,8 +116,8 @@ export citations, licenses, obis_citation
 # Results.
 #
 # `nrow`, `ncol` and `metadata` are deliberately not exported: DataFrames exports the same
-# names through DataAPI, and exporting them here would make `using OBIS, DataFrames` an
-# ambiguity error at every call site. Reach them as `OBIS.nrow(t)`, or load the DataFrames
+# names through DataAPI, and exporting them here would make `using OceanBIS, DataFrames` an
+# ambiguity error at every call site. Reach them as `OceanBIS.nrow(t)`, or load the DataFrames
 # extension, which makes the DataAPI versions work on an `OBISTable` directly.
 export OBISTable, extra_names, extra_column, cursor
 

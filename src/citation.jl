@@ -30,11 +30,11 @@ policy also allows citing the OBIS database as a whole; [`obis_citation`](@ref) 
 # Examples
 
 ```julia
-recs = OBIS.occurrence("Abra alba"; limit = 1000)
+recs = OceanBIS.occurrence("Abra alba"; limit = 1000)
 
-cites = OBIS.citations(recs)          # a table, one row per dataset
-print(OBIS.citations(recs; format = :text))
-write("references.bib", OBIS.citations(recs; format = :bibtex))
+cites = OceanBIS.citations(recs)          # a table, one row per dataset
+print(OceanBIS.citations(recs; format = :text))
+write("references.bib", OceanBIS.citations(recs; format = :bibtex))
 ```
 """
 function citations(t::OBISTable; format::Symbol=:table)
@@ -162,7 +162,7 @@ function fetch_dataset_records(meta::QueryMeta, ids::Vector{String})
         @warn """
         Citation metadata is unavailable for $(length(missing_ids)) datasets without one \
         request each, so those entries will be incomplete. Narrow the query, or call \
-        `OBIS.dataset(...)` with the same filters to retrieve the metadata yourself.""" maxlog =
+        `OceanBIS.dataset(...)` with the same filters to retrieve the metadata yourself.""" maxlog =
             1
         missing_ids = String[]
     end
@@ -232,7 +232,7 @@ The data policy allows citing the integrated database in addition to — never i
 the individual datasets, whose own restrictions continue to apply.
 
 ```jldoctest
-julia> OBIS.obis_citation(; description = "Distribution records of Abra alba", accessed = Date(2026, 9, 6), year = 2026)
+julia> OceanBIS.obis_citation(; description = "Distribution records of Abra alba", accessed = Date(2026, 9, 6), year = 2026)
 "OBIS (2026) Distribution records of Abra alba [Dataset] (Available: Ocean Biodiversity Information System. Intergovernmental Oceanographic Commission of UNESCO. https://obis.org. Accessed: 2026-09-06)"
 ```
 """
@@ -351,7 +351,7 @@ non-commercial, and `"unknown"` covers rights statements that could not be ident
 among them the literal value `Restricted` — which are not permission to redistribute.
 
 ```julia
-julia> OBIS.licenses(OBIS.occurrence("Abra alba"; limit = 500))
+julia> OceanBIS.licenses(OceanBIS.occurrence("Abra alba"; limit = 500))
 OBISTable: 3 records, 7 columns
 ```
 """
@@ -366,7 +366,7 @@ function licenses(t::OBISTable)
                 :t,
                 nothing,
                 "This table has no `license` column. Licences are attached to occurrence " *
-                "and dataset results; for other endpoints, query `OBIS.dataset(...)` with " *
+                "and dataset results; for other endpoints, query `OceanBIS.dataset(...)` with " *
                 "the same filters.",
             ),
         )

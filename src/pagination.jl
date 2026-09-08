@@ -29,19 +29,19 @@ Construct with [`occurrence_pages`](@ref).
 ```julia
 # Process a large query without holding it in memory.
 total = 0
-for page in OBIS.occurrence_pages(scientificname = "Mollusca")
-    total += OBIS.nrow(page)
+for page in OceanBIS.occurrence_pages(scientificname = "Mollusca")
+    total += OceanBIS.nrow(page)
 end
 
 # Checkpoint, then resume in another session.
-pages = OBIS.occurrence_pages(scientificname = "Mollusca")
+pages = OceanBIS.occurrence_pages(scientificname = "Mollusca")
 for page in pages
     process(page)
-    write("checkpoint.txt", OBIS.cursor(pages))
+    write("checkpoint.txt", OceanBIS.cursor(pages))
     break
 end
 
-resumed = OBIS.occurrence_pages(
+resumed = OceanBIS.occurrence_pages(
     scientificname = "Mollusca", after = read("checkpoint.txt", String)
 )
 ```

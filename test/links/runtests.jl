@@ -21,7 +21,7 @@
 
 using Test
 using HTTP
-using OBIS
+using OceanBIS
 
 const ROOT = dirname(dirname(@__DIR__))
 
@@ -119,7 +119,7 @@ function reachable(url::AbstractString; follow::Bool=true, attempts::Int=3)
                 r = HTTP.request(
                     method,
                     url;
-                    headers=["User-Agent" => OBIS.config().user_agent],
+                    headers=["User-Agent" => OceanBIS.config().user_agent],
                     status_exception=false,
                     redirect=follow,
                     redirect_limit=10,

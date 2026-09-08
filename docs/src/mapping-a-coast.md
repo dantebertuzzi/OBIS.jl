@@ -4,12 +4,12 @@ Four maps of one coastline, none of them a scatter of one query. The point of th
 is that the interesting maps come from asking the API a different question, not from
 plotting the same answer more prettily.
 
-The script is [`examples/brazil.jl`](https://github.com/dantebertuzzi/OBIS.jl/blob/main/examples/brazil.jl).
+The script is [`examples/brazil.jl`](https://github.com/dantebertuzzi/OceanBIS.jl/blob/main/examples/brazil.jl).
 Run it with `julia --project=examples examples/brazil.jl`. Every number and figure below
 came from that run; the counts move as OBIS ingests data.
 
 ```julia
-using OBIS, DataFrames, Statistics
+using OceanBIS, DataFrames, Statistics
 ```
 
 The first run makes about six hundred small requests and retrieves some 26,000 records.
@@ -18,7 +18,7 @@ so without one the same script run tomorrow draws different maps and nothing kep
 what today's were based on.
 
 ```julia
-OBIS.configure!(cache = OBIS.QueryCache())
+OceanBIS.configure!(cache = OceanBIS.QueryCache())
 ```
 
 ## 1. The region, priced before anything is downloaded
@@ -28,7 +28,7 @@ a hand-drawn box, and the same one their statistics are reported against:
 
 ```julia
 for id in (40017, 40016, 40015)          # North, East and South Brazil Shelf
-    OBIS.statistics(; areaid = id)
+    OceanBIS.statistics(; areaid = id)
 end
 ```
 
@@ -51,7 +51,7 @@ occurrences:
 ```julia
 cell(w, s) = "POLYGON (($w $s, $(w+1) $s, $(w+1) $(s+1), $w $(s+1), $w $s))"
 
-st = OBIS.statistics(; geometry = cell(-46.0, -24.0))
+st = OceanBIS.statistics(; geometry = cell(-46.0, -24.0))
 (st["records"], st["species"])
 ```
 
@@ -126,7 +126,7 @@ its effort, not how many species live there.
 Two taxa, one retrieval each per shelf:
 
 ```julia
-corals = vcat((DataFrame(OBIS.occurrence("Scleractinia"; areaid = id))
+corals = vcat((DataFrame(OceanBIS.occurrence("Scleractinia"; areaid = id))
                for id in (40017, 40016, 40015))...)
 ```
 
@@ -173,7 +173,7 @@ essentially every record even where the provider reported no depth of its own. C
 the shark and ray records by it turns the map into a statement about coverage:
 
 ```julia
-sharks = vcat((DataFrame(OBIS.occurrence("Chondrichthyes"; areaid = id))
+sharks = vcat((DataFrame(OceanBIS.occurrence("Chondrichthyes"; areaid = id))
                for id in (40017, 40016, 40015))...)
 count(d -> d < 200, skipmissing(sharks.bathymetry)) / nrow(sharks)
 ```
@@ -204,7 +204,7 @@ the blank offshore is about ship time rather than about sharks.
 
 ## Notes on drawing the maps
 
-Plotting is not part of OBIS.jl, and two of the wrinkles below are GeoMakie's rather than
+Plotting is not part of OceanBIS.jl, and two of the wrinkles below are GeoMakie's rather than
 this package's — but they cost an afternoon each, so they are recorded here.
 
   - **GeoMakie 0.7 does not clip a plot to the axis limits.** A land polygon drawn under a

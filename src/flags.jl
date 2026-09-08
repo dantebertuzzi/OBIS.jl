@@ -71,10 +71,10 @@ Unknown flags are passed through rather than rejected: OBIS adds quality checks 
 and a hard allow-list would reject a valid new flag.
 
 ```jldoctest
-julia> OBIS.normalize_flag("on_land")
+julia> OceanBIS.normalize_flag("on_land")
 "ON_LAND"
 
-julia> OBIS.normalize_flag(:no_depth)
+julia> OceanBIS.normalize_flag(:no_depth)
 "NO_DEPTH"
 ```
 """
@@ -88,7 +88,7 @@ function normalize_flag(flag)
         Unrecognized OBIS quality flag $(repr(s)); sending it unchanged.
         If this is a typo the API will not report it: an unmatched `flags` value returns \
         zero records, and an unmatched `exclude` value applies no filter. Known flags are \
-        in `OBIS.KNOWN_FLAGS`.""" _id = Symbol("obis_unknown_flag_", s) maxlog = 1
+        in `OceanBIS.KNOWN_FLAGS`.""" _id = Symbol("obis_unknown_flag_", s) maxlog = 1
     end
     return s
 end
@@ -102,12 +102,12 @@ Accepts a `String`, a `Symbol`, or any iterable of those. A comma-separated stri
 split, so both `"ON_LAND,NO_DEPTH"` and `["ON_LAND", "NO_DEPTH"]` work.
 
 ```jldoctest
-julia> OBIS.normalize_flags(["on_land", :NO_DEPTH])
+julia> OceanBIS.normalize_flags(["on_land", :NO_DEPTH])
 2-element Vector{String}:
  "ON_LAND"
  "NO_DEPTH"
 
-julia> OBIS.normalize_flags("on_land,no_match")
+julia> OceanBIS.normalize_flags("on_land,no_match")
 2-element Vector{String}:
  "ON_LAND"
  "NO_MATCH"
@@ -124,10 +124,10 @@ normalize_flags(flags) = [normalize_flag(f) for f in flags]
 Whether a record carrying `flag` is dropped from the OBIS main index.
 
 ```jldoctest
-julia> OBIS.drops_record("NO_MATCH")
+julia> OceanBIS.drops_record("NO_MATCH")
 true
 
-julia> OBIS.drops_record("on_land")
+julia> OceanBIS.drops_record("on_land")
 false
 ```
 """

@@ -14,7 +14,7 @@ OBIS states the general caution itself, in its data policy:
 > geo-referencing, data handling, and mapping. They should cross check their results for
 > possible errors and qualify their interpretation of any results accordingly.
 
-Print it in full with [`OBIS.disclaimer`](@ref).
+Print it in full with [`OceanBIS.disclaimer`](@ref).
 
 ## Record counts measure sampling effort
 
@@ -29,9 +29,9 @@ looked varies by orders of magnitude more than the biology does.
 You can see the shape of it directly:
 
 ```julia
-using OBIS
+using OceanBIS
 
-years = OBIS.statistics_years("Abra alba")
+years = OceanBIS.statistics_years("Abra alba")
 
 for e in years
     e["year"] >= 1960 || continue
@@ -67,8 +67,8 @@ Three consequences:
   from the same datasets, region and period — the effort that produced them:
 
 ```julia
-target = OBIS.statistics("Abra alba"; areaid = 259)["records"]
-effort = OBIS.statistics(; areaid = 259)["records"]
+target = OceanBIS.statistics("Abra alba"; areaid = 259)["records"]
+effort = OceanBIS.statistics(; areaid = 259)["records"]
 share  = target / effort
 ```
 
@@ -89,14 +89,14 @@ zero, and names that cannot be matched to the World Register of Marine Species, 
 match a taxon WoRMS considers exclusively freshwater or terrestrial.
 
 ```julia
-OBIS.DROPPING_FLAGS
+OceanBIS.DROPPING_FLAGS
 ```
 
 Dropped records are not deleted, only hidden by default. They are the record of what went
 wrong, and they are worth looking at when a dataset returns fewer records than expected:
 
 ```julia
-dropped = OBIS.occurrence("Abra alba"; dropped = :only)
+dropped = OceanBIS.occurrence("Abra alba"; dropped = :only)
 
 # Why were they dropped?
 using DataFrames
@@ -121,16 +121,16 @@ scarcer half. For *Abra alba*, the absences number roughly a quarter again of th
 across fourteen datasets:
 
 ```julia
-OBIS.statistics("Abra alba")["records"]                      # presences
-OBIS.statistics("Abra alba"; absence = :only)["records"]      # absences
-OBIS.statistics("Abra alba"; absence = :include)["records"]   # both
+OceanBIS.statistics("Abra alba")["records"]                      # presences
+OceanBIS.statistics("Abra alba"; absence = :only)["records"]      # absences
+OceanBIS.statistics("Abra alba"; absence = :include)["records"]   # both
 ```
 
 Absence records are excluded from the default view on either access route, and asked for
 with `absence = :include` or `:only`. OBIS's data access page says the Mapper downloads and
 the bulk export contain none at all; for the bulk export that is stale — the files do carry
 them, verified count for count against `/statistics` (NOTES.md §7.3), and
-[`OBIS.read_export`](@ref) reads them with the same tri-state selection the API takes. The
+[`OceanBIS.read_export`](@ref) reads them with the same tri-state selection the API takes. The
 Mapper was not checked, so treat the page's statement about it as it stands.
 
 Why it matters: a presence-only dataset cannot distinguish "not recorded here" from "looked
@@ -142,7 +142,7 @@ assumption from the analysis.
 
 ```julia
 # Presences and absences together, labelled.
-both = OBIS.occurrence("Abra alba"; absence = :include, limit = 5000)
+both = OceanBIS.occurrence("Abra alba"; absence = :include, limit = 5000)
 count(both.absence)          # how many are absences
 ```
 
@@ -153,13 +153,13 @@ Flags do not remove a record. `ON_LAND`, `NO_DEPTH`, `DEPTH_EXCEEDS_BATH`,
 ignoring them silently accepts every problem they describe.
 
 ```julia
-recs = OBIS.occurrence("Abra alba"; limit = 5000)
+recs = OceanBIS.occurrence("Abra alba"; limit = 5000)
 
 # How many marine records are positioned on land?
 count(fs -> "ON_LAND" in fs, recs.flags)
 
 # Exclude them at the source instead.
-clean = OBIS.occurrence("Abra alba"; exclude = "ON_LAND", limit = 5000)
+clean = OceanBIS.occurrence("Abra alba"; exclude = "ON_LAND", limit = 5000)
 ```
 
 `ON_LAND` is a georeferencing error most of the time: a coordinate transposed, truncated,
@@ -181,7 +181,7 @@ being checked against — in a canyon or a trench, the flag can be the thing tha
 `MARINE_UNSURE` reflects uncertainty in WoRMS about the taxon's habitat, not about the
 observation.
 
-The flags in `OBIS.KNOWN_FLAGS` are the documented vocabulary, and the QC pipeline's own
+The flags in `OceanBIS.KNOWN_FLAGS` are the documented vocabulary, and the QC pipeline's own
 reference at [github.com/iobis/obis-qc](https://github.com/iobis/obis-qc) defines each
 check. The vocabulary is open — OBIS adds checks — so an unrecognized flag is passed
 through with a warning rather than rejected.
@@ -190,7 +190,7 @@ through with a warning rather than rejected.
 first move than inspecting records:
 
 ```julia
-qc = OBIS.statistics_qc("Abra alba")
+qc = OceanBIS.statistics_qc("Abra alba")
 qc["flags"]
 qc["onland"]
 ```
@@ -209,22 +209,22 @@ name the provider wrote. The provider's original is kept as `originalScientificN
 the two differ whenever a synonym was resolved, a misspelling corrected, or a name updated.
 
 ```julia
-recs = OBIS.occurrence("Abra alba"; limit = 1000)
-count(i -> recs.scientificName[i] != recs.originalScientificName[i], 1:OBIS.nrow(recs))
+recs = OceanBIS.occurrence("Abra alba"; limit = 1000)
+count(i -> recs.scientificName[i] != recs.originalScientificName[i], 1:OceanBIS.nrow(recs))
 ```
 
 Querying by `taxonid` (an AphiaID) rather than by name avoids the ambiguity entirely, since
 it addresses a WoRMS concept directly:
 
 ```julia
-OBIS.occurrence(; taxonid = 141433, limit = 100)     # Abra alba, unambiguously
+OceanBIS.occurrence(; taxonid = 141433, limit = 100)     # Abra alba, unambiguously
 ```
 
 Where a name could not be matched, records carry `NO_MATCH` and are dropped, and the WoRMS
 team's notes on the name are available:
 
 ```julia
-OBIS.taxon_annotations(; scientificname = "Abra alba")
+OceanBIS.taxon_annotations(; scientificname = "Abra alba")
 ```
 
 ## A short checklist

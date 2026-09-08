@@ -14,7 +14,7 @@ using JSON3
 const FIXTURE_DIR = joinpath(@__DIR__, "fixtures")
 const BASE = "https://api.obis.org/v3/"
 const EXPORT_BASE = "https://obis-open-data.s3.amazonaws.com/"
-const UA = "OBIS.jl fixture recorder (https://github.com/dantebertuzzi/OBIS.jl)"
+const UA = "OceanBIS.jl fixture recorder (https://github.com/dantebertuzzi/OceanBIS.jl)"
 
 # name => path, so a test can refer to a fixture by an obvious name.
 const REQUESTS = [
