@@ -19,7 +19,13 @@ function write_example_scripts()
             "figures.jl",
             "The three figures shown in the README and in the manual's other pages.",
         ),
-        ("theme.jl", "The shared colour palette and Makie theme both scripts include."),
+        (
+            "brazil.jl",
+            "Four maps of the Brazilian shelf: a choropleth built from `statistics` alone, \
+             the same cells with sampling effort divided out, one download read at two \
+             taxonomic ranks, and a depth-coloured map with its own marginal.",
+        ),
+        ("theme.jl", "The shared colour palette and Makie theme the scripts include."),
     ]
     open(joinpath(@__DIR__, "src", "example-scripts.md"), "w") do io
         println(io, "# Example scripts\n")
@@ -67,6 +73,7 @@ makedocs(;
         "Getting started" => "getting-started.md",
         "Interpreting OBIS data" => "interpreting.md",
         "Worked example: killer whales" => "worked-example.md",
+        "Mapping a coast" => "mapping-a-coast.md",
         "Example scripts" => "example-scripts.md",
         "Licensing and citation" => "licensing.md",
         "Large queries" => "large-queries.md",

@@ -8,6 +8,17 @@ All notable changes to this project are documented here. The format follows
 
 ### Added
 
+- `examples/brazil.jl`, four maps of the Brazilian shelf that are not scatters of one
+  query: a choropleth of records and species per one-degree cell built from `statistics`
+  alone, without retrieving an occurrence; the same cells with the species–effort relation
+  divided out; `Scleractinia` read at the order and at the endemic reef genus `Mussismilia`,
+  which answer different questions about where the reefs are; and sharks and rays coloured
+  by the seabed depth under them, with a marginal showing that 77% sit over water shallower
+  than 200 m. The script caches every response, so a re-run rebuilds the same figures from
+  the same responses.
+- `Palette` gains `landfill` and the `seq` and `div` value scales the new maps need: one
+  hue for magnitude, two hues around a neutral grey for polarity, each stepped separately
+  for the light and dark surfaces and checked for lightness monotonicity.
 - A link check (`test/links/runtests.jl`) over every URL in the README, the manual, the
   docstrings, the CITATION files and the example scripts, and over the ones the package
   builds at run time from a prefix and an identifier. It runs weekly alongside the

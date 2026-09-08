@@ -326,6 +326,40 @@ unstack(combine(groupby(work, [:decade, :hemisphere]), nrow => :records),
         :decade, :hemisphere, :records; fill = 0)
 ```
 
+## Mapping a coast
+
+[`examples/brazil.jl`](examples/brazil.jl) maps the Brazilian shelf four ways, none of them
+a scatter of one query. It also caches every response into `~/.cache/OBIS.jl`, so the
+second run rebuilds the same figures from the same responses rather than from whatever
+OBIS holds that day. Written up in the manual under
+[Mapping a coast](https://dantebertuzzi.github.io/OBIS.jl/stable/mapping-a-coast/).
+
+**A choropleth costs no occurrence records.** `statistics` honours `geometry`, so one cheap
+request per grid cell returns that cell's record and species counts. Six hundred requests
+buy the map below, and the two panels are the same map: the bright cells are the ones with
+a marine laboratory on them, plus the oceanic islands.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/brazil-effort-dark.png">
+  <img alt="Records and species per one-degree cell along the Brazilian coast, on a logarithmic colour scale" src="examples/figures/brazil-effort.png">
+</picture>
+
+**The rank you query at is the question you asked.** `Scleractinia` is an order, and it
+holds the reef builders together with the solitary deep-water corals that reach the
+southern end of the coast. Read at the order the data say corals reach 34°S; read at
+`Mussismilia`, the reef genus endemic to Brazil, they say the reefs are tropical and 93% of
+the reef records sit on the Abrolhos Bank. Both answers come out of the same download.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="examples/figures/brazil-corals-dark.png">
+  <img alt="Scleractinia records along the Brazilian coast with Mussismilia highlighted, and a zoom on the Abrolhos Bank" src="examples/figures/brazil-corals.png">
+</picture>
+
+The other two figures divide sampling effort back out of the richness map, and colour
+sharks and rays by the depth of the seabed under them — 77% of those records sit over water
+shallower than 200 m, so OBIS's coverage of Brazil's exclusive economic zone is a coverage
+of its shelf.
+
 ## How it fits Julia
 
 The package is written for the way Julia code is normally written, and the four points
