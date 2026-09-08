@@ -31,7 +31,7 @@ absence records, excluded by default : 4386
 dropped records, excluded by default : 65
 ```
 
-4,386 absence records — surveys that went looking for killer whales and did not find them —
+4,386 absence records (surveys that went looking for killer whales and did not find them)
 are excluded from every default query and from the Mapper downloads. For a species
 distribution question they are the other half of the evidence.
 
@@ -151,9 +151,9 @@ save("orca-global.png", fig; px_per_unit = 2)
 </picture>
 ```
 
-Killer whales are genuinely cosmopolitan, so this map is unusually close to a real
-distribution — and even so, the density is as much about observers as about whales: heavy
-off northwest Europe, the Pacific Northwest and the Antarctic Peninsula, thin across the
+Killer whales are genuinely cosmopolitan, so this map comes unusually close to a real
+distribution. Even so, the density still tracks where the observers are: heavy off
+northwest Europe, the Pacific Northwest and the Antarctic Peninsula, thin across the
 tropics and the southern Indian Ocean.
 
 Zooming in shows structure a world map flattens away. Each panel is the same records under
@@ -189,9 +189,10 @@ end
 </picture>
 ```
 
-The Norwegian records trace the herring-following population along the coast and shelf; the
-British Columbia records trace the Inside Passage; the northwest Europe panel is dominated
-by a dense block north of Scotland. Each is a survey footprint as much as a habitat.
+The Norwegian records trace the herring-following population along the coast and shelf, and
+the British Columbia records follow the Inside Passage. A dense block north of Scotland
+dominates the northwest Europe panel. Each panel is a survey footprint as much as a
+habitat.
 
 ## 5. A statistic worth computing
 
@@ -268,35 +269,35 @@ across 26 large marine ecosystems
 ```
 
 ρ = 0.77 across 26 large marine ecosystems: regions with more records have more species on
-record. The slope of 0.45 says how the two are related — richness rises roughly as the
+record. The slope of 0.45 says how the two are related: richness rises roughly as the
 square root of effort, so a region with a hundred times the records shows about ten times
 the species.
 
-Read the slope carefully in both directions. It is **not** a claim that the Caribbean is
-poorer than the California Current; it is a warning that any comparison of regional richness
-which ignores effort is partly measuring survey budgets. It is also not a bias correction —
-turning these counts into comparable richness estimates is a modelling problem, and the
-scope of a different package.
+Read the slope carefully in both directions. It does not mean the Caribbean is poorer than
+the California Current. It means that any comparison of regional richness that ignores
+effort is partly measuring survey budgets. Nor does it correct the bias: turning these
+counts into comparable richness estimates is a modelling problem, and the scope of a
+different package.
 
 Two caveats on the analysis itself, since it is an example and not a result:
 
 - The 26 regions are the first 26 large marine ecosystems in the area list, not a designed
   sample. They differ in area, latitude and habitat, none of which is controlled for.
 - Records and species are not independent quantities: a species enters the count because a
-  record exists. The correlation is real, but it is partly definitional, which is exactly
-  why the slope matters more than the correlation.
+  record exists. The correlation is real but partly definitional, which is why the slope is
+  the more informative number here.
 
 ## The complete scripts
 
-The code above is trimmed to what each step is about — the shared theme, the light and dark
-variants, and the captions are left out. Both scripts appear in full, exactly as they are in
-the repository, under [Example scripts](example-scripts.md).
+The code above is trimmed to what each step is about, leaving out the shared theme, the
+light and dark variants, and the captions. Both scripts appear in full, exactly as they are
+in the repository, under [Example scripts](example-scripts.md).
 
 ## What to take from this
 
 The client's job ended at step 1. Everything after it is ordinary Julia on an ordinary
-table — which is the argument for a stable typed schema: `groupby`, `unstack`, `cor` and
-`log10` all work without a cleaning step, and they keep working when the query changes.
+table. `groupby`, `unstack`, `cor` and `log10` all work without a cleaning step, and they
+keep working when the query changes.
 
 The interpretation, though, does not come from the tools. See
 [Interpreting OBIS data](interpreting.md).

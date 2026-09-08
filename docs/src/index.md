@@ -57,36 +57,36 @@ Arrow and Parquet all work without the package depending on any of them.
 | [`QueryCache`](@ref OBISClient.QueryCache) | Reproducible re-runs against cached responses | [Reproducibility](reproducibility.md) |
 | [`configure!`](@ref OBISClient.configure!) | Page size, pacing, retries, caching | [Getting started](getting-started.md) |
 
-A full session — retrieve, map, group, pivot and test a relationship — is in
-[Worked example: killer whales](worked-example.md).
+[Worked example: killer whales](worked-example.md) works through a full session: retrieve,
+map, group, pivot, and test a relationship.
 
 Full docstrings are in the [Public API](api.md) reference. Functions the package uses
 internally, and that the schema is built from, are in [Internals](internals.md).
 
 ## What the package guarantees
 
-**A stable, typed schema.** OBIS returns only the fields a record has a value for, so the
+**The schema does not move.** OBIS returns only the fields a record has a value for, so the
 field set differs from query to query. A result here always has the same columns in the
 same order, with concrete types and `missing` for absent values. Darwin Core fields outside
 the core schema are preserved per row in an `extra` column.
 
-**Rights that travel with the data.** Every occurrence row carries the licence and citation
-of its dataset, and the result records the date it was retrieved — which the OBIS citation
-format requires and nothing in the data supplies.
+**Every row carries its rights.** The licence and citation of the dataset a record came
+from travel with the record, and the result records the date it was retrieved. The OBIS
+citation format requires that date, and nothing in the data supplies it.
 
-**Access to what the default view omits.** Absence records and records dropped by the
-quality pipeline are excluded unless asked for, and the tri-state `absence`, `dropped` and
+**You can reach what the default view omits.** Absence records and records dropped by the
+quality pipeline are excluded unless asked for. The tri-state `absence`, `dropped` and
 `event` keywords ask for them.
 
-**A choice between access routes.** A query too large for the API raises an error listing
-the alternatives instead of switching routes on its own. The API and the bulk export don't
-cover the same records, so the choice is yours to make.
+**The choice of access route stays yours.** A query too large for the API raises an error
+listing the alternatives instead of switching routes on its own, because the API and the
+bulk export do not cover the same records.
 
 ## Read this before analysing anything
 
 Record counts measure sampling effort as much as biology, and the default view of OBIS is
-filtered in two directions. [Interpreting OBIS data](interpreting.md) covers the four ways
-a correct query becomes a wrong conclusion.
+filtered in two directions. [Interpreting OBIS data](interpreting.md) covers what turns a
+correct query into a wrong conclusion.
 
 ```@raw html
 <picture>
@@ -97,9 +97,9 @@ a correct query becomes a wrong conclusion.
 
 ## How this manual was checked
 
-The numbers, field names and error messages here were checked against the live OBIS API,
-not copied from its documentation. Where a statement rests on observation rather than on
-something OBIS publishes, the text says so.
+The numbers, field names and error messages here come from the live OBIS API rather than
+from its documentation. Where a statement rests on observation rather than on something
+OBIS publishes, the text says so.
 
 Output in the examples was pasted back from actual runs. Docstring examples marked
 `jldoctest` run on every documentation build. An
@@ -134,13 +134,13 @@ versus observed.
 ## Scope
 
 The package is a client. It does not model, plot, or ship data. Analysis belongs in
-packages built for it, and OBIS records have a DOI and an access date that a frozen copy
+packages built for it, and OBIS records carry a DOI and an access date that a frozen copy
 inside a package would misreport.
 
 ## How to cite
 
-Cite the **datasets you used** — `OBISClient.citations(result)` builds those, with the access
-date filled in. See [Licensing and citation](licensing.md). Citing the package does not
+Cite the **datasets you used**. `OBISClient.citations(result)` builds those, with the access
+date filled in; see [Licensing and citation](licensing.md). Citing the package does not
 replace citing the data.
 
 For the package itself, the repository ships a

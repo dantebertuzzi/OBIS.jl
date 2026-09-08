@@ -23,7 +23,7 @@ OBISClient.configure!(cache = OBISClient.QueryCache())
 
 ## 1. The region, priced before anything is downloaded
 
-The coast is covered by three OBIS areas, so the region is OBIS's own definition rather than
+The coast is covered by three OBIS areas, so the region is OBIS's own definition instead of
 a hand-drawn box, and the same one their statistics are reported against:
 
 ```julia
@@ -45,7 +45,7 @@ figures needs them.
 
 `statistics` honours every occurrence filter, `geometry` included, so one cheap request per
 grid cell returns that cell's record and species counts. A one-degree grid over the coast
-is six hundred requests and almost no data — less traffic than a single page of
+is six hundred requests and almost no data, less traffic than a single page of
 occurrences:
 
 ```julia
@@ -57,8 +57,8 @@ st = OBISClient.statistics(; geometry = cell(-46.0, -24.0))
 
 Requesting every cell of the bounding box would waste most of them on the Amazon basin and
 the open South Atlantic, so the grid is masked to a corridor five degrees wide around a
-coarse coastline polyline, plus a small disc around each of the oceanic island groups —
-Fernando de Noronha, São Pedro e São Paulo, and Trindade — which lie outside it.
+coarse coastline polyline, plus a small disc around each of the oceanic island groups that
+lie outside it: Fernando de Noronha, São Pedro e São Paulo, and Trindade.
 
 ```
 602 cells queried, 580 with records; the busiest holds 74216 records and the emptiest 0.
@@ -81,9 +81,10 @@ another.
   <img alt="Records and species per one-degree cell along the Brazilian coast, on a logarithmic colour scale" src="../assets/brazil-effort.png">
 </picture>
 
-The two panels are the same map. The bright cells are not the richest stretches of coast,
-they are the ones with a marine laboratory on them — São Sebastião, Cabo Frio, Todos os
-Santos — plus the oceanic islands, where one expedition's records have nowhere else to fall.
+The two panels are the same map. The bright cells are the ones with a marine laboratory on
+them, São Sebastião, Cabo Frio and Todos os Santos, plus the oceanic islands, where one
+expedition's records have nowhere else to fall. How rich the coast actually is has little
+to do with it.
 
 ## 3. Dividing the effort out
 
@@ -154,7 +155,7 @@ the families down there are
   Dendrophylliidae     31
 ```
 
-`Mussismilia` — endemic to Brazil, and the genus the Abrolhos reefs are built from — is the
+`Mussismilia`, endemic to Brazil and the genus the Abrolhos reefs are built from, is the
 reef half of the answer, and 4,469 of the 17,134 records.
 
 <picture>
@@ -188,10 +189,10 @@ seabed depth under the Chondrichthyes records:
 the shallowest band includes 309 records the depth grid places above sea level.
 ```
 
-The shallowest band opens downward rather than starting at zero. Some records sit where the
-global depth grid says dry land, because a grid cell is coarser than a coastline; they
-belong in the shallow band rather than in a footnote, and certainly not silently dropped,
-which would make every band a share of a total that is not the number of records.
+The shallowest band opens downward instead of starting at zero. Some records sit where the
+global depth grid says dry land, because a grid cell is coarser than a coastline. They
+belong in the shallow band, not in a footnote; dropping them silently would make every band
+a share of a total that is not the number of records.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="../assets/brazil-depth-dark.png">
@@ -200,12 +201,12 @@ which would make every band a share of a total that is not the number of records
 
 77% of the records sit over water shallower than 200 m. Brazil's exclusive economic zone is
 mostly abyssal, so on this evidence OBIS's coverage of it is a coverage of the shelf, and
-the blank offshore is about ship time rather than about sharks.
+the blank offshore says more about ship time than about sharks.
 
 ## Notes on drawing the maps
 
-Plotting is not part of OBISClient.jl, and two of the wrinkles below are GeoMakie's rather than
-this package's — but they cost an afternoon each, so they are recorded here.
+Plotting is not part of OBISClient.jl, and two of the wrinkles below are GeoMakie's, not
+this package's. They cost an afternoon each, so they are recorded here.
 
   - **GeoMakie 0.7 does not clip a plot to the axis limits.** A land polygon drawn under a
     regional map bleeds across the rest of the figure and paints over the tick labels. The

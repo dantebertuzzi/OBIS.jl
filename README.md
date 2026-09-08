@@ -77,7 +77,7 @@ write("obis-references.bib", OBISClient.citations(recs; format = :bibtex))
 
 One query usually spans several datasets, and the most restrictive licence governs the
 whole. Where a provider's rights statement can't be identified, it is reported as
-`unknown`, never assumed permissive.
+`unknown`. The package does not assume it is permissive.
 
 [Licensing and citation](https://dantebertuzzi.github.io/OBISClient.jl/stable/licensing/)
 covers the data policy and shows the rights summary laid out with PrettyTables.
@@ -85,8 +85,8 @@ covers the data policy and shows the rights summary laid out with PrettyTables.
 ## Large queries and the bulk export
 
 For big volumes OBIS recommends its GeoParquet export over the API. A query estimated to
-exceed the configured limit raises an error listing your options rather than quietly
-switching routes, since the two don't return the same thing: the export is a periodic
+exceed the configured limit raises an error listing your options instead of switching
+routes quietly, since the two don't return the same thing: the export is a periodic
 snapshot, the API is live.
 
 ```julia
@@ -146,9 +146,9 @@ and [Internals](https://dantebertuzzi.github.io/OBISClient.jl/stable/internals/)
 - **`missing` means missing.** Collection-valued columns are never `missing`: `flags` is an
   empty `Set{String}` when nothing was raised, so `count(fs -> "ON_LAND" in fs, recs.flags)`
   needs no missing-handling.
-- **Tables.jl is the interface, not DataFrames.** Installing the client pulls in HTTP,
-  JSON3, StructTypes, Tables and two stdlibs. DataFrames and DuckDB support live in package
-  extensions that load only if you already have them.
+- **Tables.jl is the interface.** Installing the client pulls in HTTP, JSON3, StructTypes,
+  Tables and two stdlibs. DataFrames and DuckDB support live in package extensions that
+  load only if you already have them.
 - **Requests are conservative.** Serial, identified by a `User-Agent` naming the package and
   this repository, with exponential backoff that honours `Retry-After`. OBIS asks that
   downloads not be parallelized, so the package doesn't offer it.
@@ -159,7 +159,7 @@ and [Internals](https://dantebertuzzi.github.io/OBISClient.jl/stable/internals/)
 ## Scope
 
 This is a client, and only that. It doesn't analyse, model, or draw anything, and it ships
-no OBIS data — a frozen copy inside a package would break the citation it's meant to
+no OBIS data: a frozen copy inside a package would break the citation it's meant to
 support.
 
 ## Before you analyse anything
@@ -182,7 +182,7 @@ OBIS states the general caution itself:
 
 Cite the datasets you used; `OBISClient.citations(result)` builds them with the access date
 filled in. Where a result draws on many datasets, the database as a whole may be cited in
-addition to — never instead of — the individual datasets, with
+addition to the individual datasets, though not in place of them, with
 `OBISClient.obis_citation(...)`. See [manual.obis.org/citing.html](https://manual.obis.org/citing.html).
 
 If the package itself was useful, [CITATION.cff](CITATION.cff) says how to cite it. That

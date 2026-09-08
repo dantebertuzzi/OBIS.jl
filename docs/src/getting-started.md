@@ -53,7 +53,8 @@ OBISClient.occurrence("Abra alba"; flags = "ON_LAND", limit = 100)      # inspec
 OBISClient.occurrence("Abra alba"; exclude = ["ON_LAND", "NO_DEPTH"])
 ```
 
-Either case works — the package normalizes to the upper-case forms the API matches on.
+Either case works, since the package normalizes to the upper-case forms the API matches
+on.
 See [Interpreting OBIS data](interpreting.md) for what the flags mean.
 
 ## Working with a result
@@ -89,7 +90,7 @@ extrema(skipmissing(recs.decimalLatitude))
 ### Fields outside the core schema
 
 Providers supply Darwin Core terms beyond the core schema, and which of them appear depends
-on the query. They are kept per row in `extra` rather than becoming columns, so the main
+on the query. They are kept per row in `extra` instead of becoming columns, so the main
 schema stays the same between queries.
 
 ```julia
@@ -146,7 +147,7 @@ OBISClient.occurrence("Abra albaa")     # OBISNameNotFoundError, not an empty re
 OBISClient.occurrence(; geometry = "NOTWKT")   # OBISValidationError, caught locally
 ```
 
-An empty result from this package therefore means no records matched — never that the
+An empty result from this package therefore means no records matched. It does not mean the
 query was malformed. Every error type is a subtype of [`OBISClient.OBISError`](@ref).
 
 ## Configuration

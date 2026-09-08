@@ -9,9 +9,9 @@ metadata and the moment of retrieval. The package collects both.
 The policy is at [manual.obis.org/policy.html](https://manual.obis.org/policy.html). Two
 sections bear directly on a user of this package.
 
-**Section 4, conditions of use.** Any use of OBIS data or derived products — the policy
-names "software applications, workflows and papers" explicitly — should be properly cited.
-The recommended format for data retrieved from OBIS includes the access date:
+**Section 4, conditions of use.** Any use of OBIS data or derived products should be
+properly cited, and the policy names "software applications, workflows and papers"
+explicitly. The recommended format for data retrieved from OBIS includes the access date:
 
 > [Dataset citation available from metadata] [Data provider details] [Dataset] (Available:
 > Ocean Biodiversity Information System. Intergovernmental Oceanographic Commission of
@@ -140,7 +140,7 @@ is refused.
 
 Read the permission columns before building anything: a single CC BY-NC dataset makes the
 whole result non-commercial, and this query has six. That is why the breakdown is per
-licence instead of a single verdict — showing only the majority licence would mislead.
+licence instead of a single verdict: showing only the majority licence would mislead.
 
 To check before retrieving anything, query the datasets first:
 
@@ -200,9 +200,9 @@ A BibTeX entry looks like this:
 
 ### The access date
 
-The citation format requires `Accessed: YYYY-MM-DD`, and nothing in the data supplies it —
-it is a property of the request. The package records it when the request is made and stores
-it on the result, so the citation is correct without you tracking anything:
+The citation format requires `Accessed: YYYY-MM-DD`, and nothing in the data supplies it,
+because it is a property of the request. The package records it when the request is made
+and stores it on the result, so the citation is correct without you tracking anything:
 
 ```julia
 OBISClient.metadata(recs).accessed
@@ -229,8 +229,8 @@ incomplete.
 ## Citing the database as a whole
 
 Where a result draws on many datasets, the policy allows citing the integrated database **in
-addition to** the individual datasets, taking each dataset's restrictions into account. It
-is not a substitute for them.
+addition to** the individual datasets, taking each dataset's restrictions into account.
+Citing it does not replace citing them.
 
 ```julia
 OBISClient.obis_citation(; description = "Distribution records of Abra alba")

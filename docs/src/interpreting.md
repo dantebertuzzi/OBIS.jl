@@ -1,9 +1,9 @@
 # Interpreting OBIS data
 
 OBIS aggregates observations that thousands of people collected for their own purposes,
-over two centuries, with methods that were never coordinated. The records are real; what
-they collectively represent is not obvious. This page covers the four things that most
-often turn a correct query into a wrong conclusion.
+over two centuries, with methods that were never coordinated. The records are real. What
+they add up to is a harder question. This page covers what most often turns a correct
+query into a wrong conclusion.
 
 OBIS states the general caution itself, in its data policy:
 
@@ -23,8 +23,8 @@ biology.
 
 A record exists because somebody looked, identified what they found, and published it. The
 number of records for a taxon in a place and year is therefore the product of how much of
-it there was and how hard people looked — and across the history of OBIS, how hard people
-looked varies by orders of magnitude more than the biology does.
+it there was and how hard people looked. Across the history of OBIS, the second factor
+varies by orders of magnitude more than the biology does.
 
 You can see the shape of it directly:
 
@@ -52,8 +52,8 @@ The series for almost any well-recorded taxon rises steeply through the late twe
 century and then moves sharply with individual events. Those movements are survey
 programmes starting and ending, museum collections being digitized, and national nodes
 joining OBIS and contributing decades of backlog in a single year. *Abra alba* has records
-from 1841 onward, and the global OBIS year range starts in 1103 — a range that reflects the
-history of natural history, not of the ocean.
+from 1841 onward, and the global OBIS year range starts in 1103, which says more about
+when people began collecting than about the ocean.
 
 Three consequences:
 
@@ -63,8 +63,9 @@ Three consequences:
 - **A map of record density is a map of survey coverage.** Coastal Europe and North America
   are dense; the open ocean and the southern hemisphere are sparse. That is a statement
   about ships and funding.
-- **Comparisons need a denominator.** If you must compare, compare against total records
-  from the same datasets, region and period — the effort that produced them:
+- **Comparisons need a denominator.** If you must compare, compare against the total
+  records from the same datasets, region and period. That total is the effort that
+  produced them:
 
 ```julia
 target = OBISClient.statistics("Abra alba"; areaid = 259)["records"]
@@ -72,7 +73,8 @@ effort = OBISClient.statistics(; areaid = 259)["records"]
 share  = target / effort
 ```
 
-That is still crude, but it is a proportion of a sampled community rather than a raw count.
+That is still crude, but a proportion of a sampled community tells you more than a raw
+count does.
 Properly accounting for effort is a modelling problem, which is outside this package's
 scope.
 
@@ -128,17 +130,17 @@ OBISClient.statistics("Abra alba"; absence = :include)["records"]   # both
 
 Absence records are excluded from the default view on either access route, and asked for
 with `absence = :include` or `:only`. OBIS's data access page says the Mapper downloads and
-the bulk export contain none at all; for the bulk export that is stale — the files do carry
+the bulk export contain none at all; for the bulk export that is stale: the files do carry
 them, verified count for count against `/statistics` (NOTES.md §7.3), and
 [`OBISClient.read_export`](@ref) reads them with the same tri-state selection the API takes. The
 Mapper was not checked, so treat the page's statement about it as it stands.
 
 Why it matters: a presence-only dataset cannot distinguish "not recorded here" from "looked
-for and not found here". Any method that needs a contrast between occupied and unoccupied
-sites — and most do — has to construct the unoccupied set somehow, usually as
-pseudo-absences drawn from the background. A recorded absence is an observation; a
-pseudo-absence is an assumption. Where recorded absences exist, using them removes that
-assumption from the analysis.
+for and not found here". Most methods need a contrast between occupied and unoccupied
+sites, and they have to build the unoccupied set somehow, usually as pseudo-absences drawn
+from the background. That construction is an assumption about where the species is absent.
+A recorded absence is an observation, so using one where it exists takes that assumption
+out of the analysis.
 
 ```julia
 # Presences and absences together, labelled.
@@ -174,7 +176,8 @@ pattern a transposed or truncated coordinate produces:
 ```
 
 
-Not every flag is an error, though, and no rule covers this — you need to know the domain.
+Not every flag is an error, though, and no general rule covers the difference. You need to
+know the domain.
 `DEPTH_EXCEEDS_BATH` compares the recorded depth against GEBCO bathymetry, and OBIS notes
 that a measured depth is sometimes more accurate than the gridded bathymetry it is checked
 against. In a canyon or a trench, the flag can be the thing that is wrong.
@@ -183,8 +186,8 @@ observation.
 
 The flags in `OBISClient.KNOWN_FLAGS` are the documented vocabulary, and the QC pipeline's own
 reference at [github.com/iobis/obis-qc](https://github.com/iobis/obis-qc) defines each
-check. The vocabulary is open — OBIS adds checks — so an unrecognized flag is passed
-through with a warning rather than rejected.
+check. OBIS adds checks over time, so the vocabulary is open: an unrecognized flag is
+passed through with a warning instead of being rejected.
 
 `statistics_qc` summarizes flags and missing fields for a whole query, which is a better
 first move than inspecting records:
@@ -199,8 +202,8 @@ qc["onland"]
 
 The API matches flags in upper case. A lower-case flag is not an error: `flags = "on_land"`
 returns zero records, and `exclude = "on_land"` applies no filter at all, both with a
-success status. The package normalizes case for you, so either spelling works here — but
-the behaviour is worth knowing if you also query the API directly.
+success status. The package normalizes case for you, so either spelling works here. The
+behaviour is worth knowing if you also query the API directly.
 
 ## Names are matched, not authoritative
 
@@ -233,7 +236,7 @@ Before drawing a conclusion from an OBIS query:
 
 1. Have you looked at `statistics_qc` for the query?
 2. Do you know whether absence records exist for this taxon, and whether you want them?
-3. Have you decided what to do about each flag present, rather than ignoring all of them?
+3. Have you decided what to do about each flag present?
 4. If you are comparing counts across time or space, what is the denominator?
 5. Are you citing the datasets, and do their licences permit what you plan to do?
    See [Licensing and citation](licensing.md).

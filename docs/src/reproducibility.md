@@ -29,8 +29,8 @@ as it stood in March". Remove entries explicitly:
 OBISClient.clear_cache!()
 ```
 
-What is stored is the **raw response body**, not the parsed table. So a re-run reproduces
-the original data even if the package's schema handling has changed in the meantime — the
+What is stored is the **raw response body**, not the parsed table, so a re-run reproduces
+the original data even if the package's schema handling has changed in the meantime. The
 stored artifact does not depend on this package's decisions.
 
 The cache key covers the base URL, the endpoint and the parameters, sorted, so keyword
@@ -61,7 +61,7 @@ end
 
 ## Guaranteeing a re-run uses the cache
 
-A cache that silently falls back to the network is not a guarantee. Open it read-only and
+A cache that silently falls back to the network guarantees nothing. Open it read-only and
 any query that is not already cached fails loudly instead of fetching today's data:
 
 ```julia
@@ -108,5 +108,5 @@ piece of work:
 - record the access date in the manuscript, which the citations already do;
 - and where a dataset has a DOI, cite it, so a reader can reach the source directly.
 
-For a frozen snapshot of the whole database rather than of your queries, OBIS publishes
-dated bulk exports; see [Large queries](large-queries.md).
+For a frozen snapshot of the whole database, as opposed to one of your queries, OBIS
+publishes dated bulk exports; see [Large queries](large-queries.md).

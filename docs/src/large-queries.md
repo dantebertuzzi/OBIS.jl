@@ -18,9 +18,8 @@ OBISClient.estimate_size(; scientificname = "Mollusca")
 ## The limit, and why it is an error
 
 By default, `occurrence` estimates a query first and refuses to page through more than
-`api_record_limit` records — 100,000 unless you change it. The refusal is deliberate rather
-than a silent switch to the bulk export, because **the two routes do not return the same
-records**:
+`api_record_limit` records (100,000 unless you change it). It refuses instead of switching
+silently to the bulk export, because **the two routes do not return the same records**:
 
 - The export is a periodic snapshot and the API is live, so the same query answered from
   each differs by whatever OBIS has ingested since the export was built.
@@ -73,7 +72,7 @@ on a complete result works on a page.
 ### Resuming
 
 Pagination is keyset on the record UUID, so the entire cursor is one string. Save it and
-resume — in the same session or a later one, after an interruption or a crash:
+resume in the same session or a later one, after an interruption or a crash:
 
 ```julia
 pages = OBISClient.occurrence_pages("Mollusca"; page_size = 10_000)
@@ -89,9 +88,9 @@ resumed = OBISClient.occurrence_pages(
 )
 ```
 
-Note what the ordering is and is not. Records come back ordered by UUID, which is unrelated
-to date, place or taxon. A partial pull is an arbitrary subset of the matches — never "the
-earliest records" or "the nearest ones". If you need the earliest records, filter by date.
+Note what the ordering is. Records come back ordered by UUID, which is unrelated to date,
+place or taxon, so a partial pull is an arbitrary subset of the matches, not "the earliest
+records" or "the nearest ones". If you need the earliest records, filter by date.
 
 ## The bulk export
 
@@ -124,9 +123,9 @@ DataFrame(recs)
 ```
 
 `absence` and `dropped` default to `:exclude`, as on the API, because the export contains
-those records — a plain `select *` would mix them into an ordinary count without saying so.
-Pass `:include` or `:only` for the other two views, and the filter is pushed into the read
-rather than applied to a materialized table.
+those records and a plain `select *` would mix them into an ordinary count without saying
+so. Pass `:include` or `:only` for the other two views. The filter is pushed into the read
+instead of being applied to a materialized table.
 
 Two columns are always `missing`: the export carries `marine` and `brackish` but not
 `freshwater` or `terrestrial`. The access date on the result is the file's modification
@@ -136,7 +135,7 @@ DuckDB is a weak dependency, so it is installed only if you ask for it, and Parq
 not an alternative here: it does not support the nested struct columns the export is built
 from (NOTES.md §7.4).
 
-Nothing stops you reading the files yourself instead — they are ordinary Parquet:
+Nothing stops you reading the files yourself instead. They are ordinary Parquet:
 
 ```julia
 using DuckDB, DBInterface
@@ -158,7 +157,7 @@ OBISClient.export_covers(; event = :only)                    # false — API onl
 ```
 
 Absence and dropped records are in the export, despite the data access page saying
-otherwise, which is why the query above filters them out explicitly rather than assuming
+otherwise, which is why the query above filters them out explicitly instead of assuming
 they are absent. Checked against `/statistics` for five datasets: the export's `absence`
 and `dropped` row counts matched the API's `absence = :only` and `dropped = :only` counts
 exactly, and each export's total came to the default count plus them.
