@@ -22,6 +22,12 @@ Nothing to install to try it: the badge above opens
 runs Julia natively. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the
 cells.
 
+A second notebook, [`obis-missingness.ipynb`](https://colab.research.google.com/github/dantebertuzzi/MissingPatterns.jl/blob/main/notebooks/obis-missingness.ipynb),
+pairs this client with [MissingPatterns.jl](https://github.com/dantebertuzzi/MissingPatterns.jl)
+to read what is *absent* from a pull of records — which fields go missing together, what
+complete-case analysis would cost, and how a 3000-record sample compares with OBIS's own counts
+for the whole query.
+
 ## Installation
 
 ```julia
