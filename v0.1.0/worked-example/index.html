@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Worked example: killer whales · OBISClient.jl</title><meta name="title" content="Worked example: killer whales · OBISClient.jl"/><meta property="og:title" content="Worked example: killer whales · OBISClient.jl"/><meta property="twitter:title" content="Worked example: killer whales · OBISClient.jl"/><meta name="description" content="Documentation for OBISClient.jl."/><meta property="og:description" content="Documentation for OBISClient.jl."/><meta property="twitter:description" content="Documentation for OBISClient.jl."/><meta property="og:url" content="https://dantebertuzzi.github.io/OBISClient.jl/worked-example/"/><meta property="twitter:url" content="https://dantebertuzzi.github.io/OBISClient.jl/worked-example/"/><link rel="canonical" href="https://dantebertuzzi.github.io/OBISClient.jl/worked-example/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.63.2/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">OBISClient.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting-started/">Getting started</a></li><li><a class="tocitem" href="../interpreting/">Interpreting OBIS data</a></li><li class="is-active"><a class="tocitem" href>Worked example: killer whales</a><ul class="internal"><li><a class="tocitem" href="#1.-The-query,-and-what-it-leaves-out"><span>1. The query, and what it leaves out</span></a></li><li><a class="tocitem" href="#2.-groupby:-where-do-the-records-come-from?"><span>2. <code>groupby</code>: where do the records come from?</span></a></li><li><a class="tocitem" href="#3.-unstack:-a-pivot-table"><span>3. <code>unstack</code>: a pivot table</span></a></li><li><a class="tocitem" href="#4.-Mapping"><span>4. Mapping</span></a></li><li><a class="tocitem" href="#5.-A-statistic-worth-computing"><span>5. A statistic worth computing</span></a></li><li><a class="tocitem" href="#The-complete-scripts"><span>The complete scripts</span></a></li><li><a class="tocitem" href="#What-to-take-from-this"><span>What to take from this</span></a></li></ul></li><li><a class="tocitem" href="../mapping-a-coast/">Mapping a coast</a></li><li><a class="tocitem" href="../example-scripts/">Example scripts</a></li><li><a class="tocitem" href="../licensing/">Licensing and citation</a></li><li><a class="tocitem" href="../large-queries/">Large queries</a></li><li><a class="tocitem" href="../reproducibility/">Reproducibility</a></li><li><a class="tocitem" href="../api/">Public API</a></li><li><a class="tocitem" href="../internals/">Internals</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Worked example: killer whales</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Worked example: killer whales</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBISClient.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/dantebertuzzi/OBISClient.jl/blob/main/docs/src/worked-example.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Worked-example:-killer-whales"><a class="docs-heading-anchor" href="#Worked-example:-killer-whales">Worked example: killer whales</a><a id="Worked-example:-killer-whales-1"></a><a class="docs-heading-anchor-permalink" href="#Worked-example:-killer-whales" title="Permalink"></a></h1><p>A full session on one species: retrieve, map, group, pivot, and test a relationship, using the client together with DataFrames and CairoMakie. Analysis and plotting are not part of OBISClient.jl. They happen here on a table the client handed over, which is why it implements Tables.jl.</p><p>The script is <a href="https://github.com/dantebertuzzi/OBISClient.jl/blob/main/examples/orcas.jl"><code>examples/orcas.jl</code></a>. Run it with <code>julia --project=examples examples/orcas.jl</code>. Every number and figure below came from that run; the counts move as OBIS ingests data.</p><pre><code class="language-julia hljs">using OBISClient, DataFrames, Statistics</code></pre><h2 id="1.-The-query,-and-what-it-leaves-out"><a class="docs-heading-anchor" href="#1.-The-query,-and-what-it-leaves-out">1. The query, and what it leaves out</a><a id="1.-The-query,-and-what-it-leaves-out-1"></a><a class="docs-heading-anchor-permalink" href="#1.-The-query,-and-what-it-leaves-out" title="Permalink"></a></h2><p>Size the query before retrieving it, and ask what the default view is hiding:</p><pre><code class="language-julia hljs">st = OBISClient.statistics(&quot;Orcinus orca&quot;)
+OBISClient.statistics(&quot;Orcinus orca&quot;; absence = :only)[&quot;records&quot;]
+OBISClient.statistics(&quot;Orcinus orca&quot;; dropped = :only)[&quot;records&quot;]</code></pre><pre><code class="nohighlight hljs">presence records returned by default : 34364
+datasets                             : 260
+year range                           : 1758–2026
+absence records, excluded by default : 4386
+dropped records, excluded by default : 65</code></pre><p>4,386 absence records — surveys that went looking for killer whales and did not find them — are excluded from every default query and from the Mapper downloads. For a species distribution question they are the other half of the evidence.</p><p>Retrieving the presences is one call. At 34,364 records it sits under the API limit, so no route decision is needed:</p><pre><code class="language-julia hljs">records = OBISClient.occurrence(&quot;Orcinus orca&quot;; progress = true)
+df = DataFrame(records)</code></pre><h2 id="2.-groupby:-where-do-the-records-come-from?"><a class="docs-heading-anchor" href="#2.-groupby:-where-do-the-records-come-from?">2. <code>groupby</code>: where do the records come from?</a><a id="2.-groupby:-where-do-the-records-come-from?-1"></a><a class="docs-heading-anchor-permalink" href="#2.-groupby:-where-do-the-records-come-from?" title="Permalink"></a></h2><p>The columns are already typed, so ordinary DataFrames idiom applies with no cleaning step:</p><pre><code class="language-julia hljs">by_basis = combine(groupby(dropmissing(df, :basisOfRecord), :basisOfRecord), nrow =&gt; :records)
+sort!(by_basis, :records; rev = true)</code></pre><pre><code class="nohighlight hljs">6×2 DataFrame
+ Row │ basisOfRecord           records
+     │ String                  Int64
+─────┼─────────────────────────────────
+   1 │ HumanObservation          31325
+   2 │ MachineObservation         2858
+   3 │ Occurrence                  117
+   4 │ PreservedSpecimen            58
+   5 │ MaterialSample                5
+   6 │ NomenclaturalChecklist        1</code></pre><p>Overwhelmingly people watching from boats and shorelines, which is worth knowing before treating the records as a survey.</p><pre><code class="language-julia hljs">by_dataset = combine(groupby(df, :dataset_id), nrow =&gt; :records)
+sort!(by_dataset, :records; rev = true)</code></pre><blockquote><p>34364 records come from 260 datasets; the largest contributes 8374 (24.4%).</p></blockquote><p>Group on <code>dataset_id</code>, not on the citation text: citation strings come from the provider, and some are missing or shared, which would merge distinct datasets. Grouping on the identifier reproduces the 260 that <code>statistics</code> reports; grouping on the citation gives 251.</p><h2 id="3.-unstack:-a-pivot-table"><a class="docs-heading-anchor" href="#3.-unstack:-a-pivot-table">3. <code>unstack</code>: a pivot table</a><a id="3.-unstack:-a-pivot-table-1"></a><a class="docs-heading-anchor-permalink" href="#3.-unstack:-a-pivot-table" title="Permalink"></a></h2><p>Records by decade and hemisphere:</p><pre><code class="language-julia hljs">work = dropmissing(df, [:date_year, :decimalLatitude])
+work.decade     = (work.date_year .÷ 10) .* 10
+work.hemisphere = ifelse.(work.decimalLatitude .&gt;= 0, &quot;northern&quot;, &quot;southern&quot;)
+
+pivot = unstack(
+    combine(groupby(work, [:decade, :hemisphere]), nrow =&gt; :records),
+    :decade, :hemisphere, :records; fill = 0,
+)</code></pre><pre><code class="nohighlight hljs">8×3 DataFrame
+ Row │ decade  southern  northern
+     │ Int64   Int64     Int64
+─────┼────────────────────────────
+   1 │   1950         7         9
+   2 │   1960         2        62
+   3 │   1970        46       229
+   4 │   1980       155       792
+   5 │   1990       546      1696
+   6 │   2000       247      3774
+   7 │   2010      1005      6951
+   8 │   2020      3388     14908</code></pre><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/orca-pivot-dark.png">
+  <img alt="Killer whale records per decade by hemisphere" src="../assets/orca-pivot.png">
+</picture><p>Both columns climb steeply, but neither is a population estimate. They track the spread of digital recording, dedicated cetacean surveys and, more recently, citizen science. The southern dip in the 2000s is a survey programme ending.</p><h2 id="4.-Mapping"><a class="docs-heading-anchor" href="#4.-Mapping">4. Mapping</a><a id="4.-Mapping-1"></a><a class="docs-heading-anchor-permalink" href="#4.-Mapping" title="Permalink"></a></h2><p>Coordinates are <code>Float64</code> columns, so they go straight into a plotting call. Land comes from Natural Earth; nothing here is specific to OBISClient.jl:</p><pre><code class="language-julia hljs">using CairoMakie, GeoMakie, NaturalEarth
+
+lon  = collect(records.decimalLongitude)
+lat  = collect(records.decimalLatitude)
+keep = .!ismissing.(lon) .&amp; .!ismissing.(lat)
+
+fig = Figure(; size = (900, 560))
+ga  = GeoAxis(fig[1, 1]; dest = &quot;+proj=robin&quot;,
+              xticklabelsvisible = false, yticklabelsvisible = false)
+
+poly!(ga, NaturalEarth.naturalearth(&quot;land&quot;, 110).geometry;
+      color = &quot;#eeece6&quot;, strokecolor = &quot;#c3c2b7&quot;, strokewidth = 0.5)
+scatter!(ga, lon[keep], lat[keep];
+         color = (&quot;#2a78d6&quot;, 0.35), markersize = 3, strokewidth = 0)
+
+save(&quot;orca-global.png&quot;, fig; px_per_unit = 2)</code></pre><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/orca-global-dark.png">
+  <img alt="Every killer whale record in OBIS, on a Robinson projection" src="../assets/orca-global.png">
+</picture><p>Killer whales are genuinely cosmopolitan, so this map is unusually close to a real distribution — and even so, the density is as much about observers as about whales: heavy off northwest Europe, the Pacific Northwest and the Antarctic Peninsula, thin across the tropics and the southern Indian Ocean.</p><p>Zooming in shows structure a world map flattens away. Each panel is the same records under a different bounding box, filtered with ordinary broadcasting:</p><pre><code class="language-julia hljs">REGIONS = [
+    (&quot;Norwegian and Barents Seas&quot;,         (0.0, 44.0, 62.0, 80.0)),
+    (&quot;Gulf of Alaska and British Columbia&quot;, (-160.0, -122.0, 47.0, 62.0)),
+    (&quot;Antarctic Peninsula&quot;,                (-72.0, -50.0, -70.0, -60.0)),
+    (&quot;Northwest Europe&quot;,                   (-14.0, 12.0, 48.0, 62.0)),
+]
+
+fig  = Figure(; size = (940, 700))
+land = NaturalEarth.naturalearth(&quot;land&quot;, 50).geometry
+
+for (k, (title, (w, e, s, n))) in enumerate(REGIONS)
+    row, col = divrem(k - 1, 2) .+ (1, 1)
+    inbox = keep .&amp; (lon .&gt;= w) .&amp; (lon .&lt;= e) .&amp; (lat .&gt;= s) .&amp; (lat .&lt;= n)
+
+    ga = GeoAxis(fig[row, col]; dest = &quot;+proj=merc&quot;, limits = (w, e, s, n),
+                 title = &quot;$(title)  ·  $(count(inbox)) records&quot;)
+    poly!(ga, land; color = &quot;#eeece6&quot;, strokecolor = &quot;#c3c2b7&quot;, strokewidth = 0.6)
+    scatter!(ga, lon[inbox], lat[inbox];
+             color = (&quot;#2a78d6&quot;, 0.5), markersize = 4, strokewidth = 0)
+end</code></pre><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/orca-regions-dark.png">
+  <img alt="Killer whale records in four regions: Norwegian and Barents Seas, Gulf of Alaska, Antarctic Peninsula, northwest Europe" src="../assets/orca-regions.png">
+</picture><p>The Norwegian records trace the herring-following population along the coast and shelf; the British Columbia records trace the Inside Passage; the northwest Europe panel is dominated by a dense block north of Scotland. Each is a survey footprint as much as a habitat.</p><h2 id="5.-A-statistic-worth-computing"><a class="docs-heading-anchor" href="#5.-A-statistic-worth-computing">5. A statistic worth computing</a><a id="5.-A-statistic-worth-computing-1"></a><a class="docs-heading-anchor-permalink" href="#5.-A-statistic-worth-computing" title="Permalink"></a></h2><p>Fitting a trend line to record counts over time would just measure observers. A more useful question, and one that quantifies the problem: does apparent species richness track sampling effort across regions?</p><p><code>statistics</code> returns both counts for an area in a single request, so this costs one request per region:</p><pre><code class="language-julia hljs">areas = OBISClient.area()
+lme = [i for i in 1:OBISClient.nrow(areas)
+       if !ismissing(areas.type[i]) &amp;&amp; areas.type[i] == &quot;lme&quot;]
+
+name, records, species = String[], Int[], Int[]
+for i in lme[1:26]
+    s = try
+        OBISClient.statistics(; areaid = areas.id[i])
+    catch err
+        err isa OBISClient.OBISError || rethrow()
+        continue                       # a region with no data is not a failure
+    end
+    (s[&quot;records&quot;] &gt; 0 &amp;&amp; s[&quot;species&quot;] &gt; 0) || continue
+    push!(name, String(areas.name[i]))
+    push!(records, Int(s[&quot;records&quot;]))
+    push!(species, Int(s[&quot;species&quot;]))
+end
+
+regions = DataFrame(; region = name, records, species)
+sort!(regions, :records; rev = true)</code></pre><pre><code class="nohighlight hljs">8×3 DataFrame
+ Row │ region                         records   species
+     │ String                         Int64     Int64
+─────┼──────────────────────────────────────────────────
+   1 │ California Current             16968104    11505
+   2 │ East Central Australian Shelf  16014671    17001
+   3 │ Celtic-Biscay Shelf            13492953    10882
+   4 │ Gulf of Alaska                  7242071     6887
+   5 │ Baltic Sea                      6806532     4259
+   6 │ Caribbean Sea                   3640502    15609
+   7 │ Agulhas Current                 1905190    13977
+   8 │ Barents Sea                     1443787     5235</code></pre><p>Spearman&#39;s rank correlation needs no distributional assumption and is three lines:</p><pre><code class="language-julia hljs">function spearman(x, y)
+    rank(v) = invperm(sortperm(v))
+    return cor(float.(rank(x)), float.(rank(y)))
+end
+
+rho = spearman(regions.records, regions.species)
+
+lx, ly = log10.(regions.records), log10.(regions.species)
+b = cov(lx, ly) / var(lx)          # slope of log(species) on log(records)</code></pre><pre><code class="nohighlight hljs">across 26 large marine ecosystems
+  Spearman&#39;s rho (records vs species)      : 0.771
+  slope of log10(species) on log10(records) : 0.449</code></pre><picture>
+  <source media="(prefers-color-scheme: dark)" srcset="../assets/richness-vs-effort-dark.png">
+  <img alt="Species recorded against records in OBIS, one point per large marine ecosystem, log-log with a fitted power law" src="../assets/richness-vs-effort.png">
+</picture><p>ρ = 0.77 across 26 large marine ecosystems: regions with more records have more species on record. The slope of 0.45 says how the two are related — richness rises roughly as the square root of effort, so a region with a hundred times the records shows about ten times the species.</p><p>Read the slope carefully in both directions. It is <strong>not</strong> a claim that the Caribbean is poorer than the California Current; it is a warning that any comparison of regional richness which ignores effort is partly measuring survey budgets. It is also not a bias correction — turning these counts into comparable richness estimates is a modelling problem, and the scope of a different package.</p><p>Two caveats on the analysis itself, since it is an example and not a result:</p><ul><li>The 26 regions are the first 26 large marine ecosystems in the area list, not a designed sample. They differ in area, latitude and habitat, none of which is controlled for.</li><li>Records and species are not independent quantities: a species enters the count because a record exists. The correlation is real, but it is partly definitional, which is exactly why the slope matters more than the correlation.</li></ul><h2 id="The-complete-scripts"><a class="docs-heading-anchor" href="#The-complete-scripts">The complete scripts</a><a id="The-complete-scripts-1"></a><a class="docs-heading-anchor-permalink" href="#The-complete-scripts" title="Permalink"></a></h2><p>The code above is trimmed to what each step is about — the shared theme, the light and dark variants, and the captions are left out. Both scripts appear in full, exactly as they are in the repository, under <a href="../example-scripts/">Example scripts</a>.</p><h2 id="What-to-take-from-this"><a class="docs-heading-anchor" href="#What-to-take-from-this">What to take from this</a><a id="What-to-take-from-this-1"></a><a class="docs-heading-anchor-permalink" href="#What-to-take-from-this" title="Permalink"></a></h2><p>The client&#39;s job ended at step 1. Everything after it is ordinary Julia on an ordinary table — which is the argument for a stable typed schema: <code>groupby</code>, <code>unstack</code>, <code>cor</code> and <code>log10</code> all work without a cleaning step, and they keep working when the query changes.</p><p>The interpretation, though, does not come from the tools. See <a href="../interpreting/">Interpreting OBIS data</a>.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../interpreting/">« Interpreting OBIS data</a><a class="docs-footer-nextpage" href="../mapping-a-coast/">Mapping a coast »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Friday 11 September 2026 22:43">Friday 11 September 2026</span>. Using Julia version 1.13.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
