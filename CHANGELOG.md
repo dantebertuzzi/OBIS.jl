@@ -15,9 +15,12 @@ All notable changes to this project are documented here. The format follows
   year, a scatter of coordinates with the `ON_LAND` records marked, the checklist and taxon
   routes, and `estimate_size` before a large pull. The outputs committed with it were produced
   by an actual run, so the notebook reads on GitHub without being executed.
-- A pointer in the README to `obis-missingness.ipynb`, a notebook in the MissingPatterns.jl
-  repository that pairs this client with that package to audit what is absent from a pull of
-  records.
+- `notebooks/obis-missingness.ipynb`, which pairs this client with
+  [MissingPatterns.jl](https://github.com/dantebertuzzi/MissingPatterns.jl) to audit what is
+  absent from a pull of records: which fields go missing together, what complete-case analysis
+  would cost, and how a 3000-record sample compares with OBIS's own per-field counts for the
+  whole query. The same notebook is committed in the MissingPatterns.jl repository, since it
+  belongs to both packages; the two copies have to be kept in step by hand.
 
 ## [0.1.0] - 2026-09-07
 

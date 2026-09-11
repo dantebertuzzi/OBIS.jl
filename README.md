@@ -17,16 +17,15 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 
 **Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
 
-Nothing to install to try it: the badge above opens
-[`notebooks/getting-started.ipynb`](notebooks/getting-started.ipynb) in Google Colab, which
-runs Julia natively. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the
-cells.
+Nothing to install to try it: Google Colab runs Julia natively, and both notebooks below open
+there from their badge. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the
+cells. Both are committed with the outputs of a real run, so they also read on GitHub without
+being executed.
 
-A second notebook, [`obis-missingness.ipynb`](https://colab.research.google.com/github/dantebertuzzi/MissingPatterns.jl/blob/main/notebooks/obis-missingness.ipynb),
-pairs this client with [MissingPatterns.jl](https://github.com/dantebertuzzi/MissingPatterns.jl)
-to read what is *absent* from a pull of records — which fields go missing together, what
-complete-case analysis would cost, and how a 3000-record sample compares with OBIS's own counts
-for the whole query.
+| Notebook | What it does |
+|---|---|
+| [`getting-started.ipynb`](notebooks/getting-started.ipynb) [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/getting-started.ipynb) | A first query and what comes back: the stable schema, the licences and citations carried on a result, the quality flags and what a default query filters out, records per year, a scatter of coordinates with the `ON_LAND` records marked, and `estimate_size` before a large pull. |
+| [`obis-missingness.ipynb`](notebooks/obis-missingness.ipynb) [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/obis-missingness.ipynb) | What is *absent* from a pull of records, read with [MissingPatterns.jl](https://github.com/dantebertuzzi/MissingPatterns.jl): two depth fields that turn out to be one, a provenance split hiding in a negative ϕ, not a single complete record in three thousand, and a check of the sample against OBIS's own counts for the whole query. Also in that package's repository, since it belongs to both. |
 
 ## Installation
 
