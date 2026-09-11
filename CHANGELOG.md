@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `notebooks/getting-started.ipynb`, a Jupyter notebook that runs the client against the live
+  API and is linked from the README by a badge that opens it in Google Colab, which supports
+  Julia natively. It covers a first query, the result schema, the licences and citations
+  carried on a result, the quality flags and what a default query filters out, records per
+  year, a scatter of coordinates with the `ON_LAND` records marked, the checklist and taxon
+  routes, and `estimate_size` before a large pull. The outputs committed with it were produced
+  by an actual run, so the notebook reads on GitHub without being executed.
+
 ## [0.1.0] - 2026-09-07
 
 First release. A Julia client for the OBIS API with a stable typed schema, licence and

@@ -9,12 +9,18 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 [![Docs (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/stable)
 [![Docs (dev)](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/getting-started.ipynb)
 
 > **Not an official OBIS product.** This is an independent, community-maintained client,
 > not affiliated with or endorsed by OBIS, the IOC, or UNESCO. The data, the API and the
 > quality control behind them are the work of OBIS and its nodes.
 
 **Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
+
+Nothing to install to try it: the badge above opens
+[`notebooks/getting-started.ipynb`](notebooks/getting-started.ipynb) in Google Colab, which
+runs Julia natively. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the
+cells.
 
 ## Installation
 
