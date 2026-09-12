@@ -9,7 +9,7 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 [![Docs (stable)](https://img.shields.io/badge/docs-stable-blue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/stable)
 [![Docs (dev)](https://img.shields.io/badge/docs-dev-lightblue.svg)](https://dantebertuzzi.github.io/OBISClient.jl/dev)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/getting-started.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl)
 
 > **Not an official OBIS product.** This is an independent, community-maintained client,
 > not affiliated with or endorsed by OBIS, the IOC, or UNESCO. The data, the API and the
@@ -17,10 +17,10 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 
 **Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
 
-Nothing to install to try it: Google Colab runs Julia natively, and both notebooks below open
-there from their badge. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the
-cells. Both are committed with the outputs of a real run, so they also read on GitHub without
-being executed.
+Nothing to install to try it: Google Colab runs Julia natively. The badge above opens the
+repository's notebook list, so you pick which of the two to run; each also carries its own badge
+below. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the cells. Both are
+committed with the outputs of a real run, so they also read on GitHub without being executed.
 
 | Notebook | What it does |
 |---|---|
