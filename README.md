@@ -18,14 +18,15 @@ a programme of the Intergovernmental Oceanographic Commission of UNESCO.
 **Documentation: [dantebertuzzi.github.io/OBISClient.jl/stable](https://dantebertuzzi.github.io/OBISClient.jl/stable)**
 
 Nothing to install to try it: Google Colab runs Julia natively. The badge above opens the
-repository's notebook list, so you pick which of the two to run; each also carries its own badge
-below. Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the cells. Both are
+repository's notebook list, so you pick which one to run; each also carries its own badge below.
+Pick the Julia runtime under *Runtime ▸ Change runtime type* and run the cells. All three are
 committed with the outputs of a real run, so they also read on GitHub without being executed.
 
 | Notebook | What it does |
 |---|---|
 | [`getting-started.ipynb`](notebooks/getting-started.ipynb) [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/getting-started.ipynb) | A first query and what comes back: the stable schema, the licences and citations carried on a result, the quality flags and what a default query filters out, records per year, a scatter of coordinates with the `ON_LAND` records marked, and `estimate_size` before a large pull. |
 | [`obis-missingness.ipynb`](notebooks/obis-missingness.ipynb) [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/obis-missingness.ipynb) | What is *absent* from a pull of records, read with [MissingPatterns.jl](https://github.com/dantebertuzzi/MissingPatterns.jl): two depth fields that turn out to be one, a provenance split hiding in a negative ϕ, not a single complete record in three thousand, and a check of the sample against OBIS's own counts for the whole query. Also in that package's repository, since it belongs to both. |
+| [`descriptive-statistics.ipynb`](notebooks/descriptive-statistics.ipynb) [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dantebertuzzi/OBISClient.jl/blob/main/notebooks/descriptive-statistics.ipynb) | Describing a pull before modelling it, with CairoMakie figures on the palette the package's own maps use: centre, spread and skew side by side, a multimodal temperature distribution resolved into one curve per contributing dataset, depth as an ECDF split by `basisOfRecord`, the categorical columns with their absences counted, a rank-correlation matrix where the latitude–temperature gradient has been erased by mixing two ocean basins, and a check of the sample against OBIS's own counts for the whole query. |
 
 ## Installation
 

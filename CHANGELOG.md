@@ -21,6 +21,15 @@ All notable changes to this project are documented here. The format follows
   would cost, and how a 3000-record sample compares with OBIS's own per-field counts for the
   whole query. The same notebook is committed in the MissingPatterns.jl repository, since it
   belongs to both packages; the two copies have to be kept in step by hand.
+- `notebooks/descriptive-statistics.ipynb`, a descriptive pass over a live pull of Atlantic cod
+  records, with CairoMakie figures on the palette `examples/theme.jl` gives the package's own
+  maps. It covers position, spread and skew for the numeric columns, the shapes behind those
+  numbers, a multimodal temperature distribution resolved into one density per contributing
+  dataset, depth as an ECDF split by `basisOfRecord`, frequency tables that keep the absences,
+  the count column and why its mean is not one, a Spearman matrix in which the
+  latitude-temperature gradient has been erased by pooling two ocean basins, and a comparison of
+  the sample against `statistics_env` over the whole query. Plotting stays outside the package:
+  the notebook uses CairoMakie on a `DataFrame`, as any caller would.
 
 ## [0.1.0] - 2026-09-07
 
